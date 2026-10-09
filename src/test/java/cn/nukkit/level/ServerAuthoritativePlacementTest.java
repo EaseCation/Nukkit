@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -91,6 +93,60 @@ class ServerAuthoritativePlacementTest {
         assertNull(place());
         verify(plugins, never()).callEvent(any(BlockPlaceEvent.class));
         verify(item, never()).setCount(anyInt());
+    }
+
+    @Test
+    void invalidSourceBeforeInteractionCannotStartWorldCallbacks() {
+        BooleanSupplier source = () -> false;
+        doCallRealMethod().when(level).useItemOn(position, item, BlockFace.UP, 0, 0, 0, player, false, source);
+        assertNull(level.useItemOn(position, item, BlockFace.UP, 0, 0, 0, player, false, source));
+        verifyNoInteractions(plugins);
+        verify(placed, never()).place(any(), any(), any(), any(), anyFloat(), anyFloat(), anyFloat(), any());
+    }
+
+    @Test
+    void sourceInvalidatedInInteractionDoesNotTouchOrPlaceTheBlock() {
+        AtomicBoolean valid = new AtomicBoolean(true);
+        BooleanSupplier source = valid::get;
+        doAnswer(call -> { valid.set(false); return null; }).when(plugins).callEvent(any(PlayerInteractEvent.class));
+        doCallRealMethod().when(level).useItemOn(position, item, BlockFace.UP, 0, 0, 0, player, null, source);
+        assertNull(level.useItemOn(position, item, BlockFace.UP, 0, 0, 0, player, null, source));
+        verify(clicked, never()).onUpdate(anyInt());
+        verify(plugins, never()).callEvent(any(BlockPlaceEvent.class));
+        verify(item, never()).setCount(anyInt());
+    }
+
+    @Test
+    void sourceInvalidatedInPlaceEventCannotPlaceOrConsumeTheItem() {
+        AtomicBoolean valid = new AtomicBoolean(true);
+        BooleanSupplier source = valid::get;
+        doAnswer(call -> { valid.set(false); return null; }).when(plugins).callEvent(any(BlockPlaceEvent.class));
+        doCallRealMethod().when(level).useItemOn(position, item, BlockFace.UP, 0, 0, 0, player, null, source);
+        assertNull(level.useItemOn(position, item, BlockFace.UP, 0, 0, 0, player, null, source));
+        verify(placed, never()).place(any(), any(), any(), any(), anyFloat(), anyFloat(), anyFloat(), any());
+        verify(item, never()).setCount(anyInt());
+    }
+
+    @Test
+    void unchangedSourcePlacesAndConsumesOneThroughTheGuardedEntry() {
+        BooleanSupplier source = () -> true;
+        doCallRealMethod().when(level).useItemOn(position, item, BlockFace.UP, 0, 0, 0, player, null, source);
+        assertSame(item, level.useItemOn(position, item, BlockFace.UP, 0, 0, 0, player, null, source));
+        verify(placed).place(item, replaced, clicked, BlockFace.UP, 0, 0, 0, player);
+        verify(item).setCount(1);
+    }
+
+    @Test
+    void failedBlockActivationCannotPassAnInvalidSourceToTheItem() {
+        AtomicBoolean valid = new AtomicBoolean(true);
+        BooleanSupplier source = valid::get;
+        when(clicked.canBeActivated()).thenReturn(true);
+        when(item.canBeActivated()).thenReturn(true);
+        doAnswer(call -> { valid.set(false); return false; }).when(clicked).onActivate(item, BlockFace.UP, 0, 0, 0, player);
+        doCallRealMethod().when(level).useItemOn(position, item, BlockFace.UP, 0, 0, 0, player, null, source);
+        assertNull(level.useItemOn(position, item, BlockFace.UP, 0, 0, 0, player, null, source));
+        verify(item, never()).onActivate(any(), any(), any(), any(), any(), anyFloat(), anyFloat(), anyFloat());
+        verify(plugins, never()).callEvent(any(BlockPlaceEvent.class));
     }
 
     private Item place() {

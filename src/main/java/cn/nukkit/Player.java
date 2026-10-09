@@ -34,6 +34,10 @@ import cn.nukkit.event.player.PlayerSpawnChangeEvent.Cause;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
+import cn.nukkit.network.input.InputValidationResult;
+import cn.nukkit.network.input.MovementCommit;
+import cn.nukkit.network.input.MovementCommitResult;
+import cn.nukkit.network.input.MovementTickAccumulator;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.inventory.*;
@@ -108,6 +112,7 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -250,6 +255,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Map<UUID, Player> hiddenPlayers = new ConcurrentHashMap<>();
 
     protected Vector3 newPosition = null;
+    private volatile long movementEpoch;
+    private long pendingMovementEpoch;
+    private double pendingMovementYaw;
+    private double pendingMovementPitch;
+    @Nullable
+    private MovementTickAccumulator inputMovementStatistics;
 
     protected int chunkRadius;
     protected int viewDistance;
@@ -894,6 +905,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean switchLevel(Level targetLevel) {
         Level oldLevel = this.level;
         if (super.switchLevel(targetLevel)) {
+            this.advanceMovementEpoch();
             // Remove old chunks
             for (long index : new LongArrayList(this.usedChunks.keySet())) {
                 int chunkX = Level.getHashX(index);
@@ -983,6 +995,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendChunk(int dimension, int x, int z, int subChunkCount, ChunkCachedData cachedData, DataPacket packet) {
+        @Nullable ChunkSendContext chunkContext = this.captureChunkSendContext();
         if (!this.connected) {
             return;
         }
@@ -991,24 +1004,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.chunkLoadCount++;
 
         this.dataPacket(packet);
+        if (chunkContext != null && !chunkContext.isCurrent(this)) return;
 
         for (BlockEntity blockEntity : this.level.getChunkBlockEntities(x, z).values()) {
             if (!(blockEntity instanceof BlockEntitySpawnable)) {
                 continue;
             }
             ((BlockEntitySpawnable) blockEntity).spawnTo(this);
+            if (chunkContext != null && !chunkContext.isCurrent(this)) return;
         }
 
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
                 if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
+                    if (chunkContext != null && !chunkContext.isCurrent(this)) return;
                 }
             }
         }
     }
 
     public void sendChunk(int dimension, int x, int z, int subChunkCount, ChunkCachedData cachedData, byte[] payload, byte[] subModePayload) {
+        @Nullable ChunkSendContext chunkContext = this.captureChunkSendContext();
         if (!this.connected) {
             return;
         }
@@ -1021,18 +1038,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.chunkZ = z;
         pk.data = payload;
         this.dataPacket(pk);
+        if (chunkContext != null && !chunkContext.isCurrent(this)) return;
 
         for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
             if (!(entity instanceof BlockEntitySpawnable)) {
                 continue;
             }
             ((BlockEntitySpawnable) entity).spawnTo(this);
+            if (chunkContext != null && !chunkContext.isCurrent(this)) return;
         }
 
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
                 if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
+                    if (chunkContext != null && !chunkContext.isCurrent(this)) return;
                 }
             }
         }
@@ -1278,14 +1298,233 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
+        @Nullable MovementPacketSource source = this.captureMovementPacketSource(packet);
+        @Nullable MotionPacketSource motion = this.captureMotionPacketSource(packet);
+        @Nullable ViewRemovalSource removal = this.captureViewRemovalSource(packet);
+        @Nullable ChunkSendContext chunk = this.captureChunkSendContext(packet);
+        @Nullable MetadataFlagsSource flags = this.captureMetadataFlagsSource(packet);
         DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
         this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        if (ev.isCancelled() || motion != null && motion.references(ev.getFinalPacket()) && !motion.isCurrent(this)
+                || source != null && !source.isCurrent(this) && source.references(ev.getFinalPacket())
+                || removal != null && removal.references(ev.getFinalPacket()) && !removal.isCurrent(this)
+                || chunk != null && chunk.references(ev.getFinalPacket()) && !chunk.isCurrent(this)
+                || flags != null && flags.references(ev.getFinalPacket(), this) && !flags.isCurrent(this)) {
             return false;
         }
 
         this.interfaz.putPacket(this, ev.getFinalPacket(), false, true);
         return true;
+    }
+
+    /** 地形内容可复用，但一次发送不能跨越插件回调中的世界或接入边界。 */
+    @Nullable
+    protected final ChunkSendContext captureChunkSendContext() {
+        if (!this.isMainThreadInputEnabled() || !this.server.isPrimaryThread() || this.level == null) {
+            return null;
+        }
+        return new ChunkSendContext(this.level, this.getDummyDimension(), this.isAcceptingInputPackets());
+    }
+
+    @Nullable
+    protected final ChunkSendContext captureChunkSendContext(DataPacket packet) {
+        if (!this.isMainThreadInputEnabled() || !this.server.isPrimaryThread() || !isChunkScopedPacket(packet)) {
+            return null;
+        }
+        return this.captureChunkSendContext();
+    }
+
+    private static boolean isChunkScopedPacket(DataPacket packet) {
+        if (isChunkScopedPacketId(packet.pid())) return true;
+        if (packet instanceof BatchPacket batch && batch.tracks != null) {
+            for (BatchPacket.Track track : batch.tracks) {
+                if (isChunkScopedPacketId(track.packetId)) return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isChunkScopedPacketId(int packetId) {
+        return packetId == ProtocolInfo.LEVEL_CHUNK_PACKET || packetId == ProtocolInfo.SUB_CHUNK_PACKET
+                || packetId == ProtocolInfo.NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET
+                || packetId == ProtocolInfo.BLOCK_ACTOR_DATA_PACKET;
+    }
+
+    protected record ChunkSendContext(Level level, int dimension, boolean acceptingInput) {
+        public boolean isCurrent(Player recipient) {
+            return recipient.isConnected() && !recipient.isClosed() && recipient.getLevel() == this.level
+                    && recipient.getDummyDimension() == this.dimension
+                    && recipient.isAcceptingInputPackets() == this.acceptingInput;
+        }
+
+        public boolean references(DataPacket packet) {
+            // 地形发送被替换成不透明批次时仍属于原操作，不在主线程尝试解压判定。
+            return isChunkScopedPacket(packet) || packet instanceof BatchPacket batch && batch.tracks == null;
+        }
+    }
+
+    /** 删除实体也属于接收方的具体视野，不能跨越发包回调里的传送。 */
+    @Nullable
+    protected final ViewRemovalSource captureViewRemovalSource(DataPacket packet) {
+        if (!this.isMainThreadInputEnabled() || !this.server.isPrimaryThread() || this.level == null
+                || !(packet instanceof RemoveEntityPacket removal)) {
+            return null;
+        }
+        return new ViewRemovalSource(removal.eid, this.level, this.getMovementEpoch(), this.isAcceptingInputPackets());
+    }
+
+    protected record ViewRemovalSource(long entityId, Level recipientLevel, long recipientEpoch, boolean acceptingInput) {
+        public boolean references(DataPacket packet) {
+            return packet instanceof RemoveEntityPacket removal && removal.eid == this.entityId;
+        }
+
+        public boolean isCurrent(Player recipient) {
+            return recipient.isOnline() && recipient.getLevel() == this.recipientLevel
+                    && recipient.getMovementEpoch() == this.recipientEpoch
+                    && recipient.isAcceptingInputPackets() == this.acceptingInput;
+        }
+    }
+
+    /** 只冻结新模式中实际玩家的位置来源；关闭时不查实体，也不创建快照。 */
+    @Nullable
+    protected final MovementPacketSource captureMovementPacketSource(DataPacket packet) {
+        if (!this.isMainThreadInputEnabled() || !this.isOnline()
+                || !this.server.isPrimaryThread() || this.level == null) {
+            return null;
+        }
+        long entityId;
+        if (packet instanceof MovePlayerPacket movement) {
+            entityId = movement.eid;
+        } else if (packet instanceof MoveEntityPacket movement) {
+            entityId = movement.eid;
+        } else {
+            return null;
+        }
+        if (entityId == this.getId() || entityId == this.getLocalEntityId()) {
+            return null;
+        }
+        Entity entity = this.level.getEntity(entityId);
+        if (!(entity instanceof Player actor) || !actor.isMainThreadInputEnabled()) {
+            return null;
+        }
+        // 此处只是发送前状态快照，不产生新的输入提交或反作弊通知。
+        return new MovementPacketSource(actor, MovementCommit.capture(actor, MovementCommitResult.UNCHANGED,
+                actor.getMovementEpoch()), actor.getBaseOffset(), this.getSessionId(), this.getMovementEpoch());
+    }
+
+    protected record MovementPacketSource(Player actor, MovementCommit state, float baseOffset,
+                                          UUID recipientSessionId, long recipientMovementEpoch) {
+        public boolean references(DataPacket packet) {
+            return packet instanceof MovePlayerPacket playerMovement && playerMovement.eid == this.actor.getId()
+                    || packet instanceof MoveEntityPacket entityMovement && entityMovement.eid == this.actor.getId();
+        }
+
+        public boolean isCurrent(Player recipient) {
+            return this.state.isCurrent(this.actor) && recipient.isOnline()
+                    && this.recipientSessionId.equals(recipient.getSessionId())
+                    && this.recipientMovementEpoch == recipient.getMovementEpoch()
+                    && recipient.getLevel() == this.state.level()
+                    && this.actor.getBaseOffset() == this.baseOffset
+                    && this.actor.getViewers().get(recipient.getLoaderId()) == recipient
+                    && this.actor.isWithinEntityViewDistance(recipient)
+                    && recipient.canSee(this.actor);
+        }
+    }
+
+    /** 速度覆盖也绑定原发布状态，回调中的新 motion 不能被外层旧包覆盖。 */
+    @Nullable
+    protected final MotionPacketSource captureMotionPacketSource(DataPacket packet) {
+        if (!this.isMainThreadInputEnabled() || !this.isOnline() || !this.server.isPrimaryThread()
+                || this.level == null || !(packet instanceof SetEntityMotionPacket motion)) return null;
+        Entity entity = motion.eid == this.getId() || motion.eid == this.getLocalEntityId()
+                ? this : this.level.getEntity(motion.eid);
+        if (!(entity instanceof Player actor) || !actor.isMainThreadInputEnabled()) return null;
+        return new MotionPacketSource(actor, actor.getLevel(), actor.getMovementEpoch(), actor.isAcceptingInputPackets(),
+                actor.motionX, actor.motionY, actor.motionZ, this.getMovementEpoch(), this.isAcceptingInputPackets(),
+                actor == this ? this.getLocalEntityId() : actor.getId());
+    }
+
+    protected record MotionPacketSource(Player actor, Level level, long actorEpoch, boolean acceptingInput,
+                                        double motionX, double motionY, double motionZ,
+                                        long recipientEpoch, boolean recipientAcceptingInput, long encodedEntityId) {
+        public boolean references(DataPacket packet) {
+            return packet instanceof SetEntityMotionPacket motion
+                    && (motion.eid == this.actor.getId() || motion.eid == this.encodedEntityId);
+        }
+
+        public boolean isCurrent(Player recipient) {
+            return this.actor.isOnline() && !this.actor.isClosed() && this.actor.getLevel() == this.level
+                    && this.actor.getMovementEpoch() == this.actorEpoch
+                    && this.actor.isAcceptingInputPackets() == this.acceptingInput
+                    && this.actor.motionX == this.motionX && this.actor.motionY == this.motionY && this.actor.motionZ == this.motionZ
+                    && recipient.isOnline() && !recipient.isClosed() && recipient.getLevel() == this.level
+                    && recipient.getMovementEpoch() == this.recipientEpoch
+                    && recipient.isAcceptingInputPackets() == this.recipientAcceptingInput;
+        }
+    }
+
+    /** 标志可对观察者覆写，但一次快照不能覆盖发包回调产生的新权威状态。 */
+    @Nullable
+    protected final MetadataFlagsSource captureMetadataFlagsSource(DataPacket packet) {
+        if (!this.isMainThreadInputEnabled() || !this.isOnline() || !this.server.isPrimaryThread()
+                || this.level == null || !(packet instanceof SetEntityDataPacket metadata) || metadata.metadata == null) return null;
+        boolean first = metadata.metadata.exists(DATA_FLAGS);
+        boolean second = metadata.metadata.exists(DATA_FLAGS_EXTENDED);
+        boolean third = metadata.metadata.exists(DATA_FLAGS_3);
+        if (!first && !second && !third) return null;
+        Entity entity = metadata.eid == this.getId() ? this : this.level.getEntity(metadata.eid);
+        if (entity == null && metadata.eid == this.getLocalEntityId()) entity = this;
+        if (!(entity instanceof Player actor) || !actor.isMainThreadInputEnabled()
+                || actor != this && actor.getViewers().get(this.getLoaderId()) != this) return null;
+        return new MetadataFlagsSource(actor, actor.getLevel(), actor.getSessionId(), actor.getMovementEpoch(),
+                this.getSessionId(), this.getMovementEpoch(), actor.isAcceptingInputPackets(),
+                this.isAcceptingInputPackets(), actor.isAlive(),
+                first, second, third, actor.getDataProperties().getLong(DATA_FLAGS),
+                actor.getDataProperties().getLong(DATA_FLAGS_EXTENDED), actor.getDataProperties().getLong(DATA_FLAGS_3));
+    }
+
+    /** 广播共用快照只绑定一次源状态，后续接收者不能以新状态重新认可旧快照。 */
+    @Nullable
+    public final BooleanSupplier captureMetadataPublication(DataPacket packet) {
+        MetadataFlagsSource source = this.captureMetadataFlagsSource(packet);
+        return source == null ? null : () -> source.isCurrent(this);
+    }
+
+    protected record MetadataFlagsSource(Player actor, Level level, UUID actorSession, long actorEpoch,
+                                         UUID recipientSession, long recipientEpoch, boolean acceptingInput,
+                                         boolean recipientAcceptingInput, boolean alive,
+                                         boolean first, boolean second, boolean third, long firstValue,
+                                         long secondValue, long thirdValue) {
+        public boolean references(DataPacket packet, Player recipient) {
+            // 不透明批次仍属于原发布操作，主线程不解压猜测来源。
+            if (packet instanceof BatchPacket batch) {
+                if (batch.tracks == null) return true;
+                for (BatchPacket.Track track : batch.tracks) {
+                    if (track.packetId == ProtocolInfo.SET_ACTOR_DATA_PACKET) return true;
+                }
+                return false;
+            }
+            return packet instanceof SetEntityDataPacket metadata && metadata.metadata != null
+                    && (metadata.eid == this.actor.getId() || this.actor == recipient && metadata.eid == recipient.getLocalEntityId())
+                    && (this.first && metadata.metadata.exists(DATA_FLAGS)
+                    || this.second && metadata.metadata.exists(DATA_FLAGS_EXTENDED)
+                    || this.third && metadata.metadata.exists(DATA_FLAGS_3));
+        }
+
+        public boolean isCurrent(Player recipient) {
+            return this.actor.isOnline() && !this.actor.isClosed() && this.actor.getLevel() == this.level
+                    && this.actorSession.equals(this.actor.getSessionId()) && this.actorEpoch == this.actor.getMovementEpoch()
+                    && this.acceptingInput == this.actor.isAcceptingInputPackets()
+                    && this.alive == this.actor.isAlive()
+                    && recipient.isOnline() && this.recipientSession.equals(recipient.getSessionId())
+                    && this.recipientEpoch == recipient.getMovementEpoch() && recipient.getLevel() == this.level
+                    && this.recipientAcceptingInput == recipient.isAcceptingInputPackets()
+                    && (this.actor == recipient || this.actor.getViewers().get(recipient.getLoaderId()) == recipient
+                    && this.actor.isWithinEntityViewDistance(recipient) && recipient.canSee(this.actor))
+                    && (!this.first || this.firstValue == this.actor.getDataProperties().getLong(DATA_FLAGS))
+                    && (!this.second || this.secondValue == this.actor.getDataProperties().getLong(DATA_FLAGS_EXTENDED))
+                    && (!this.third || this.thirdValue == this.actor.getDataProperties().getLong(DATA_FLAGS_3));
+        }
     }
 
     @Deprecated
@@ -1779,17 +2018,51 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void processMovement(int tickDiff) {
+        this.commitPendingMovement(tickDiff);
+    }
+
+    /** 输入位置由 Player 持有；周期入口和后续输入入口共用同一个提交过程。 */
+    protected final void commitPendingMovement(int tickDiff) {
+        this.commitPendingMovement(tickDiff, false);
+    }
+
+    /** 新入口仅提交自身仍持有的待处理位置；发布由完成通知之后的调用方负责。 */
+    protected final MovementCommitResult commitPendingMovement(int tickDiff, boolean guardedInput) {
+        return this.commitPendingMovement(tickDiff, guardedInput, InputValidationResult.ACCEPTED);
+    }
+
+    protected final MovementCommitResult commitPendingMovement(int tickDiff, boolean guardedInput,
+                                                                InputValidationResult validation) {
         if (!this.isAlive() || !this.spawned || this.newPosition == null || this.teleportPosition != null || this.isSleeping()) {
-            return;
+            return MovementCommitResult.NO_PENDING;
         }
         Vector3 newPos = this.newPosition;
+        long expectedEpoch = guardedInput ? this.pendingMovementEpoch : 0;
+        Level expectedLevel = this.level;
+        Location canonicalFrom = guardedInput ? this.getLocation() : null;
+        if (guardedInput) {
+            canonicalFrom.yaw = this.pendingMovementYaw;
+            canonicalFrom.pitch = this.pendingMovementPitch;
+        }
+        boolean canonicalOnGround = guardedInput && this.onGround;
+        if (guardedInput && !this.ownsPendingMovement(newPos, expectedEpoch, expectedLevel)) {
+            return this.invalidatePendingMovement(newPos, expectedEpoch);
+        }
         if (newPos.checkIncorrectIntegerRange()) {
             this.close("", "Invalid position from " + this.getLocation() + " moving to " + newPos);
-            return;
+            return MovementCommitResult.REJECTED;
         }
         double distanceSquared = newPos.distanceSquared(this);
+        double tickDistanceSquared = distanceSquared;
+        if (guardedInput && this.inputMovementStatistics != null) {
+            // 逐帧提交仍受原周期位移边界约束，不能通过拆包获得多份移动额度。
+            double tickDx = newPos.x - this.x + this.inputMovementStatistics.deltaX();
+            double tickDy = newPos.y - this.y + this.inputMovementStatistics.deltaY();
+            double tickDz = newPos.z - this.z + this.inputMovementStatistics.deltaZ();
+            tickDistanceSquared = tickDx * tickDx + tickDy * tickDy + tickDz * tickDz;
+        }
         boolean revert = false;
-        if ((distanceSquared / ((double) (tickDiff * tickDiff))) > 225) {
+        if ((tickDistanceSquared / ((double) (tickDiff * tickDiff))) > 225) {
             revert = true;
         } else {
             if (this.chunk == null || !this.chunk.isGenerated()) {
@@ -1816,8 +2089,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             double dz = newPos.z - this.z;
 
             this.fastMove(dx, dy, dz);
-            if (this.newPosition == null) {
-                return; //maybe solve that in better way
+            if (this.newPosition == null || guardedInput && !this.ownsPendingMovement(newPos, expectedEpoch, expectedLevel)) {
+                return guardedInput ? this.invalidatePendingMovement(newPos, expectedEpoch) : MovementCommitResult.INVALIDATED;
             }
 
             double diffX = this.x - newPos.x;
@@ -1838,6 +2111,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if (diffHorizontalSqr > 0.5) {
                             PlayerInvalidMoveEvent ev;
                             this.getServer().getPluginManager().callEvent(ev = new PlayerInvalidMoveEvent(this, true));
+                            if (guardedInput && !this.ownsPendingMovement(newPos, expectedEpoch, expectedLevel)) {
+                                return this.invalidatePendingMovement(newPos, expectedEpoch);
+                            }
                             if (!ev.isCancelled()) {
                                 revert = ev.isRevert();
 
@@ -1857,7 +2133,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
 
-        Location from = new Location(
+        Location from = guardedInput ? canonicalFrom.clone() : new Location(
                 this.lastX,
                 this.lastY,
                 this.lastZ,
@@ -1885,8 +2161,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.lastPitch = to.pitch;
 
             if (!isFirst) {
-                List<Block> blocksAround = new ObjectArrayList<>(this.blocksAround);
-                List<Block> collidingBlocks = new ObjectArrayList<>(this.collisionBlocks);
+                // 纠正后的缓存允许尚未重建，取消移动时保留该状态。
+                @Nullable List<Block> blocksAround = this.blocksAround == null ? null : new ObjectArrayList<>(this.blocksAround);
+                @Nullable List<Block> collidingBlocks = this.collisionBlocks == null ? null : new ObjectArrayList<>(this.collisionBlocks);
 
                 PlayerMoveEvent ev = new PlayerMoveEvent(this, from, to);
 
@@ -1894,11 +2171,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.collisionBlocks = null;
 
                 this.server.getPluginManager().callEvent(ev);
+                if (guardedInput && !this.ownsPendingMovement(newPos, expectedEpoch, expectedLevel)) {
+                    return this.invalidatePendingMovement(newPos, expectedEpoch);
+                }
 
                 if (!(revert = ev.isCancelled())) { //Yes, this is intended
                     if (!to.equals(ev.getTo())) { //If plugins modify the destination
-                        this.teleport(ev.getTo(), null);
-                    } else {
+                        boolean teleported = this.teleport(ev.getTo(), null);
+                        if (guardedInput && !this.ownsPendingMovement(newPos, expectedEpoch, expectedLevel)) {
+                            return this.invalidatePendingMovement(newPos, expectedEpoch);
+                        }
+                        if (guardedInput && !teleported) {
+                            revert = true;
+                        }
+                    } else if (!guardedInput) {
                         this.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.yaw);
                     }
                 } else {
@@ -1914,14 +2200,178 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             else this.speed.setComponents(0, 0, 0);
         }
 
+        if (!guardedInput) {
+            this.applyMovementSideEffects(distance, deltaXZ, revert);
+        }
+        if (guardedInput && !this.ownsPendingMovement(newPos, expectedEpoch, expectedLevel)) {
+            return this.invalidatePendingMovement(newPos, expectedEpoch);
+        }
+
+        if (revert) {
+            if (guardedInput) {
+                from = canonicalFrom;
+                if (!this.setPosition(canonicalFrom)) {
+                    return MovementCommitResult.INVALIDATED;
+                }
+                this.onGround = canonicalOnGround;
+                this.setRotation(from.yaw, from.pitch);
+                this.blocksAround = null;
+                this.collisionBlocks = null;
+                if (this.speed == null) {
+                    this.speed = new Vector3();
+                } else {
+                    this.speed.setComponents(0, 0, 0);
+                }
+            }
+            this.lastX = from.x;
+            this.lastY = from.y;
+            this.lastZ = from.z;
+
+            this.lastYaw = from.yaw;
+            this.lastPitch = from.pitch;
+
+            // 略微抬高回退位置，避免客户端落入地板。
+            if (!guardedInput || this.server.getPlayerInputProcessor() == null) {
+                this.sendPosition(from.add(0, 0.00001, 0), from.yaw, from.pitch, MovePlayerPacket.MODE_NORMAL);
+            }
+            this.forceMovement = new Vector3(from.x, from.y + 0.00001, from.z);
+        } else {
+            this.forceMovement = null;
+            if (distanceSquared != 0 && this.nextChunkOrderRun > 20) {
+                this.nextChunkOrderRun = 20;
+            }
+        }
+
+        boolean changed = !guardedInput || canonicalFrom.x != this.x || canonicalFrom.y != this.y
+                || canonicalFrom.z != this.z || canonicalFrom.yaw != this.yaw || canonicalFrom.pitch != this.pitch;
+        if (guardedInput) {
+            if (this.inputMovementStatistics == null) {
+                this.inputMovementStatistics = new MovementTickAccumulator();
+            }
+            if (!revert) {
+                this.inputMovementStatistics.record(this.x - canonicalFrom.x, this.y - canonicalFrom.y,
+                        this.z - canonicalFrom.z,
+                        (this.isFoodEnabled() || this.level.getDifficulty() == 0) && this.isSurvivalLike() && this.riding == null,
+                        this.isSprinting(), this.isInsideOfWater(),
+                        validation.groundJumpKnown() ? validation.groundJump()
+                                : canonicalOnGround && !this.onGround && this.y > canonicalFrom.y);
+            }
+            this.updateInputMovementSpeed();
+        }
+        this.clearPendingMovement();
+        return revert ? MovementCommitResult.REJECTED
+                : changed ? MovementCommitResult.APPLIED : MovementCommitResult.UNCHANGED;
+    }
+
+    private boolean ownsPendingMovement(Vector3 position, long expectedEpoch, Level expectedLevel) {
+        return this.connected && !this.closed && this.level == expectedLevel
+                && this.movementEpoch == expectedEpoch && this.newPosition == position;
+    }
+
+    private MovementCommitResult invalidatePendingMovement(Vector3 position, long expectedEpoch) {
+        if (this.newPosition == position && this.pendingMovementEpoch == expectedEpoch) {
+            this.clearPendingMovement();
+        }
+        return MovementCommitResult.INVALIDATED;
+    }
+
+    public long getMovementEpoch() {
+        return this.movementEpoch;
+    }
+
+    /** 可信服务端纠正清除旧输入；出站顺序由发起纠正的组件负责。 */
+    public final boolean applyInputCorrection(Vector3 position, boolean onGround) {
+        if (!this.server.isPrimaryThread() || !this.connected || this.closed || !this.setPosition(position)) {
+            return false;
+        }
+        this.advanceMovementEpoch();
+        this.clearPendingMovement();
+        this.forceMovement = null;
+        this.onGround = onGround;
+        this.blocksAround = null;
+        this.collisionBlocks = null;
+        this.lastX = this.x;
+        this.lastY = this.y;
+        this.lastZ = this.z;
+        this.lastYaw = this.yaw;
+        this.lastPitch = this.pitch;
+        return true;
+    }
+
+    /** 更新已由纠正前缀发送的服务端速度，不重复生成 motion 包。 */
+    public final void applyInputCorrectionMotion(Vector3 motion) {
+        if (!this.server.isPrimaryThread() || this.closed) {
+            throw new IllegalStateException("Correction motion requires a live main-thread player");
+        }
+        this.motionX = motion.x;
+        this.motionY = motion.y;
+        this.motionZ = motion.z;
+        this.lastMotionX = motion.x;
+        this.lastMotionY = motion.y;
+        this.lastMotionZ = motion.z;
+    }
+
+    private void advanceMovementEpoch() {
+        this.movementEpoch++;
+        if (this.inputMovementStatistics != null) {
+            this.inputMovementStatistics.resetDisplacement();
+            this.updateInputMovementSpeed();
+        }
+    }
+
+    private void updateInputMovementSpeed() {
+        if (this.speed == null) {
+            this.speed = new Vector3();
+        }
+        // speed 沿用原来的负向周期位移单位，不改为最后一帧的速度。
+        this.speed.setComponents(-this.inputMovementStatistics.deltaX(),
+                -this.inputMovementStatistics.deltaY(), -this.inputMovementStatistics.deltaZ());
+    }
+
+    /** 只由正常玩家 tick 调用；输入提交不推进食物、跳跃或附魔周期。 */
+    protected final void finishInputMovementTick() {
+        if (this.inputMovementStatistics == null) {
+            return;
+        }
+        // 最终提交和位置纠正已更新速度；空周期不覆盖原入口保留的兼容缓存。
+        float exhaustion = this.inputMovementStatistics.exhaustion();
+        boolean movedHorizontally = this.inputMovementStatistics.movedHorizontally();
+        // 在可能触发插件回调之前消费本周期，防止重入重复执行。
+        this.inputMovementStatistics.clearTick();
+        if (this.isAlive() && !this.closed && this.spawned) {
+            if (exhaustion != 0) {
+                this.getFoodData().updateFoodExpLevel(exhaustion);
+            }
+            this.applyFrostWalker(movedHorizontally);
+        }
+    }
+
+    protected final void setPendingMovement(Vector3 position, float yaw, float pitch) {
+        if (this.server.getInputDispatcher() != null) {
+            if (this.newPosition == null || this.pendingMovementEpoch != this.movementEpoch) {
+                this.pendingMovementYaw = this.yaw;
+                this.pendingMovementPitch = this.pitch;
+            }
+            this.pendingMovementEpoch = this.movementEpoch;
+        }
+        this.setRotation(yaw, pitch);
+        this.newPosition = position;
+    }
+
+    protected final void clearPendingMovement() {
+        this.newPosition = null;
+    }
+
+    /** 移动提交的周期副作用；保留原调用顺序，不能按输入帧重复执行。 */
+    private void applyMovementSideEffects(float distance, double deltaXZ, boolean revert) {
         if (!revert && (this.isFoodEnabled() || this.level.getDifficulty() == 0)) {
             if (this.isSurvivalLike() && this.riding == null) {
-                //UpdateFoodExpLevel
+                // 按原距离和周期内跳跃状态累计消耗。
                 if (distance >= 0.05f) {
                     float jump = 0;
                     float swimming = this.isInsideOfWater() ? 0.015f * distance : 0;
                     if (swimming != 0) distance = 0;
-                    if (this.isSprinting()) {  //Running
+                    if (this.isSprinting()) {
                         if (this.inAirTicks == 3 && swimming == 0) {
                             jump = 0.2f;
                         }
@@ -1936,8 +2386,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
 
+        this.applyFrostWalker(!revert && deltaXZ > Mth.EPSILON);
+    }
+
+    private void applyFrostWalker(boolean movedHorizontally) {
         HeightRange heightRange = level.getHeightRange();
-        if (!revert && !isSpectator() && this.y >= heightRange.getMinY() + 1 && this.y < heightRange.getMaxY() && deltaXZ > Mth.EPSILON) {
+        if (movedHorizontally && !isSpectator() && this.y >= heightRange.getMinY() + 1 && this.y < heightRange.getMaxY()) {
             int frostWalker = armorInventory.getBoots().getValidEnchantmentLevel(Enchantment.FROST_WALKER);
             if (frostWalker > 0) {
                 int playerX = getFloorX();
@@ -1977,39 +2431,29 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
         }
-
-        if (revert) {
-            this.lastX = from.x;
-            this.lastY = from.y;
-            this.lastZ = from.z;
-
-            this.lastYaw = from.yaw;
-            this.lastPitch = from.pitch;
-
-            // We have to send slightly above otherwise the player will fall into the ground.
-            this.sendPosition(from.add(0, 0.00001, 0), from.yaw, from.pitch, MovePlayerPacket.MODE_NORMAL);
-            //this.sendSettings();
-            this.forceMovement = new Vector3(from.x, from.y + 0.00001, from.z);
-        } else {
-            this.forceMovement = null;
-            if (distanceSquared != 0 && this.nextChunkOrderRun > 20) {
-                this.nextChunkOrderRun = 20;
-            }
-        }
-
-        this.newPosition = null;
     }
 
     @Override
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
             if (this.chunk != null) {
-                this.getLevel().addEntityMotion(this.getChunkX(), this.getChunkZ(), this.getId(), this.motionX, this.motionY, this.motionZ);  //Send to others
+                if (!this.isMainThreadInputEnabled()) {
+                    this.getLevel().addEntityMotion(this.getChunkX(), this.getChunkZ(), this.getId(), this.motionX, this.motionY, this.motionZ);
+                }
                 SetEntityMotionPacket pk = new SetEntityMotionPacket();
                 pk.eid = this.id;
-                pk.motionX = (float) motion.x;
-                pk.motionY = (float) motion.y;
-                pk.motionZ = (float) motion.z;
+                pk.motionX = (float) (this.isMainThreadInputEnabled() ? this.motionX : motion.x);
+                pk.motionY = (float) (this.isMainThreadInputEnabled() ? this.motionY : motion.y);
+                pk.motionZ = (float) (this.isMainThreadInputEnabled() ? this.motionZ : motion.z);
+                if (this.isMainThreadInputEnabled()) {
+                    // 回调可发布更新的速度；只停止本次尚未发送的旧覆盖。
+                    @Nullable MotionPacketSource publication = this.captureMotionPacketSource(pk);
+                    for (Player viewer : this.getViewers().values()) {
+                        if (publication != null && !publication.isCurrent(this)) return true;
+                        viewer.dataPacket(pk);
+                    }
+                    if (publication != null && !publication.isCurrent(this)) return true;
+                }
                 this.dataPacket(pk);  //Send to self
             }
 
@@ -2022,6 +2466,159 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         return false;
+    }
+
+    /** 协议接入层只有在两端新输入开关均开启时才覆盖为 true。 */
+    public boolean isMainThreadInputEnabled() {
+        return false;
+    }
+
+    /** 接入层可将仍在线、但已交接给其他后端的旧对象标记为不再接收输入。 */
+    public boolean isAcceptingInputPackets() {
+        return this.isOnline();
+    }
+
+    /** 传送回调返回后，原世界及位置代际仍须属于本次操作。 */
+    public boolean isTeleportStateCurrent(Level origin, long movementEpoch) {
+        return !this.isClosed() && this.isOnline() && this.isAcceptingInputPackets()
+                && this.level == origin && this.getMovementEpoch() == movementEpoch;
+    }
+
+    /** 物品回调后检查同一次动作是否仍属于当前玩家位置与生命周期。 */
+    public boolean canContinueItemUse(long movementEpoch) {
+        return this.isOnline() && this.isAlive() && this.spawned
+                && this.getMovementEpoch() == movementEpoch;
+    }
+
+    /** 完成一次使用后只续接仍属于当前手的状态，不把来源身份锁定到整段蓄力。 */
+    protected final void completeItemUse(Item item, int ticksUsed, boolean explicitShieldUse) {
+        InventorySlotReference source = this.isMainThreadInputEnabled() ? this.inventory.captureHeldItem() : null;
+        long movementEpoch = source == null ? 0 : this.getMovementEpoch();
+        this.setUsingItem(false);
+        if (source != null && (this.startAction != -1 || !this.isItemUseSourceCurrent(source, movementEpoch)
+                || !source.getSnapshot().equalsExact(item))) {
+            source.sendContents(this);
+            return;
+        }
+        if (!item.onUse(this, ticksUsed)) {
+            this.inventory.sendContents(this);
+        }
+        if ((item.canRelease() || explicitShieldUse) && !item.isNull()
+                && (source == null || (item.canContinueUsing() || explicitShieldUse)
+                && this.startAction == -1 && this.canContinueItemUse(movementEpoch)
+                && source.isSelectedBy(this.inventory) && this.inventory.getItemInHand().getId() == item.getId())) {
+            this.setUsingItem(true);
+        }
+    }
+
+    private boolean isItemUseSourceCurrent(@Nullable InventorySlotReference source, long movementEpoch) {
+        return source == null || this.canContinueItemUse(movementEpoch)
+                && source.isSelectedBy(this.inventory) && source.isCurrent();
+    }
+
+    private boolean canContinueActiveItemUse(@Nullable InventorySlotReference source, long movementEpoch,
+                                              int actionStart, long actionTimestamp) {
+        if (source == null) {
+            return true;
+        }
+        if (this.startAction == actionStart && this.startActionTimestamp == actionTimestamp) {
+            if (this.isItemUseSourceCurrent(source, movementEpoch)) {
+                return true;
+            }
+            this.setUsingItem(false);
+        }
+        source.sendContents(this);
+        return false;
+    }
+
+    /** 世界周期负责持续使用；回调失效只结束本次物品步骤，不跳过后续实体周期职责。 */
+    void tickActiveItemUse() {
+        ItemUseHand previousHand = null;
+        if (this.isUsingOffhandItem()) {
+            previousHand = this.setItemInteractionHand(ItemUseHand.OFF_HAND);
+        }
+        try {
+            Item item = this.inventory.getItemInHand();
+            InventorySlotReference source = this.isMainThreadInputEnabled() ? this.inventory.captureHeldItem() : null;
+            long movementEpoch = source == null ? 0 : this.getMovementEpoch();
+            int actionStart = this.startAction;
+            long actionTimestamp = this.startActionTimestamp;
+            if (this.isUsingOffhandItem() && !this.isUsingSameItem(item)) {
+                this.setUsingItem(false);
+                return;
+            }
+            if (!item.canRelease()) {
+                return;
+            }
+            int ticksUsed = this.server.getTick() - this.startAction;
+            int timeUsedTicks = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
+            if (!this.isSpectator()) {
+                item.onUsing(this, timeUsedTicks);
+            }
+            if (!this.canContinueActiveItemUse(source, movementEpoch, actionStart, actionTimestamp)) {
+                return;
+            }
+            int useDuration = item.getUseDuration();
+            if (useDuration <= 0 || ticksUsed <= useDuration) {
+                return;
+            }
+            Vector3 directionVector = this.getDirectionVector();
+            PlayerInteractEvent event = new PlayerInteractEvent(this, item, directionVector, null, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
+            if (this.isSpectator()) {
+                event.setCancelled();
+            }
+            event.call();
+            if (event.isCancelled()) {
+                this.inventory.sendHeldItem(this);
+                return;
+            }
+            if (!this.canContinueActiveItemUse(source, movementEpoch, actionStart, actionTimestamp)) {
+                return;
+            }
+            if (!item.onClickAir(this, directionVector)) {
+                return;
+            }
+            if (!this.canContinueActiveItemUse(source, movementEpoch, actionStart, actionTimestamp)) {
+                return;
+            }
+            if (this.isSurvivalLike()) {
+                if (source == null) {
+                    this.inventory.setItemInHand(item);
+                } else if (!source.setItem(item)) {
+                    source.sendContents(this);
+                    return;
+                }
+            }
+            if (source != null && (!this.canContinueItemUse(movementEpoch) || !source.isSelectedBy(this.inventory))) {
+                if (this.startAction == actionStart && this.startActionTimestamp == actionTimestamp) {
+                    this.setUsingItem(false);
+                }
+                return;
+            }
+            if (source != null && (this.startAction != actionStart || this.startActionTimestamp != actionTimestamp)) {
+                return;
+            }
+            if (!this.isUsingItem()) {
+                this.setUsingItem(item.canRelease());
+            } else {
+                this.completeItemUse(item, ticksUsed, false);
+            }
+        } finally {
+            if (previousHand != null) {
+                this.setItemInteractionHand(previousHand);
+            }
+        }
+    }
+
+    @Override
+    protected void onMotionChanged() {
+        if (this.isMainThreadInputEnabled() && this.chunk != null) {
+            // setter 已负责本次 motion 发布，缓存同步后仍执行原位置更新职责。
+            this.lastMotionX = this.motionX;
+            this.lastMotionY = this.motionY;
+            this.lastMotionZ = this.motionZ;
+        }
+        super.onMotionChanged();
     }
 
     public void sendAttributes() {
@@ -2208,58 +2805,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             boolean isSwinging;
             if (isUsingItem()) {
                 isSwinging = true;
-                ItemUseHand previousHand = null;
-                if (this.isUsingOffhandItem()) {
-                    previousHand = this.setItemInteractionHand(ItemUseHand.OFF_HAND);
-                }
-                try {
-                    Item item = inventory.getItemInHand();
-                    if (this.isUsingOffhandItem() && !this.isUsingSameItem(item)) {
-                        this.setUsingItem(false);
-                    } else if (item.canRelease()) {
-                        int ticksUsed = this.server.getTick() - this.startAction;
-                        int timeUsedTicks = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
-                        if (!isSpectator()) {
-                            item.onUsing(this, timeUsedTicks);
-                        }
-
-                        int useDuration = item.getUseDuration();
-                        if (useDuration > 0 && ticksUsed > useDuration) {
-                            // client bug fixes: left click when using an item
-                            Vector3 directionVector = this.getDirectionVector();
-                            PlayerInteractEvent event = new PlayerInteractEvent(this, item, directionVector, null, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
-                            if (isSpectator()) {
-                                event.setCancelled();
-                            }
-                            event.call();
-                            if (event.isCancelled()) {
-                                this.inventory.sendHeldItem(this);
-                            } else if (item.onClickAir(this, directionVector)) {
-                                if (this.isSurvivalLike()) {
-                                    this.inventory.setItemInHand(item);
-                                }
-
-                                if (!this.isUsingItem()) {
-                                    this.setUsingItem(item.canRelease());
-                                } else {
-                                    this.setUsingItem(false);
-
-                                    if (!item.onUse(this, ticksUsed)) {
-                                        this.inventory.sendContents(this);
-                                    }
-
-                                    if (item.canRelease() && !item.isNull()) {
-                                        this.setUsingItem(true);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } finally {
-                    if (previousHand != null) {
-                        this.setItemInteractionHand(previousHand);
-                    }
-                }
+                this.tickActiveItemUse();
             } else {
                 isSwinging = this.swinging;
             }
@@ -3020,8 +3566,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             movePlayerPacket.yaw += 360;
                         }
 
-                        this.setRotation(movePlayerPacket.yaw, movePlayerPacket.pitch);
-                        this.newPosition = newPos;
+                        this.setPendingMovement(newPos, movePlayerPacket.yaw, movePlayerPacket.pitch);
                         this.forceMovement = null;
                     }
                     break;
@@ -3089,8 +3634,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         return;
                     }
 
+                    // 新输入路径已可能从使用事务完成选槽，后到同槽回声不能再次中断使用。
+                    if (this.isMainThreadInputEnabled() && inv == this.inventory
+                            && this.inventory.getHeldItemIndex() == mobEquipmentPacket.hotbarSlot) {
+                        break;
+                    }
                     if (inv instanceof PlayerInventory) {
-                        ((PlayerInventory) inv).equipItem(mobEquipmentPacket.hotbarSlot);
+                        boolean equipped = ((PlayerInventory) inv).equipItem(mobEquipmentPacket.hotbarSlot);
+                        if (this.isMainThreadInputEnabled() && !equipped) {
+                            break;
+                        }
                     }
 
                     if (!ExplicitItemUseHandPolicy.isActiveOffhandEquipmentEcho(
@@ -3484,9 +4037,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     AnimatePacket animatePk = (AnimatePacket) packet;
 
+                    long animationEpoch = this.getMovementEpoch();
+                    Level animationLevel = this.level;
                     PlayerAnimationEvent animationEvent = new PlayerAnimationEvent(this, animatePk.action);
                     this.server.getPluginManager().callEvent(animationEvent);
-                    if (animationEvent.isCancelled()) {
+                    if (animationEvent.isCancelled() || this.isMainThreadInputEnabled()
+                            && (!this.isAlive() || !this.isTeleportStateCurrent(animationLevel, animationEpoch))) {
                         break;
                     }
 
@@ -3605,11 +4161,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     PlayerCommandPreprocessEvent playerCommandPreprocessEvent = new PlayerCommandPreprocessEvent(this, command);
                     this.server.getPluginManager().callEvent(playerCommandPreprocessEvent);
-                    if (playerCommandPreprocessEvent.isCancelled()) {
-                        break;
-                    }
-
-                    this.server.dispatchCommand(playerCommandPreprocessEvent.getPlayer(), playerCommandPreprocessEvent.getMessage().substring(1));
+                    this.dispatchPreprocessedCommand(playerCommandPreprocessEvent);
                     break;
                 case ProtocolInfo.TEXT_PACKET:
                     if (!this.spawned || !this.isAlive()) {
@@ -4337,6 +4889,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         chat(message);
     }
 
+    /** 命令事件可转服或退出；旧输入停止继续派发，合法传送和插件指定执行者保持原语义。 */
+    protected final void dispatchPreprocessedCommand(PlayerCommandPreprocessEvent event) {
+        if (event.isCancelled() || this.isMainThreadInputEnabled() && !this.isAcceptingInputPackets()) {
+            return;
+        }
+        this.server.dispatchCommand(event.getPlayer(), event.getMessage().substring(1));
+    }
+
     /**
      * Sends a chat message as this player. If the message begins with a / (forward-slash) it will be treated
      * as a command.
@@ -4344,7 +4904,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return successful
      */
     public boolean chat(String message) {
-        if (!this.spawned || !this.isAlive()) {
+        if (!this.spawned || !this.isAlive() || this.isMainThreadInputEnabled() && !this.isAcceptingInputPackets()) {
             return false;
         }
 
@@ -4366,9 +4926,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         for (String msg : message.split("\n", this.messageCounter + 1)) {
+            if (this.isMainThreadInputEnabled() && !this.isAcceptingInputPackets()) {
+                return false;
+            }
             if (!msg.trim().isEmpty() && msg.length() <= 512 && this.messageCounter-- > 0) {
                 PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
                 this.server.getPluginManager().callEvent(chatEvent);
+                if (this.isMainThreadInputEnabled() && !this.isAcceptingInputPackets()) {
+                    return false;
+                }
                 if (!chatEvent.isCancelled()) {
                     this.server.broadcastMessage(this.getServer().getLanguage().translate(chatEvent.getFormat(), chatEvent.getPlayer().getDisplayName(), new LiteralContainer(chatEvent.getMessage())), chatEvent.getRecipients());
                 }
@@ -4645,6 +5211,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void close(TextContainer message, String reason, boolean notify) {
         if (this.connected && !this.closed) {
+            this.advanceMovementEpoch();
+            if (this.inputMovementStatistics != null) {
+                this.inputMovementStatistics.clearTick();
+            }
             if (notify && !reason.isEmpty()) {
                 sendDisconnectScreen(reason);
             }
@@ -5653,10 +6223,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode, Player[] targets) {
+        @Nullable MovementCommit publication = targets != null && this.isMainThreadInputEnabled() && this.server.isPrimaryThread()
+                ? MovementCommit.capture(this, MovementCommitResult.UNCHANGED, this.getMovementEpoch()) : null;
+        boolean acceptingInput = publication != null && this.isAcceptingInputPackets();
+        float baseOffset = this.getBaseOffset();
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.eid = this.getId();
         pk.x = (float) pos.x;
-        pk.y = (float) (pos.y + this.getBaseOffset());
+        pk.y = (float) (pos.y + baseOffset);
         pk.z = (float) pos.z;
         pk.headYaw = (float) yaw;
         pk.pitch = (float) pitch;
@@ -5668,7 +6242,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.setChannel(DataPacket.CHANNEL_PLAYER_MOVING);
 
         if (targets != null) {
-            Server.broadcastPacket(targets, pk);
+            if (publication == null) {
+                Server.broadcastPacket(targets, pk);
+            } else {
+                // 同一广播共用来源，后续接收者不能以新状态重新认可外层旧位置。
+                for (Player target : targets) {
+                    if (!publication.isCurrent(this) || this.getBaseOffset() != baseOffset
+                            || this.isAcceptingInputPackets() != acceptingInput) return;
+                    target.dataPacket(pk);
+                }
+            }
         } else {
             pk.eid = this.id;
             this.dataPacket(pk);
@@ -5795,25 +6378,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         Location from = this.getLocation();
         Location to = location;
+        boolean guardedTeleport = this.isMainThreadInputEnabled();
+        long teleportEpoch = this.getMovementEpoch();
+        if (guardedTeleport && !this.isTeleportStateCurrent(from.getLevel(), teleportEpoch)) {
+            return false;
+        }
 
         if (cause != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
             this.server.getPluginManager().callEvent(event);
-            if (event.isCancelled()) return false;
+            if (event.isCancelled() || guardedTeleport && !this.isTeleportStateCurrent(from.getLevel(), teleportEpoch)) return false;
             to = event.getTo();
-            if (to.level != null && from.getLevel() != to.getLevel()) { //Different level, update compass position
-                SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
-                pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
-                Position spawn = to.getLevel().getSpawnLocation(Position::new);
-                pk.x = spawn.getFloorX();
-                pk.y = spawn.getFloorY();
-                pk.z = spawn.getFloorZ();
-                dataPacket(pk);
+            if (!this.isMainThreadInputEnabled() && to.level != null && from.getLevel() != to.getLevel()) {
+                this.sendWorldSpawnPosition(to.getLevel());
             }
         }
 
         //TODO Remove it! A hack to solve the client-side teleporting bug! (inside into the block)
         if (super.teleport(to.getY() == to.getFloorY() ? to.add(0, 0.00001, 0) : to, null)) { // null to prevent fire of duplicate EntityTeleportEvent
+            // 实体层也能取消换世界；新模式成功后才通知最终世界的出生点。
+            if (this.isMainThreadInputEnabled() && cause != null && from.getLevel() != this.level) {
+                this.sendWorldSpawnPosition(this.level);
+            }
             this.removeAllWindows();
 
             postTeleport(false);
@@ -5823,7 +6409,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
+    private void sendWorldSpawnPosition(Level targetLevel) {
+        SetSpawnPositionPacket packet = new SetSpawnPositionPacket();
+        packet.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
+        Position spawn = targetLevel.getSpawnLocation(Position::new);
+        packet.x = spawn.getFloorX();
+        packet.y = spawn.getFloorY();
+        packet.z = spawn.getFloorZ();
+        this.dataPacket(packet);
+    }
+
     protected void postTeleport(boolean synapse) {
+        this.advanceMovementEpoch();
         this.teleportPosition = new Vector3(this.x, this.y, this.z);
         this.forceMovement = this.teleportPosition;
         this.sendPosition(this, this.yaw, this.pitch, MovePlayerPacket.MODE_TELEPORT);
@@ -5832,7 +6429,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.resetFallDistance();
         this.nextChunkOrderRun = 0;
-        this.newPosition = null;
+        this.clearPendingMovement();
 
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
@@ -5876,6 +6473,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void teleportImmediate(Location location, TeleportCause cause) {
         Location from = this.getLocation();
         if (super.teleport(location, cause)) {
+            this.advanceMovementEpoch();
             this.removeAllWindows();
 
             if (from.getLevel() != location.getLevel()) { //Different level, update compass position
@@ -5897,7 +6495,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.resetFallDistance();
             this.orderChunks();
             this.nextChunkOrderRun = 0;
-            this.newPosition = null;
+            this.clearPendingMovement();
 
             this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
         }
@@ -6379,6 +6977,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public boolean setSprinting(boolean value) {
+        if (this.isMainThreadInputEnabled()) {
+            // 先提交属性再发布标志，发包回调中的新状态不会被外层旧参数覆盖。
+            if (value) {
+                movementSpeedAttribute.addModifier(AttributeModifiers.SPRINTING_BOOST);
+            } else {
+                movementSpeedAttribute.removeModifier(AttributeModifiers.SPRINTING_BOOST.getId());
+            }
+            return super.setSprinting(value);
+        }
         if (super.setSprinting(value)) {
             if (value) {
                 movementSpeedAttribute.addModifier(AttributeModifiers.SPRINTING_BOOST);
