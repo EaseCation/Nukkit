@@ -2278,12 +2278,12 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             long epoch = inputPlayer == null ? 0 : inputPlayer.getMovementEpoch();
             EntityLevelChangeEvent ev = new EntityLevelChangeEvent(this, this.level, targetLevel);
             this.server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled() || inputPlayer != null && !inputPlayer.isTeleportStateCurrent(origin, epoch)) {
+            if (ev.isCancelled() || inputPlayer != null && !inputPlayer.isLevelSwitchStateCurrent(origin, epoch)) {
                 return false;
             }
 
             this.onLevelChangeAccepted(targetLevel);
-            if (inputPlayer != null && !inputPlayer.isTeleportStateCurrent(origin, epoch)) {
+            if (inputPlayer != null && !inputPlayer.isLevelSwitchStateCurrent(origin, epoch)) {
                 return false;
             }
             this.level.removeEntity(this);

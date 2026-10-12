@@ -2484,6 +2484,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 && this.level == origin && this.getMovementEpoch() == movementEpoch;
     }
 
+    /**
+     * 登录事件可以初始化玩家世界；回调后仍须持有有效连接和原位置代际。
+     */
+    public boolean isLevelSwitchStateCurrent(Level origin, long movementEpoch) {
+        return !this.isClosed() && this.isConnected() && this.isAcceptingInputPackets()
+                && this.level == origin && this.getMovementEpoch() == movementEpoch;
+    }
+
     /** 物品回调后检查同一次动作是否仍属于当前玩家位置与生命周期。 */
     public boolean canContinueItemUse(long movementEpoch) {
         return this.isOnline() && this.isAlive() && this.spawned
