@@ -42,6 +42,21 @@ public final class ServerInputDispatcher {
                            long rejectedTasks, long betweenTickBarriers, long overBudgetTasks, boolean closed) {
     }
 
+    /** 候选表示入队时允许尝试补充阶段，不表示消费时动态门禁一定通过。 */
+    public record SchedulingSnapshot(long sampledNanos, long betweenTickExecutedTasks, long worldTickExecutedTasks,
+                                     long candidateBetweenTickTasks, long candidateWorldTickTasks,
+                                     long candidateTasksBehindBarrier, long candidateWorldTasksBehindBarrier,
+                                     long candidateWorldTasksAtOwnBarrier, long staticBarrierHeads,
+                                     long dynamicBarrierHeads, long observedBarrierNanos,
+                                     QueueWaitSnapshot candidateQueueWait,
+                                     QueueWaitSnapshot candidateWorldBehindBarrierQueueWait) {
+    }
+
+    /** 累计排队时长分桶；le 为累计桶，gt250Ms 单独记录超过最大桶的数量。 */
+    public record QueueWaitSnapshot(long count, long totalNanos, long le1Ms, long le5Ms, long le10Ms,
+                                    long le25Ms, long le50Ms, long le100Ms, long le250Ms, long gt250Ms) {
+    }
+
     private record Entry(Session session, ServerInputTask task, int bytes, boolean betweenTicks,
                          long sequence, long sessionSequence, long enqueuedNanos, long receivedNanos) {
     }
@@ -62,6 +77,22 @@ public final class ServerInputDispatcher {
     private long rejectedTasks;
     private long betweenTickBarriers;
     private long overBudgetTasks;
+    private long betweenTickExecutedTasks;
+    private long candidateBetweenTickTasks;
+    private long candidateWorldTickTasks;
+    private long candidateTasksBehindBarrier;
+    private long candidateWorldTasksBehindBarrier;
+    private long candidateWorldTasksAtOwnBarrier;
+    private long staticBarrierHeads;
+    private long dynamicBarrierHeads;
+    private long lastBarrierSequence;
+    private boolean lastBarrierHeadWasFollower;
+    private long barrierAffectedThrough;
+    private long activeBarrierSequence;
+    private long activeBarrierSince;
+    private long observedBarrierNanos;
+    private final QueueWaitCounter candidateQueueWait = new QueueWaitCounter();
+    private final QueueWaitCounter candidateWorldBehindBarrierQueueWait = new QueueWaitCounter();
     private volatile boolean closed;
     private boolean consuming;
     @Nullable
@@ -118,6 +149,8 @@ public final class ServerInputDispatcher {
                 queuedBytes += bytes;
                 session.queuedTasks++;
                 session.queuedBytes += bytes;
+                // 只扩展已观测屏障覆盖的序号范围，不扫描队列或预读后包的动态资格。
+                if (activeBarrierSequence != 0) barrierAffectedThrough = nextSequence;
                 result = OfferResult.ACCEPTED;
             }
         }
@@ -141,8 +174,9 @@ public final class ServerInputDispatcher {
         consuming = true;
         int count = 0;
         try {
-            while (clock.getAsLong() < deadlineNanos) {
-                Entry entry = poll(betweenTicks);
+            long dequeuedNanos;
+            while ((dequeuedNanos = clock.getAsLong()) < deadlineNanos) {
+                Entry entry = poll(betweenTicks, dequeuedNanos);
                 if (entry == null) {
                     break;
                 }
@@ -152,6 +186,7 @@ public final class ServerInputDispatcher {
                     }
                     continue;
                 }
+                long executionNanos = clock.getAsLong();
                 currentContext = new InboundContext(entry.session.id, entry.sequence, entry.sessionSequence, entry.enqueuedNanos,
                         serverTick, betweenTicks, entry.receivedNanos);
                 try {
@@ -162,6 +197,7 @@ public final class ServerInputDispatcher {
                     currentContext = null;
                     synchronized (lock) {
                         executedTasks++;
+                        recordExecution(entry, betweenTicks, executionNanos);
                         if (clock.getAsLong() > deadlineNanos) {
                             overBudgetTasks++;
                         }
@@ -216,9 +252,24 @@ public final class ServerInputDispatcher {
         }
     }
 
+    /** 全局低频快照；活跃屏障时间也纳入，长卡顿不必等到队头放行才可见。 */
+    public SchedulingSnapshot schedulingSnapshot() {
+        synchronized (lock) {
+            long sampledNanos = clock.getAsLong();
+            long blockedNanos = observedBarrierNanos;
+            if (activeBarrierSequence != 0) blockedNanos += Math.max(0, sampledNanos - activeBarrierSince);
+            return new SchedulingSnapshot(sampledNanos, betweenTickExecutedTasks, executedTasks - betweenTickExecutedTasks,
+                    candidateBetweenTickTasks, candidateWorldTickTasks, candidateTasksBehindBarrier,
+                    candidateWorldTasksBehindBarrier, candidateWorldTasksAtOwnBarrier,
+                    staticBarrierHeads, dynamicBarrierHeads, blockedNanos,
+                    candidateQueueWait.snapshot(), candidateWorldBehindBarrierQueueWait.snapshot());
+        }
+    }
+
     public void close() {
         synchronized (lock) {
             closed = true;
+            if (activeBarrierSequence != 0) endObservedBarrier(clock.getAsLong());
             Entry entry;
             while ((entry = queue.poll()) != null) {
                 release(entry);
@@ -230,7 +281,7 @@ public final class ServerInputDispatcher {
     }
 
     @Nullable
-    private Entry poll(boolean betweenTicks) {
+    private Entry poll(boolean betweenTicks, long now) {
         synchronized (lock) {
             Entry entry = queue.peek();
             if (entry == null) {
@@ -240,11 +291,78 @@ public final class ServerInputDispatcher {
             if (entry.session.active && entry.task.isValid() && betweenTicks
                     && (!entry.betweenTicks || !entry.task.canRunBetweenTicks())) {
                 betweenTickBarriers++;
+                if (entry.sequence != lastBarrierSequence) {
+                    lastBarrierHeadWasFollower = isObservedFollower(entry.sequence);
+                    lastBarrierSequence = entry.sequence;
+                    if (entry.betweenTicks) dynamicBarrierHeads++;
+                    else staticBarrierHeads++;
+                }
+                if (activeBarrierSequence == 0) {
+                    activeBarrierSequence = entry.sequence;
+                    activeBarrierSince = now;
+                }
+                barrierAffectedThrough = nextSequence;
                 return null;
             }
+            endObservedBarrier(now);
             queue.remove();
             release(entry);
             return entry;
+        }
+    }
+
+    /** 调用处已持有队列锁；该区间只声明观察到排在屏障后，不推断反事实可执行性。 */
+    private boolean isObservedFollower(long sequence) {
+        return sequence > lastBarrierSequence && sequence <= barrierAffectedThrough
+                || sequence == lastBarrierSequence && lastBarrierHeadWasFollower;
+    }
+
+    private void endObservedBarrier(long now) {
+        if (activeBarrierSequence == 0) return;
+        observedBarrierNanos += Math.max(0, now - activeBarrierSince);
+        activeBarrierSequence = 0;
+    }
+
+    private void recordExecution(Entry entry, boolean betweenTicks, long executionNanos) {
+        if (betweenTicks) betweenTickExecutedTasks++;
+        if (!entry.betweenTicks) return;
+        long waitNanos = Math.max(0, executionNanos - entry.enqueuedNanos);
+        candidateQueueWait.record(waitNanos);
+        if (betweenTicks) candidateBetweenTickTasks++;
+        else candidateWorldTickTasks++;
+        if (isObservedFollower(entry.sequence)) {
+            candidateTasksBehindBarrier++;
+            if (!betweenTicks) {
+                candidateWorldTasksBehindBarrier++;
+                candidateWorldBehindBarrierQueueWait.record(waitNanos);
+            }
+        }
+        if (!betweenTicks && entry.sequence == lastBarrierSequence) candidateWorldTasksAtOwnBarrier++;
+    }
+
+    private static final class QueueWaitCounter {
+        private long count;
+        private long totalNanos;
+        private final long[] buckets = new long[8];
+
+        private void record(long nanos) {
+            count++;
+            totalNanos += nanos;
+            int bucket = nanos <= 1_000_000L ? 0 : nanos <= 5_000_000L ? 1 : nanos <= 10_000_000L ? 2
+                    : nanos <= 25_000_000L ? 3 : nanos <= 50_000_000L ? 4 : nanos <= 100_000_000L ? 5
+                    : nanos <= 250_000_000L ? 6 : 7;
+            buckets[bucket]++;
+        }
+
+        private QueueWaitSnapshot snapshot() {
+            long b1 = buckets[0];
+            long b5 = b1 + buckets[1];
+            long b10 = b5 + buckets[2];
+            long b25 = b10 + buckets[3];
+            long b50 = b25 + buckets[4];
+            long b100 = b50 + buckets[5];
+            long b250 = b100 + buckets[6];
+            return new QueueWaitSnapshot(count, totalNanos, b1, b5, b10, b25, b50, b100, b250, buckets[7]);
         }
     }
 
