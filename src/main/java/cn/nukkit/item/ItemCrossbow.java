@@ -4,7 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
+import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventorySlotReference;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
@@ -18,6 +20,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemCrossbow extends ItemTool {
@@ -71,9 +75,18 @@ public class ItemCrossbow extends ItemTool {
                 return false;
             }
 
+            InventorySlotReference source = player.isMainThreadInputEnabled() ? player.getInventory().captureHeldItem() : null;
+            long movementEpoch = source == null ? 0 : player.getMovementEpoch();
+            if (source != null && (!player.canContinueItemUse(movementEpoch)
+                    || !source.getSnapshot().equalsExact(this))) {
+                return false;
+            }
+
             Vector3 aimDir = Vector3.directionFromRotation(player.pitch, player.yaw);
 
             int count = Math.min(chargedItem.getCount(), 3);
+            // 新模式先完成发射回调和原槽结算，再发布；关闭模式保留原逐箭顺序。
+            List<EntityArrow> pendingProjectiles = source == null ? null : new ArrayList<>(count);
             if (chargedItem.getId() == ARROW) {
                 int penetrationLevel = getEnchantmentLevel(Enchantment.PIERCING);
 
@@ -106,18 +119,59 @@ public class ItemCrossbow extends ItemTool {
                     EntityArrow arrow = new EntityArrow(chunk, nbt, player, true);
                     ProjectileLaunchEvent event = new ProjectileLaunchEvent(arrow);
                     event.call();
+                    if (source != null && (!player.canContinueItemUse(movementEpoch)
+                            || !source.isSelectedBy(player.getInventory()) || !source.isCurrent())) {
+                        arrow.close();
+                        pendingProjectiles.forEach(Entity::close);
+                        source.sendContents(player);
+                        return false;
+                    }
                     if (event.isCancelled()) {
                         arrow.close();
+                    } else if (source != null) {
+                        pendingProjectiles.add(arrow);
                     } else {
                         arrow.spawnToAll();
                     }
                 }
-            } else if (chargedItem instanceof ItemFirework) {
+            } else if (chargedItem instanceof ItemFirework && source == null) {
                 for (int i = 0; i < count; i++) {
                     float angleOffset = count == 1 ? 0 : i * MULTISHOT_ANGLE_DELTA - MULTISHOT_ANGLE_DELTA;
                     Vector3 dir = aimDir.yRot(angleOffset * Mth.DEG_TO_RAD);
                     ((ItemFirework) chargedItem).spawnFirework(player.level, pos, dir);
                 }
+            }
+
+            if (source != null) {
+                if (!player.canContinueItemUse(movementEpoch)
+                        || !source.isSelectedBy(player.getInventory()) || !source.isCurrent()) {
+                    pendingProjectiles.forEach(Entity::close);
+                    source.sendContents(player);
+                    return false;
+                }
+                clearChargedItem();
+                if (!source.setItemAndVerify(this) || !player.canContinueItemUse(movementEpoch)) {
+                    pendingProjectiles.forEach(Entity::close);
+                    source.sendContents(player);
+                    return false;
+                }
+                for (EntityArrow arrow : pendingProjectiles) {
+                    if (player.canContinueItemUse(movementEpoch)) {
+                        arrow.spawnToAll();
+                    } else {
+                        arrow.close();
+                    }
+                }
+                if (chargedItem instanceof ItemFirework firework) {
+                    for (int i = 0; i < count && player.canContinueItemUse(movementEpoch); i++) {
+                        float angleOffset = count == 1 ? 0 : i * MULTISHOT_ANGLE_DELTA - MULTISHOT_ANGLE_DELTA;
+                        firework.spawnFirework(player.level, pos, aimDir.yRot(angleOffset * Mth.DEG_TO_RAD));
+                    }
+                }
+                if (player.canContinueItemUse(movementEpoch)) {
+                    player.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_CROSSBOW_SHOOT);
+                }
+                return false;
             }
 
             player.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_CROSSBOW_SHOOT);
@@ -179,14 +233,27 @@ public class ItemCrossbow extends ItemTool {
             return false;
         }
 
+        InventorySlotReference source = player.isMainThreadInputEnabled() ? player.getInventory().captureHeldItem() : null;
+        long movementEpoch = source == null ? 0 : player.getMovementEpoch();
+        if (source != null && (!player.canContinueItemUse(movementEpoch)
+                || !source.getSnapshot().equalsExact(this) || !getChargedItem().isNull())) {
+            return false;
+        }
+
         Item matched;
-        Inventory inventory = player.getOffhandInventory();
-        matched = inventory.peek(LazyHolder.FIREWORK_ROCKET);
+        BaseInventory inventory = player.getOffhandInventory();
+        InventorySlotReference ammoSource = source == null ? null : inventory.captureFirstItem(LazyHolder.FIREWORK_ROCKET);
+        matched = source == null ? inventory.peek(LazyHolder.FIREWORK_ROCKET)
+                : ammoSource == null ? Items.air() : ammoSource.getSnapshot();
         if (matched.isNull()) {
-            matched = inventory.peek(LazyHolder.ARROW);
+            ammoSource = source == null ? null : inventory.captureFirstItem(LazyHolder.ARROW);
+            matched = source == null ? inventory.peek(LazyHolder.ARROW)
+                    : ammoSource == null ? Items.air() : ammoSource.getSnapshot();
             if (matched.isNull()) {
                 inventory = player.getInventory();
-                matched = inventory.peek(LazyHolder.ARROW);
+                ammoSource = source == null ? null : inventory.captureFirstItem(LazyHolder.ARROW);
+                matched = source == null ? inventory.peek(LazyHolder.ARROW)
+                        : ammoSource == null ? Items.air() : ammoSource.getSnapshot();
                 if (matched.isNull()) {
                     if (player.isCreative()) {
                         matched = LazyHolder.CREATIVE_ARROW;
@@ -208,14 +275,36 @@ public class ItemCrossbow extends ItemTool {
             chargedItem.setCount(3);
         }
 
-        setChargedItem(chargedItem);
+        if (source == null) {
+            setChargedItem(chargedItem);
+        }
 
         if (player.isSurvivalLike()) {
-            inventory.removeItem(matched);
+            if (source == null) {
+                inventory.removeItem(matched);
+            } else if (ammoSource == null || !ammoSource.consume(1)) {
+                source.sendContents(player);
+                inventory.sendContents(player);
+                return false;
+            }
+
+            // 扣箭事件成立后可换选槽，仍只装填原弩；替换或转移玩家不能继承旧动作。
+            if (source != null && (!player.canContinueItemUse(movementEpoch) || !source.isCurrent())) {
+                source.sendContents(player);
+                return false;
+            }
 
             if (hurtAndBreak(multishot || chargedItem.getId() == Item.FIREWORK_ROCKET ? 3 : 1) < 0) {
                 pop();
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+            }
+        }
+
+        if (source != null) {
+            setChargedItem(chargedItem);
+            if (!source.setItemAndVerify(this) || !player.canContinueItemUse(movementEpoch)) {
+                source.sendContents(player);
+                return false;
             }
         }
 
@@ -224,7 +313,9 @@ public class ItemCrossbow extends ItemTool {
         packet.eid = player.getId();
         player.dataPacket(packet);
 
-        player.getInventory().setItemInHand(this);
+        if (source == null) {
+            player.getInventory().setItemInHand(this);
+        }
         return true;
     }
 
@@ -236,6 +327,11 @@ public class ItemCrossbow extends ItemTool {
     @Override
     public boolean canRelease() {
         return true;
+    }
+
+    @Override
+    public boolean canContinueUsing() {
+        return this.getChargedItem().isNull();
     }
 
     @Override

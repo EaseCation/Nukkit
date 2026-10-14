@@ -1445,6 +1445,11 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    /** 默认续接既有蓄力规则；物品完成状态可结束本次持续使用。 */
+    public boolean canContinueUsing() {
+        return this.canRelease();
+    }
+
     public boolean onRelease(Player player, int ticksUsed, Vector3 rotation) {
         return false;
     }
