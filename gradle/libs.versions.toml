@@ -4,7 +4,7 @@ jackson3 = "3.1.5"
 log4j = "2.26.1"
 jline = "4.3.1"
 maven = "1.9.27"
-mockito = "5.23.0"
+mockito = "5.24.0"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "9.5.1" }
