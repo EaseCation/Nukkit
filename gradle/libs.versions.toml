@@ -17,7 +17,7 @@ apache-commons-lang3 = { module = "org.apache.commons:commons-lang3", version = 
 commons-io = { module = "commons-io:commons-io", version = "2.22.0" }
 fastutil = { module = "it.unimi.dsi:fastutil", version = "8.5.18" }
 gson = { module = "com.google.code.gson:gson", version = "2.14.0" }
-guava = { module = "com.google.guava:guava", version = "33.6.0-jre" }
+guava = { module = "com.google.guava:guava", version = "33.7.1-jre" }
 jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-datatype-guava = { module = "com.fasterxml.jackson.datatype:jackson-datatype-guava", version.ref = "jackson" }
 jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8", version.ref = "jackson" }
