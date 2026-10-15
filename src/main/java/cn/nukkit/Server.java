@@ -227,7 +227,6 @@ public class Server {
     private final ServerInputDispatcher inputDispatcher;
     @Nullable
     private PlayerInputProcessor playerInputProcessor;
-    private final long inputNormalBudgetNanos;
     private final long inputIdleBudgetNanos;
 
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
@@ -429,7 +428,6 @@ public class Server {
         this.redstoneEnabled = this.getConfig("level-settings.tick-redstone", true);
 
         if (this.getConfig("network.input-dispatcher.enabled", false)) {
-            this.inputNormalBudgetNanos = Mth.clamp(this.getConfig("network.input-dispatcher.normal-budget-us", 5000), 1, 50000) * 1000L;
             this.inputIdleBudgetNanos = Mth.clamp(this.getConfig("network.input-dispatcher.idle-budget-us", 5000), 1, 50000) * 1000L;
             this.inputDispatcher = new ServerInputDispatcher(this.currentThread,
                     Math.max(1, this.getConfig("network.input-dispatcher.max-tasks", 65536)),
@@ -438,7 +436,6 @@ public class Server {
                     Math.max(1, this.getConfig("network.input-dispatcher.session-max-bytes", 12 * 1024 * 1024)),
                     exception -> log.error("Network input handler failed", exception));
         } else {
-            this.inputNormalBudgetNanos = 0;
             this.inputIdleBudgetNanos = 0;
             this.inputDispatcher = null;
         }
@@ -1270,7 +1267,7 @@ public class Server {
         this.network.processInterfaces();
 
         if (this.inputDispatcher != null) {
-            this.inputDispatcher.drain(false, this.tickCounter, System.nanoTime() + this.inputNormalBudgetNanos);
+            this.inputDispatcher.drainWorldTick(this.tickCounter);
         }
 
         if (this.rcon != null) {

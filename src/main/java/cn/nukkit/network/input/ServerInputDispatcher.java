@@ -166,7 +166,23 @@ public final class ServerInputDispatcher {
         LockSupport.unpark(consumerThread);
     }
 
+    /**
+     * 正常周期只消费进入本阶段时已有的任务；后续入队不能推迟世界更新。
+     * 单消费者且失效任务也占用批次数量，因此无需复制队列或改变原序。
+     */
+    public int drainWorldTick(int serverTick) {
+        int pendingTasks;
+        synchronized (lock) {
+            pendingTasks = queue.size();
+        }
+        return drain(false, serverTick, Long.MAX_VALUE, pendingTasks);
+    }
+
     public int drain(boolean betweenTicks, int serverTick, long deadlineNanos) {
+        return drain(betweenTicks, serverTick, deadlineNanos, Integer.MAX_VALUE);
+    }
+
+    private int drain(boolean betweenTicks, int serverTick, long deadlineNanos, int remainingTasks) {
         requireConsumerThread();
         if (consuming) {
             return 0;
@@ -175,7 +191,7 @@ public final class ServerInputDispatcher {
         int count = 0;
         try {
             long dequeuedNanos;
-            while ((dequeuedNanos = clock.getAsLong()) < deadlineNanos) {
+            while (remainingTasks-- > 0 && (dequeuedNanos = clock.getAsLong()) < deadlineNanos) {
                 Entry entry = poll(betweenTicks, dequeuedNanos);
                 if (entry == null) {
                     break;

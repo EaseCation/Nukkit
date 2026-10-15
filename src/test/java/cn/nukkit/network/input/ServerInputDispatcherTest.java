@@ -1,5 +1,7 @@
 package cn.nukkit.network.input;
 
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -22,6 +24,79 @@ class ServerInputDispatcherTest {
 
     private static ServerInputDispatcher.Session session() {
         return new ServerInputDispatcher.Session(UUID.randomUUID());
+    }
+
+    @Test
+    void worldTickFinishesItsInitialBatchWithoutChasingConcurrentArrivals() {
+        AtomicLong clock = new AtomicLong();
+        ServerInputDispatcher dispatcher = dispatcher(8, 100, 8, 100, clock);
+        LongList executed = new LongArrayList();
+        ServerInputDispatcher.Session connection = session();
+        AtomicReference<ServerInputDispatcher.OfferResult> offered = new AtomicReference<>();
+        dispatcher.offer(connection, context -> {
+            assertFalse(context.betweenTicks());
+            assertEquals(7, context.serverTick());
+            executed.add(context.sequence());
+            clock.addAndGet(TimeUnit.MILLISECONDS.toNanos(60));
+            Thread producer = new Thread(() -> offered.set(dispatcher.offer(connection,
+                    later -> executed.add(later.sequence()), 1, true)));
+            producer.start();
+            try {
+                producer.join(2000);
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                fail(exception);
+            }
+            assertFalse(producer.isAlive());
+            assertEquals(0, dispatcher.drainWorldTick(7));
+            assertEquals(0, dispatcher.drain(true, 7, Long.MAX_VALUE));
+        }, 1, true);
+        dispatcher.offer(connection, context -> executed.add(context.sequence()), 1, false);
+
+        assertEquals(2, dispatcher.drainWorldTick(7));
+        assertEquals(ServerInputDispatcher.OfferResult.ACCEPTED, offered.get());
+        assertEquals(LongList.of(1, 2), executed);
+        assertEquals(1, dispatcher.snapshot().queuedTasks());
+        assertEquals(0, dispatcher.snapshot().overBudgetTasks());
+        assertNull(dispatcher.getCurrentContext());
+        assertEquals(1, dispatcher.drainWorldTick(8));
+        assertEquals(LongList.of(1, 2, 3), executed);
+        assertEquals(0, dispatcher.snapshot().queuedBytes());
+    }
+
+    @Test
+    void invalidTasksCountTowardTheWorldTickBatchBoundary() {
+        ServerInputDispatcher dispatcher = dispatcher(8, 100, 8, 100, new AtomicLong());
+        ServerInputDispatcher.Session stale = session();
+        ServerInputDispatcher.Session live = session();
+        LongList executed = new LongArrayList();
+        dispatcher.offer(stale, context -> fail("Retired task executed"), 2, false);
+        dispatcher.invalidate(stale);
+        dispatcher.offer(live, context -> {
+            executed.add(context.sequence());
+            dispatcher.offer(live, later -> executed.add(later.sequence()), 3, true);
+        }, 1, true);
+
+        assertEquals(1, dispatcher.drainWorldTick(7));
+        assertEquals(LongList.of(2), executed);
+        assertEquals(1, dispatcher.snapshot().discardedTasks());
+        assertEquals(1, dispatcher.snapshot().queuedTasks());
+        assertEquals(3, dispatcher.snapshot().queuedBytes());
+        assertEquals(1, dispatcher.drainWorldTick(8));
+        assertEquals(LongList.of(2, 3), executed);
+    }
+
+    @Test
+    void closeDuringWorldTickDiscardsTheRestOfTheBatch() {
+        ServerInputDispatcher dispatcher = dispatcher(8, 100, 8, 100, new AtomicLong());
+        dispatcher.offer(session(), context -> dispatcher.close(), 1, true);
+        dispatcher.offer(session(), context -> fail("Closed task executed"), 1, true);
+
+        assertEquals(1, dispatcher.drainWorldTick(7));
+        assertEquals(1, dispatcher.snapshot().discardedTasks());
+        assertEquals(0, dispatcher.snapshot().queuedBytes());
+        assertNull(dispatcher.getCurrentContext());
+        assertEquals(0, dispatcher.drainWorldTick(8));
     }
 
     @Test
