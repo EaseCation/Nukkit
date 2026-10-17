@@ -174,7 +174,9 @@ public class Effect implements EffectID, Cloneable {
                 }
                 break;
             case Effect.WITHER:
-                entity.attack(new EntityDamageEvent(entity, DamageCause.WITHER, 1));
+                EntityDamageEvent witherDamage = new EntityDamageEvent(entity, DamageCause.WITHER, 1);
+                witherDamage.setBypassAttackCooldown(true);
+                entity.attack(witherDamage);
                 break;
             case Effect.REGENERATION:
                 if (entity.getHealth() < entity.getMaxHealth()) {
