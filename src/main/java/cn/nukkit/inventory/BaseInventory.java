@@ -150,6 +150,11 @@ public abstract class BaseInventory implements Inventory {
     }
 
     boolean setItem(int index, Item item, boolean send, @Nullable InventorySlotReference source) {
+        return this.setItem(index, item, send, source, null);
+    }
+
+    boolean setItem(int index, Item item, boolean send, @Nullable InventorySlotReference source,
+                    @Nullable Player predictedConsumer) {
         if (index < 0 || index >= this.size) {
             return false;
         }
@@ -157,9 +162,12 @@ public abstract class BaseInventory implements Inventory {
             return false;
         }
         if (item.isNull()) {
+            if (predictedConsumer != null) return this.clear(index, send, source, predictedConsumer);
             return source == null ? this.clear(index, send) : this.clear(index, send, source);
         }
 
+        Item original = predictedConsumer == null ? null : this.slots.get(index);
+        Item originalSnapshot = original == null ? null : original.clone();
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Entity) {
             EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, this.getItem(index), item.clone(), index);
@@ -178,8 +186,9 @@ public abstract class BaseInventory implements Inventory {
         }
         Item old = this.getItem(index);
         Item newItem = item.clone();
+        boolean skipOwner = this.canSkipPredictedBlockUpdate(index, original, originalSnapshot, newItem, predictedConsumer);
         this.slots.put(index, newItem);
-        this.onSlotChange(index, old, newItem, send);
+        this.notifySlotChange(index, old, newItem, send, skipOwner ? predictedConsumer : null);
 
         return true;
     }
@@ -389,11 +398,17 @@ public abstract class BaseInventory implements Inventory {
     }
 
     private boolean clear(int index, boolean send, @Nullable InventorySlotReference source) {
+        return this.clear(index, send, source, null);
+    }
+
+    private boolean clear(int index, boolean send, @Nullable InventorySlotReference source,
+                          @Nullable Player predictedConsumer) {
         if (source != null && !source.isCurrent()) {
             return false;
         }
         Item old = this.slots.get(index);
         if (old != null) {
+            Item originalSnapshot = predictedConsumer == null ? null : old.clone();
             Item item = Items.air();
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Entity) {
@@ -409,16 +424,15 @@ public abstract class BaseInventory implements Inventory {
             if (source != null && !source.isCurrent()) {
                 return false;
             }
-            Item newItem;
-            if (!item.isNull()) {
-                newItem = item.clone();
+            Item newItem = item.isNull() ? null : item.clone();
+            boolean skipOwner = this.canSkipPredictedBlockUpdate(index, old, originalSnapshot, newItem, predictedConsumer);
+            if (newItem != null) {
                 this.slots.put(index, newItem);
             } else {
-                newItem = null;
                 this.slots.remove(index);
             }
 
-            this.onSlotChange(index, old, newItem, send);
+            this.notifySlotChange(index, old, newItem, send, skipOwner ? predictedConsumer : null);
         }
 
         return true;
@@ -481,6 +495,33 @@ public abstract class BaseInventory implements Inventory {
 
         if (holder instanceof BlockEntity) {
             ((BlockEntity) holder).setDirty();
+        }
+    }
+
+    /**
+     * 只省略已由调用方确认预测一致的正常方块消耗；库存事件改写或替换来源仍须同步。
+     */
+    private boolean canSkipPredictedBlockUpdate(int index, @Nullable Item original, @Nullable Item snapshot,
+                                                @Nullable Item result, @Nullable Player predictedConsumer) {
+        if (predictedConsumer == null || this.holder != predictedConsumer || !predictedConsumer.spawned
+                || original == null || snapshot == null || !snapshot.canBePlaced()
+                || this.slots.get(index) != original || !snapshot.equalsExact(original)) {
+            return false;
+        }
+        if (result == null || result.isNull()) return snapshot.getCount() == 1;
+        return snapshot.equals(result) && result.getCount() == snapshot.getCount() - 1;
+    }
+
+    /**
+     * 服务端照常写回并执行槽位回调，只从本次出站接收者中排除预测一致的本人。
+     */
+    private void notifySlotChange(int index, Item before, @Nullable Item after, boolean send,
+                                  @Nullable Player predictedConsumer) {
+        this.onSlotChange(index, before, after, send && predictedConsumer == null);
+        if (send && predictedConsumer != null) {
+            for (Player viewer : new ObjectArrayList<>(this.getViewers())) {
+                if (viewer != predictedConsumer) this.sendSlot(index, viewer);
+            }
         }
     }
 
