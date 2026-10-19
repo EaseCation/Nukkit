@@ -3145,22 +3145,35 @@ public class Level implements ChunkManager, Metadatable {
         return this.useItemOn(vector, item, face, fx, fy, fz, player, clientPrediction, true, sourceValid);
     }
 
-    /** 可选来源检查只限制尚未发生的世界效果；无检查的原API沿用原顺序。 */
     private Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz,
                            @Nullable Player player, @Nullable Boolean clientPrediction, boolean playSound,
                            @Nullable BooleanSupplier sourceValid) {
+        return this.useItemOnResult(vector, item, face, fx, fy, fz, player, clientPrediction, playSound, sourceValid).item();
+    }
+
+    public ItemUseResult useItemOnResult(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz,
+                                             Player player, @Nullable Boolean clientPrediction, BooleanSupplier sourceValid) {
+        return this.useItemOnResult(vector, item, face, fx, fy, fz, player, clientPrediction, true, sourceValid);
+    }
+
+    /**
+     * 可选来源检查只限制尚未发生的世界效果；无检查的原API沿用原顺序。
+     */
+    private ItemUseResult useItemOnResult(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz,
+                                              @Nullable Player player, @Nullable Boolean clientPrediction, boolean playSound,
+                                              @Nullable BooleanSupplier sourceValid) {
         if (sourceValid != null && !sourceValid.getAsBoolean()) {
-            return null;
+            return ItemUseResult.FAIL;
         }
         Block target = this.getBlock(vector);
         Block block = target.getSide(face);
 
         if (!getHeightRange().isValidBlockY(block.y)) {
-            return null;
+            return ItemUseResult.FAIL;
         }
 
         if (target.isAir()) {
-            return null;
+            return ItemUseResult.FAIL;
         }
 
         Block extraTarget = null;
@@ -3181,7 +3194,7 @@ public class Level implements ChunkManager, Metadatable {
 
             getServer().getPluginManager().callEvent(ev);
             if (sourceValid != null && !sourceValid.getAsBoolean()) {
-                return null;
+                return ItemUseResult.FAIL;
             }
             if (!ev.isCancelled()) {
                 if (ev.isBlockPlacementServerAuthoritative()) {
@@ -3191,15 +3204,15 @@ public class Level implements ChunkManager, Metadatable {
 
                 interactTarget.onUpdate(BLOCK_UPDATE_TOUCH);
                 if (sourceValid != null && !sourceValid.getAsBoolean()) {
-                    return null;
+                    return ItemUseResult.FAIL;
                 }
 
                 if ((!player.isSneaking() || item.isNull() || item.is(Item.BRUSH) && target instanceof BlockBrushable) && interactTarget.canBeActivated() && interactTarget.onActivate(item, face, fx, fy, fz, player)) {
-                    return item;
+                    return ItemUseResult.success(item);
                 }
 
                 if (sourceValid != null && !sourceValid.getAsBoolean()) {
-                    return null;
+                    return ItemUseResult.FAIL;
                 }
 
                 if ((!player.isSneaking() || (target.canContainWater() || block.canContainWater()) && (item.is(Item.WATER_BUCKET) || item.is(Item.BUCKET)) || item.is(Item.BRUSH)) && item.canBeActivated()) {
@@ -3211,22 +3224,22 @@ public class Level implements ChunkManager, Metadatable {
                             if (newCount <= 0) {
                                 item = Items.air();
                             }
-                            return item;
+                            return ItemUseResult.success(item);
                         }
                     }
                 }
             } else {
-                return null;
+                return ItemUseResult.FAIL;
             }
         } else if (target.canBeActivated() && target.onActivate(item, face, fx, fy, fz, null)) {
-            return item;
+            return ItemUseResult.success(item);
         }
 
         if (sourceValid != null && !sourceValid.getAsBoolean()) {
-            return null;
+            return ItemUseResult.FAIL;
         }
         if (clientPrediction != null && !clientPrediction) {
-            return null;
+            return ItemUseResult.PASS;
         }
 
         Block hand;
@@ -3234,23 +3247,23 @@ public class Level implements ChunkManager, Metadatable {
             hand = item.getBlock();
             hand.position(block);
         } else {
-            return null;
+            return ItemUseResult.PASS;
         }
 
         boolean snowLayer = hand.getId() == BlockID.SNOW_LAYER && block.canContainSnow();
         if (!(block.canBeReplaced() || snowLayer || hand.isHalfSlab() && block.isHalfSlab() || block.isCandle() && hand.getId() == block.getId())) {
-            return null;
+            return ItemUseResult.PASS;
         }
 
         if (target.canBeReplaced()) {
             if (target.getId() == hand.getId() && !(target instanceof BlockMultiface)) {
-                return null;
+                return ItemUseResult.PASS;
             }
 
             block = target;
             hand.position(block);
         } else if (block.canBeReplaced() && block.getId() == hand.getId() && !block.is(Block.SNOW_LAYER) && !(block instanceof BlockMultiface)) {
-            return null;
+            return ItemUseResult.PASS;
         }
 
         Block placement = hand.getPlacementBlock(item, block, target, face, fx, fy, fz, player);
@@ -3269,7 +3282,7 @@ public class Level implements ChunkManager, Metadatable {
                             || e == player || (e instanceof Player && ((Player) e).isSpectator())) {
                         continue;
                     }
-                    return null;
+                    return ItemUseResult.PASS;
                 }
 
                 if (player != null && clientPrediction == null) {
@@ -3278,7 +3291,7 @@ public class Level implements ChunkManager, Metadatable {
                     bb = player.adjustPlacementSelfCollisionBox(bb);
                     if (boundingBox.intersectsWith(bb)) {
                         // prevent the player from placing blocks inside themselves
-                        return null;
+                        return ItemUseResult.PASS;
                     }
                 }
             }
@@ -3286,18 +3299,18 @@ public class Level implements ChunkManager, Metadatable {
 
         if (player != null) {
             if (!player.canPlaceOn(target, item)) {
-                return null;
+                return ItemUseResult.FAIL;
             }
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);
             getServer().getPluginManager().callEvent(event);
             if (event.isCancelled() || sourceValid != null && !sourceValid.getAsBoolean()) {
-                return null;
+                return ItemUseResult.FAIL;
             }
         }
 
         if (!hand.place(item, block, target, face, fx, fy, fz, player)) {
-            return null;
+            return ItemUseResult.PASS;
         }
 
         Block extraAfter = getExtraBlock(block);
@@ -3329,7 +3342,7 @@ public class Level implements ChunkManager, Metadatable {
         if (item.getCount() <= 0) {
             item = Items.air();
         }
-        return item;
+        return ItemUseResult.success(item);
     }
 
     public Entity getEntity(long entityId) {

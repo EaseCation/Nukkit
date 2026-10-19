@@ -1756,13 +1756,16 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         return hasUpdate;
     }
 
+    // 只在成功瞬移的同步调用期间置位，普通移动仍使用原有的阈值与包类型。
+    private boolean teleportMovement;
+
     public void updateMovement() {
         double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
         double diffRotation = (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
 
         double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
 
-        if (diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
+        if (this.teleportMovement || diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
             this.lastX = this.x;
             this.lastY = this.y;
             this.lastZ = this.z;
@@ -1792,6 +1795,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         pk.headYaw = (float) headYaw;
         pk.pitch = (float) pitch;
         pk.onGround = this.onGround;
+        pk.teleport = this.teleportMovement;
         pk.setChannel(DataPacket.CHANNEL_MOVING);
         Server.broadcastPacket(this.getViewers().values(), pk);
         //this.level.addEntityMovement(this.chunk.getX(), this.chunk.getZ(), this.id, x, y, z, yaw, pitch, headYaw);
@@ -2853,7 +2857,13 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             this.resetFallDistance();
             this.onGround = true;
 
-            this.updateMovement();
+            boolean previousTeleportMovement = this.teleportMovement;
+            this.teleportMovement = true;
+            try {
+                this.updateMovement();
+            } finally {
+                this.teleportMovement = previousTeleportMovement;
+            }
 
             return true;
         }
