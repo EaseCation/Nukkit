@@ -3,6 +3,7 @@ package cn.nukkit.network.input;
 import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.Objects;
+import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.locks.LockSupport;
@@ -56,6 +57,25 @@ public final class ServerInputDispatcher {
     public record QueueWaitSnapshot(long count, long totalNanos, long le1Ms, long le5Ms, long le10Ms,
                                     long le25Ms, long le50Ms, long le100Ms, long le250Ms, long gt250Ms) {
     }
+
+    /**
+     * 每个新阻塞头只计一次；后继数是各阻塞事件的观察量，同一任务可被不同头重复阻塞。
+     */
+    public record BarrierTypeSummary(String type, boolean dynamic, long heads, long followersAtStart,
+                                     long arrivalsWhileBlocked, int maxFollowers, long observedNanos,
+                                     long maxObservedHeadNanos) {
+    }
+
+    /**
+     * 分钟窗口的实际单调时间与有界类型汇总；跨窗头只续记时间，不重计 heads。
+     */
+    public record BarrierReport(long windowSequence, long fromNanos, long toNanos, int queuedTasks, long queuedBytes,
+                                @Nullable String activeType, boolean activeDynamic, long activeSequence,
+                                int activeFollowers, List<BarrierTypeSummary> types) {
+    }
+
+    @Nullable
+    private InputBarrierMetrics barrierMetrics;
 
     private record Entry(Session session, ServerInputTask task, int bytes, boolean betweenTicks,
                          long sequence, long sessionSequence, long enqueuedNanos, long receivedNanos) {
@@ -150,7 +170,10 @@ public final class ServerInputDispatcher {
                 session.queuedTasks++;
                 session.queuedBytes += bytes;
                 // 只扩展已观测屏障覆盖的序号范围，不扫描队列或预读后包的动态资格。
-                if (activeBarrierSequence != 0) barrierAffectedThrough = nextSequence;
+                if (activeBarrierSequence != 0) {
+                    barrierAffectedThrough = nextSequence;
+                    if (barrierMetrics != null) barrierMetrics.arrived(queue.size() - 1);
+                }
                 result = OfferResult.ACCEPTED;
             }
         }
@@ -261,6 +284,25 @@ public final class ServerInputDispatcher {
         return currentContext;
     }
 
+    /**
+     * 诊断由插件初始化开启，关闭输入模式不会因此创建调度器。
+     */
+    public void enableBarrierDiagnostics() {
+        synchronized (lock) {
+            if (barrierMetrics == null) barrierMetrics = new InputBarrierMetrics(clock.getAsLong());
+        }
+    }
+
+    /**
+     * 供低频后台上报消费；只复制至多64类及两种溢出桶，不扫描队列或调用任务准入。
+     */
+    @Nullable
+    public BarrierReport drainBarrierReport() {
+        synchronized (lock) {
+            return barrierMetrics == null ? null : barrierMetrics.drain(clock.getAsLong(), queue.size(), queuedBytes);
+        }
+    }
+
     public Snapshot snapshot() {
         synchronized (lock) {
             return new Snapshot(queue.size(), queuedBytes, executedTasks, discardedTasks,
@@ -316,6 +358,10 @@ public final class ServerInputDispatcher {
                 if (activeBarrierSequence == 0) {
                     activeBarrierSequence = entry.sequence;
                     activeBarrierSince = now;
+                    if (barrierMetrics != null) {
+                        barrierMetrics.begin(entry.task.diagnosticType(), entry.betweenTicks,
+                                entry.sequence, queue.size() - 1, now);
+                    }
                 }
                 barrierAffectedThrough = nextSequence;
                 return null;
@@ -336,6 +382,7 @@ public final class ServerInputDispatcher {
     private void endObservedBarrier(long now) {
         if (activeBarrierSequence == 0) return;
         observedBarrierNanos += Math.max(0, now - activeBarrierSince);
+        if (barrierMetrics != null) barrierMetrics.end(now);
         activeBarrierSequence = 0;
     }
 
