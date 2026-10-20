@@ -59,11 +59,14 @@ class InputBarrierMetricsTest {
         assertEquals(1, one.types().getFirst().heads());
         assertEquals(60, one.types().getFirst().observedNanos());
         assertEquals("CustomPayload", one.activeType());
+        dispatcher.offer(second, task("AnotherMovement"), 1, true);
         clock.set(120);
         ServerInputDispatcher.BarrierReport two = dispatcher.drainBarrierReport();
         assertEquals(2, two.windowSequence());
         assertEquals(0, two.types().getFirst().heads());
         assertEquals(0, two.types().getFirst().followersAtStart());
+        assertEquals(1, two.types().getFirst().arrivalsWhileBlocked());
+        assertEquals(2, two.types().getFirst().maxFollowers());
         assertEquals(60, two.types().getFirst().observedNanos());
         assertEquals(120, two.types().getFirst().maxObservedHeadNanos());
         clock.set(140);

@@ -170,10 +170,7 @@ public final class ServerInputDispatcher {
                 session.queuedTasks++;
                 session.queuedBytes += bytes;
                 // 只扩展已观测屏障覆盖的序号范围，不扫描队列或预读后包的动态资格。
-                if (activeBarrierSequence != 0) {
-                    barrierAffectedThrough = nextSequence;
-                    if (barrierMetrics != null) barrierMetrics.arrived(queue.size() - 1);
-                }
+                if (activeBarrierSequence != 0) barrierAffectedThrough = nextSequence;
                 result = OfferResult.ACCEPTED;
             }
         }
@@ -299,7 +296,7 @@ public final class ServerInputDispatcher {
     @Nullable
     public BarrierReport drainBarrierReport() {
         synchronized (lock) {
-            return barrierMetrics == null ? null : barrierMetrics.drain(clock.getAsLong(), queue.size(), queuedBytes);
+            return barrierMetrics == null ? null : barrierMetrics.drain(clock.getAsLong(), nextSequence, queue.size(), queuedBytes);
         }
     }
 
@@ -360,7 +357,7 @@ public final class ServerInputDispatcher {
                     activeBarrierSince = now;
                     if (barrierMetrics != null) {
                         barrierMetrics.begin(entry.task.diagnosticType(), entry.betweenTicks,
-                                entry.sequence, queue.size() - 1, now);
+                                entry.sequence, nextSequence, queue.size() - 1, now);
                     }
                 }
                 barrierAffectedThrough = nextSequence;
@@ -382,7 +379,7 @@ public final class ServerInputDispatcher {
     private void endObservedBarrier(long now) {
         if (activeBarrierSequence == 0) return;
         observedBarrierNanos += Math.max(0, now - activeBarrierSince);
-        if (barrierMetrics != null) barrierMetrics.end(now);
+        if (barrierMetrics != null) barrierMetrics.end(now, nextSequence);
         activeBarrierSequence = 0;
     }
 
