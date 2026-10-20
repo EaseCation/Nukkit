@@ -55,6 +55,14 @@ public final class InventorySlotReference {
         return this.inventory.setItem(this.slot, item, true, this);
     }
 
+    /**
+     * 调用方确认客户端快照一致后，正常减一可省略本人回发，异常结果仍完整同步。
+     */
+    public boolean setItem(Item item, @Nullable Player predictedConsumer) {
+        if (predictedConsumer == null) return this.setItem(item);
+        return this.inventory.setItem(this.slot, item, true, this, predictedConsumer);
+    }
+
     /** 效果发生前的结算还须核对事件最终写入值，不能把取消或改写当作成功。 */
     public boolean setItemAndVerify(Item item) {
         if (!this.setItem(item)) {

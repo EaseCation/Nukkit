@@ -9,6 +9,7 @@ import cn.nukkit.item.Items;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.ContainerIds;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -119,6 +120,18 @@ public class PlayerInventory extends BaseInventory {
             return offhandPlayer.getOffhandInventory().setItem(0, item);
         }
         return this.setItem(this.getHeldItemIndex(), item);
+    }
+
+    /**
+     * 仅供已确认预测快照一致的方块消耗使用，默认写回和其他库存操作不受影响。
+     */
+    public boolean setItemInHand(Item item, @Nullable Player predictedConsumer) {
+        if (predictedConsumer == null) return this.setItemInHand(item);
+        Player offhandPlayer = this.getOffhandInteractionPlayer();
+        if (offhandPlayer != null) {
+            return offhandPlayer.getOffhandInventory().setItem(0, item, true, null, predictedConsumer);
+        }
+        return this.setItem(this.getHeldItemIndex(), item, true, null, predictedConsumer);
     }
 
     /** 在协议动作取得服务端物品时捕获，不能在网络解码时提前冻结库存。 */
