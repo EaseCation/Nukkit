@@ -965,7 +965,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         level = level == null ? this.level : level;
         long index = Level.chunkHash(x, z);
         if (this.usedChunks.containsKey(index)) {
-            for (Entity entity : level.getChunkEntities(x, z).values()) {
+            for (Entity entity : new ObjectArrayList<>(level.getChunkEntities(x, z).values())) {
                 if (entity != this) {
                     entity.despawnFrom(this);
                 }
@@ -1015,7 +1015,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (this.spawned) {
-            for (Entity entity : this.level.getChunkEntities(x, z).values()) {
+            for (Entity entity : new ObjectArrayList<>(this.level.getChunkEntities(x, z).values())) {
                 if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
                     if (chunkContext != null && !chunkContext.isCurrent(this)) return;
@@ -1049,7 +1049,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (this.spawned) {
-            for (Entity entity : this.level.getChunkEntities(x, z).values()) {
+            for (Entity entity : new ObjectArrayList<>(this.level.getChunkEntities(x, z).values())) {
                 if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
                     if (chunkContext != null && !chunkContext.isCurrent(this)) return;
@@ -1201,7 +1201,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         for (long index : this.usedChunks.keySet()) {
             int chunkX = Level.getHashX(index);
             int chunkZ = Level.getHashZ(index);
-            for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
+            for (Entity entity : new ObjectArrayList<>(this.level.getChunkEntities(chunkX, chunkZ).values())) {
                 if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
                 }
@@ -5261,7 +5261,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.level.unregisterChunkLoader(this, chunkX, chunkZ);
                 this.usedChunks.remove(index);
 
-                for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
+                for (Entity entity : new ObjectArrayList<>(level.getChunkEntities(chunkX, chunkZ).values())) {
                     if (entity != this) {
                         entity.onQuit(this);
                     }
@@ -6282,7 +6282,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     int cx = Level.getHashX(chunkHash);
                     int cz = Level.getHashZ(chunkHash);
 
-                    for (Entity entity : this.level.getChunkEntities(cx, cz).values()) {
+                    for (Entity entity : new ObjectArrayList<>(this.level.getChunkEntities(cx, cz).values())) {
                         if (entity == this || entity.closed || !entity.isAlive()) {
                             continue;
                         }
