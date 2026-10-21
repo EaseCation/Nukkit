@@ -61,7 +61,7 @@ public final class ServerInputDispatcher {
     /**
      * 每个新阻塞头只计一次；后继数是各阻塞事件的观察量，同一任务可被不同头重复阻塞。
      */
-    public record BarrierTypeSummary(String type, boolean dynamic, long heads, long followersAtStart,
+    public record BarrierTypeSummary(String type, boolean dynamic, String reason, long heads, long followersAtStart,
                                      long arrivalsWhileBlocked, int maxFollowers, long observedNanos,
                                      long maxObservedHeadNanos) {
     }
@@ -70,7 +70,7 @@ public final class ServerInputDispatcher {
      * 分钟窗口的实际单调时间与有界类型汇总；跨窗头只续记时间，不重计 heads。
      */
     public record BarrierReport(long windowSequence, long fromNanos, long toNanos, int queuedTasks, long queuedBytes,
-                                @Nullable String activeType, boolean activeDynamic, long activeSequence,
+                                @Nullable String activeType, boolean activeDynamic, @Nullable String activeReason, long activeSequence,
                                 int activeFollowers, List<BarrierTypeSummary> types) {
     }
 
@@ -357,6 +357,7 @@ public final class ServerInputDispatcher {
                     activeBarrierSince = now;
                     if (barrierMetrics != null) {
                         barrierMetrics.begin(entry.task.diagnosticType(), entry.betweenTicks,
+                                entry.betweenTicks ? entry.task.diagnosticReason() : "STATIC",
                                 entry.sequence, nextSequence, queue.size() - 1, now);
                     }
                 }

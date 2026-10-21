@@ -11,6 +11,13 @@ public interface ServerInputTask {
         return "ControlOrUnclassified";
     }
 
+    /**
+     * 返回刚才准入判定保存的服务端原因，不得重新判定、访问玩家或包含包载荷。
+     */
+    default String diagnosticReason() {
+        return "UNCLASSIFIED";
+    }
+
     /** 主线程消费前检查动作归属；失效任务按原预算丢弃，不阻挡后续连接清理。 */
     default boolean isValid() {
         return true;
