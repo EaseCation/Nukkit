@@ -11,10 +11,11 @@ import java.util.Map;
  */
 final class InputBarrierMetrics {
     static final int MAX_TYPES = 64;
-    private final Map<String, Counters> staticTypes = new HashMap<>();
-    private final Map<String, Counters> dynamicTypes = new HashMap<>();
-    private final Counters staticOverflow = new Counters("OTHER", false);
-    private final Counters dynamicOverflow = new Counters("OTHER", true);
+    private final Map<String, Map<String, Counters>> staticTypes = new HashMap<>();
+    private final Map<String, Map<String, Counters>> dynamicTypes = new HashMap<>();
+    private final Counters staticOverflow = new Counters("OTHER", false, "OTHER");
+    private final Counters dynamicOverflow = new Counters("OTHER", true, "OTHER");
+    private int typeCount;
     @Nullable private Counters active;
     private long windowStartedNanos;
     private long windowSequence;
@@ -28,15 +29,21 @@ final class InputBarrierMetrics {
         windowStartedNanos = now;
     }
 
-    void begin(String type, boolean dynamic, long sequence, long tailSequence, int followers, long now) {
-        Map<String, Counters> types = dynamic ? dynamicTypes : staticTypes;
-        Counters counters = types.get(type);
+    void begin(String type, boolean dynamic, String reason, long sequence, long tailSequence, int followers, long now) {
+        Map<String, Map<String, Counters>> types = dynamic ? dynamicTypes : staticTypes;
+        Map<String, Counters> reasons = types.get(type);
+        Counters counters = reasons == null ? null : reasons.get(reason);
         if (counters == null) {
-            if (staticTypes.size() + dynamicTypes.size() >= MAX_TYPES || type.length() > 128) {
+            if (typeCount >= MAX_TYPES || type.length() > 128 || reason.length() > 64) {
                 counters = dynamic ? dynamicOverflow : staticOverflow;
             } else {
-                counters = new Counters(type, dynamic);
-                types.put(type, counters);
+                if (reasons == null) {
+                    reasons = new HashMap<>();
+                    types.put(type, reasons);
+                }
+                counters = new Counters(type, dynamic, reason);
+                reasons.put(reason, counters);
+                typeCount++;
             }
         }
         active = counters;
@@ -70,14 +77,14 @@ final class InputBarrierMetrics {
     ServerInputDispatcher.BarrierReport drain(long now, long tailSequence, int queuedTasks, long queuedBytes) {
         account(now, tailSequence);
         List<ServerInputDispatcher.BarrierTypeSummary> summaries = new ArrayList<>();
-        staticTypes.values().forEach(counters -> counters.drainTo(summaries));
-        dynamicTypes.values().forEach(counters -> counters.drainTo(summaries));
+        staticTypes.values().forEach(reasons -> reasons.values().forEach(counters -> counters.drainTo(summaries)));
+        dynamicTypes.values().forEach(reasons -> reasons.values().forEach(counters -> counters.drainTo(summaries)));
         staticOverflow.drainTo(summaries);
         dynamicOverflow.drainTo(summaries);
         ServerInputDispatcher.BarrierReport report = new ServerInputDispatcher.BarrierReport(
                 ++windowSequence, windowStartedNanos, now, queuedTasks, queuedBytes,
                 active == null ? null : active.type, active != null && active.dynamic,
-                active == null ? 0 : activeSequence, active == null ? 0 : activeFollowers,
+                active == null ? null : active.reason, active == null ? 0 : activeSequence, active == null ? 0 : activeFollowers,
                 List.copyOf(summaries));
         windowStartedNanos = now;
         return report;
@@ -86,6 +93,7 @@ final class InputBarrierMetrics {
     private static final class Counters {
         private final String type;
         private final boolean dynamic;
+        private final String reason;
         private long heads;
         private long followersAtStart;
         private long arrivals;
@@ -93,14 +101,15 @@ final class InputBarrierMetrics {
         private long maxObservedHeadNanos;
         private int maxFollowers;
 
-        private Counters(String type, boolean dynamic) {
+        private Counters(String type, boolean dynamic, String reason) {
             this.type = type;
             this.dynamic = dynamic;
+            this.reason = reason;
         }
 
         private void drainTo(List<ServerInputDispatcher.BarrierTypeSummary> target) {
             if (heads != 0 || arrivals != 0 || observedNanos != 0) {
-                target.add(new ServerInputDispatcher.BarrierTypeSummary(type, dynamic, heads,
+                target.add(new ServerInputDispatcher.BarrierTypeSummary(type, dynamic, reason, heads,
                         followersAtStart, arrivals, maxFollowers, observedNanos, maxObservedHeadNanos));
             }
             heads = followersAtStart = arrivals = observedNanos = maxObservedHeadNanos = 0;

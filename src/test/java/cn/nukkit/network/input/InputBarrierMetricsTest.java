@@ -133,6 +133,7 @@ class InputBarrierMetricsTest {
         dispatcher.offer(first, new ServerInputTask() {
             @Override public void run(InboundContext context) { }
             @Override public String diagnosticType() { throw new AssertionError("Diagnostics disabled"); }
+            @Override public String diagnosticReason() { throw new AssertionError("Diagnostics disabled"); }
         }, 1, false);
         dispatcher.drain(true, 1, Long.MAX_VALUE);
         assertNull(dispatcher.drainBarrierReport());
@@ -151,4 +152,70 @@ class InputBarrierMetricsTest {
         assertEquals(20, report.types().getFirst().observedNanos());
         assertTrue(dispatcher.drainBarrierReport().types().isEmpty());
     }
+    @Test
+    void firstObservedReasonStaysStableAcrossRechecksAndWindowBoundaries() {
+        dispatcher.enableBarrierDiagnostics();
+        AtomicInteger evaluations = new AtomicInteger();
+        AtomicInteger reads = new AtomicInteger();
+        dispatcher.offer(first, new ServerInputTask() {
+            private String reason;
+            @Override public void run(InboundContext context) { }
+            @Override public boolean canRunBetweenTicks() {
+                reason = evaluations.incrementAndGet() == 1 ? "SLEEPING" : "GLIDING";
+                return false;
+            }
+            @Override public String diagnosticType() { return "Movement"; }
+            @Override public String diagnosticReason() { reads.incrementAndGet(); return reason; }
+        }, 1, true);
+        dispatcher.drain(true, 1, Long.MAX_VALUE);
+        clock.set(10);
+        assertEquals("SLEEPING", dispatcher.drainBarrierReport().activeReason());
+        for (int i = 0; i < 1000; i++) dispatcher.drain(true, 1, Long.MAX_VALUE);
+        clock.set(20);
+        ServerInputDispatcher.BarrierTypeSummary summary = dispatcher.drainBarrierReport().types().getFirst();
+        assertEquals("SLEEPING", summary.reason());
+        assertEquals(0, summary.heads());
+        assertEquals(10, summary.observedNanos());
+        assertEquals(1001, evaluations.get());
+        assertEquals(1, reads.get());
+        dispatcher.drainWorldTick(2);
+    }
+
+    @Test
+    void reasonsShareTheExistingCardinalityBoundAndPreserveTotals() {
+        dispatcher.enableBarrierDiagnostics();
+        for (int i = 0; i < 1000; i++) {
+            String reason = "REASON_" + i;
+            dispatcher.offer(first, new ServerInputTask() {
+                @Override public void run(InboundContext context) { }
+                @Override public boolean canRunBetweenTicks() { return false; }
+                @Override public String diagnosticType() { return "Movement"; }
+                @Override public String diagnosticReason() { return reason; }
+            }, 1, true);
+            dispatcher.drain(true, 1, Long.MAX_VALUE);
+            clock.incrementAndGet();
+            dispatcher.drainWorldTick(2);
+        }
+        ServerInputDispatcher.BarrierReport report = dispatcher.drainBarrierReport();
+        assertEquals(65, report.types().size());
+        assertEquals(1000, report.types().stream().mapToLong(ServerInputDispatcher.BarrierTypeSummary::heads).sum());
+        assertEquals(1000, report.types().stream().mapToLong(ServerInputDispatcher.BarrierTypeSummary::observedNanos).sum());
+        assertEquals(936, report.types().stream().filter(t -> t.reason().equals("OTHER")).findFirst().orElseThrow().heads());
+    }
+
+    @Test
+    void disabledDiagnosticsDoesNotReadReasonEvenForDynamicFailure() {
+        AtomicInteger checks = new AtomicInteger();
+        dispatcher.offer(first, new ServerInputTask() {
+            @Override public void run(InboundContext context) { }
+            @Override public boolean canRunBetweenTicks() { checks.incrementAndGet(); return false; }
+            @Override public String diagnosticReason() { throw new AssertionError("Diagnostics disabled"); }
+        }, 1, true);
+        assertEquals(0, dispatcher.drain(true, 1, Long.MAX_VALUE));
+        assertEquals(1, checks.get());
+        assertNull(dispatcher.drainBarrierReport());
+        assertEquals(1, dispatcher.drainWorldTick(2));
+        assertEquals(1, checks.get());
+    }
+
 }
