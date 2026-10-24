@@ -1668,6 +1668,13 @@ public class Server {
         return commandMap;
     }
 
+    /**
+     * 返回已注册连接的只读快照，包含仍在登录和加载资源的玩家。
+     */
+    public List<Player> getConnectedPlayers() {
+        return List.copyOf(this.players.values());
+    }
+
     public Player getOnlinePlayer(UUID uuid) {
         return playerList.get(uuid);
     }
