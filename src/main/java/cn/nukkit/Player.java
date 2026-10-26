@@ -606,6 +606,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
+    protected void updateFallState(boolean onGround) {
+        if (onGround) {
+            this.attackCriticalThisJump = 0;
+        }
+        super.updateFallState(onGround);
+    }
+
+    @Override
     public boolean isOnline() {
         return this.connected && this.loggedIn;
     }
@@ -1870,15 +1878,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             boolean swimming = isSwimming();
 
             if (!this.onGround || dy != 0) {
-                AxisAlignedBB bb = this.boundingBox.clone();
-                bb.setMinY(bb.getMinY() - 0.75);
-
                 boolean onGroundPrev = this.onGround;
-                Block[] blocks = this.level.getCollisionBlocks(bb, true);
-                this.onGround = blocks.length > 0;
+                Block support = this.findGroundSupport();
+                this.onGround = support != null;
 
                 if (!this.isRiding() && !swimming && !onGroundPrev && onGround && !isInsideOfWater(false)) {
-                    level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LAND, blocks[0].getFullId(), EntityFullNames.PLAYER, getId());
+                    level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LAND, support.getFullId(), EntityFullNames.PLAYER, getId());
                 }
             }
             this.isCollided = this.onGround;
@@ -1905,40 +1910,29 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-    @Override
-    protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
-        if (!this.onGround || movX != 0 || movY != 0 || movZ != 0) {
-            boolean onGround = false;
+    private Block findGroundSupport() {
+        AxisAlignedBB feet = this.boundingBox.clone();
+        feet.setMaxY(feet.getMinY() + 0.0001);
+        feet.setMinY(feet.getMinY() - 0.0001);
 
-            AxisAlignedBB bb = this.boundingBox.clone();
-            bb.setMaxY(bb.getMinY() + 0.5);
-            bb.setMinY(bb.getMinY() - 1);
-
-            AxisAlignedBB realBB = this.boundingBox.clone();
-            realBB.setMaxY(realBB.getMinY() + 0.1);
-            realBB.setMinY(realBB.getMinY() - 0.2);
-
-            int minX = Mth.floor(bb.getMinX());
-            int minY = Mth.floor(bb.getMinY());
-            int minZ = Mth.floor(bb.getMinZ());
-            int maxX = Mth.floor(bb.getMaxX());
-            int maxY = Mth.floor(bb.getMaxY());
-            int maxZ = Mth.floor(bb.getMaxZ());
-
-            for (int z = minZ; z <= maxZ; ++z) {
-                for (int x = minX; x <= maxX; ++x) {
-                    for (int y = minY; y <= maxY; ++y) {
-                        Block block = this.level.getBlock(x, y, z);
-
-                        if (!block.canPassThrough() && block.collide(realBB)) {
-                            onGround = true;
-                            break;
-                        }
+        // 栅栏和围墙的碰撞箱高于所在方块格，脚底下一格也要检查。
+        for (int z = Mth.floor(feet.getMinZ()); z <= Mth.floor(feet.getMaxZ()); z++) {
+            for (int x = Mth.floor(feet.getMinX()); x <= Mth.floor(feet.getMaxX()); x++) {
+                for (int y = Mth.floor(feet.getMinY()) - 1; y <= Mth.floor(feet.getMaxY()); y++) {
+                    Block block = this.level.getBlock(x, y, z);
+                    if (!block.canPassThrough() && block.collide(feet)) {
+                        return block;
                     }
                 }
             }
+        }
+        return null;
+    }
 
-            this.onGround = onGround;
+    @Override
+    protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
+        if (!this.onGround || movX != 0 || movY != 0 || movZ != 0) {
+            this.onGround = this.findGroundSupport() != null;
         }
 
         this.isCollided = this.onGround;
