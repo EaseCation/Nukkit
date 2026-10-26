@@ -1910,6 +1910,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    @Nullable
     private Block findGroundSupport() {
         AxisAlignedBB feet = this.boundingBox.clone();
         feet.setMaxY(feet.getMinY() + 0.0001);
