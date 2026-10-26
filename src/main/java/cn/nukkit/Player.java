@@ -1919,7 +1919,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         for (int z = Mth.floor(feet.getMinZ()); z <= Mth.floor(feet.getMaxZ()); z++) {
             for (int x = Mth.floor(feet.getMinX()); x <= Mth.floor(feet.getMaxX()); x++) {
                 for (int y = Mth.floor(feet.getMinY()) - 1; y <= Mth.floor(feet.getMaxY()); y++) {
-                    Block block = this.level.getBlock(x, y, z);
+                    Block block = this.level.getBlock(x, y, z, false);
                     if (!block.canPassThrough() && block.collide(feet)) {
                         return block;
                     }
