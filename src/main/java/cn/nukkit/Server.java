@@ -1,5 +1,6 @@
 package cn.nukkit;
 
+import cn.nukkit.observability.ConnectionObservation;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.*;
 import cn.nukkit.command.*;
@@ -901,6 +902,8 @@ public class Server {
             }
         } catch (Exception e) {
             log.fatal("Exception happened while shutting down", e);
+        } finally {
+            ConnectionObservation.emit(null, "instance_stopping", Map.of());
         }
     }
 

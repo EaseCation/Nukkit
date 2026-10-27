@@ -757,6 +757,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private String observationActionId;
     private String observationReasonCode = "unclassified_server_close";
     private String observationIntent = "unspecified";
+    private volatile boolean observationTransportClosed;
+    private volatile Map<String, Object> observationCloseData = Map.of();
     public String getObservationConnectionId() { return observationConnectionId; }
     public String getObservationAdmissionId() { return observationAdmissionId; }
     public String getObservationTransferId() { return observationTransferId; }
@@ -764,7 +766,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setObservationTransferId(String id) { observationTransferId = id; }
     public void observeConnection(String type, Map<String, Object> data) { ConnectionObservation.emit(this, type, data); }
     public void observeTransportClosed(String reason) {
-        observeConnection("transport_closed", Map.of("transport_reason", reason));
+        observationTransportClosed = true;
+        Map<String, Object> data = new HashMap<>(observationCloseData);
+        data.put("transport_reason", reason);
+        observeConnection("transport_closed", data);
     }
     public boolean kickObserved(String message, String reasonCode, String intent) {
         return kickObserved(message, reasonCode, intent, true);
@@ -5261,17 +5266,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (this.inputMovementStatistics != null) {
                 this.inputMovementStatistics.clearTick();
             }
-            if (notify && !reason.isEmpty()) {
-                sendDisconnectScreen(reason);
-            }
-
+            String closeReason = "unclassified_server_close".equals(observationReasonCode) ? ConnectionObservation.reasonCode(reason) : observationReasonCode;
             if (observationActionId == null) {
                 observationActionId = UUID.randomUUID().toString();
                 observeConnection("disconnect_requested", Map.of("action_id", observationActionId,
-                    "reason_code", observationReasonCode, "intent", observationIntent));
+                    "reason_code", closeReason, "intent", observationIntent));
             }
-            observeConnection("backend_player_closed", Map.of("action_id", observationActionId,
-                "reason_code", observationReasonCode, "intent", observationIntent));
+            observationCloseData = Map.of("action_id", observationActionId, "reason_code", closeReason,
+                "intent", observationIntent, "close_origin", observationTransportClosed ? "transport" : "server");
+            if (notify && !reason.isEmpty()) {
+                sendDisconnectScreen(reason);
+            }
+            observeConnection("backend_player_closed", observationCloseData);
             this.connected = false;
             PlayerQuitEvent ev = null;
             if (this.getName() != null && !this.getName().isEmpty()) {
