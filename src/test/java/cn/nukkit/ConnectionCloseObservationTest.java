@@ -17,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -65,6 +66,69 @@ class ConnectionCloseObservationTest {
         assertEquals("unclassified_server_close", ConnectionObservation.reasonCode("token=private-value 127.0.0.1"));
         assertEquals("unclassified_server_close", ConnectionObservation.reasonCode("disconnect.reason\nprivate"));
         assertEquals("unclassified_server_close", ConnectionObservation.reasonCode(null));
+    }
+
+    @Test void nestedCancelledKicksRemainCancelledWithAndWithoutObserver() {
+        for (boolean observed : new boolean[]{false, true}) {
+            try (Fixture fixture = new Fixture()) {
+                if (!observed) ConnectionObservation.setObserver(null);
+                AtomicInteger calls = new AtomicInteger();
+                doAnswer(call -> {
+                    PlayerKickEvent event = call.getArgument(0);
+                    event.setCancelled();
+                    if (calls.getAndIncrement() == 0) assertFalse(fixture.player.kick("inner", false));
+                    return null;
+                }).when(fixture.plugins).callEvent(any(PlayerKickEvent.class));
+                assertDoesNotThrow(() -> assertFalse(fixture.player.kick(PlayerKickEvent.Reason.NEW_CONNECTION, "outer", false)));
+                assertEquals(2, calls.get());
+                assertTrue(fixture.player.isConnected());
+                verify(fixture.source, never()).close(any(), anyString());
+                if (observed) {
+                    assertEquals(List.of("disconnect_requested", "disconnect_requested", "disconnect_request_cancelled", "disconnect_request_cancelled"), fixture.types);
+                    assertNotEquals(fixture.events.get(0).get("action_id"), fixture.events.get(1).get("action_id"));
+                    assertEquals(fixture.events.get(0).get("action_id"), fixture.events.get(3).get("action_id"));
+                    assertEquals(fixture.events.get(1).get("action_id"), fixture.events.get(2).get("action_id"));
+                }
+            }
+        }
+    }
+
+    @Test void cancelledInnerKickPreservesAcceptedOuterActionAndReason() {
+        try (Fixture fixture = new Fixture()) {
+            AtomicInteger calls = new AtomicInteger();
+            doAnswer(call -> {
+                PlayerKickEvent event = call.getArgument(0);
+                if (calls.getAndIncrement() == 0) assertFalse(fixture.player.kickObserved("inner", "inner_reason", "policy_action", false));
+                else event.setCancelled();
+                return null;
+            }).when(fixture.plugins).callEvent(any(PlayerKickEvent.class));
+            assertTrue(fixture.player.kickObserved("outer", "outer_reason", "service_fault", false));
+            Map<String, Object> transport = fixture.events.getLast();
+            assertEquals(fixture.events.get(0).get("action_id"), transport.get("action_id"));
+            assertEquals("outer_reason", transport.get("reason_code"));
+            assertEquals("service_fault", transport.get("intent"));
+            verify(fixture.source, times(1)).close(fixture.player, "outer");
+        }
+    }
+
+    @Test void cancelledOuterKickDoesNotRewriteAcceptedInnerClosure() {
+        try (Fixture fixture = new Fixture()) {
+            AtomicInteger calls = new AtomicInteger();
+            doAnswer(call -> {
+                PlayerKickEvent event = call.getArgument(0);
+                if (calls.getAndIncrement() == 0) {
+                    event.setCancelled();
+                    assertTrue(fixture.player.kickObserved("inner", "inner_reason", "policy_action", false));
+                }
+                return null;
+            }).when(fixture.plugins).callEvent(any(PlayerKickEvent.class));
+            assertFalse(fixture.player.kickObserved("outer", "outer_reason", "service_fault", false));
+            Map<String, Object> transport = fixture.events.get(fixture.types.indexOf("transport_closed"));
+            assertEquals(fixture.events.get(1).get("action_id"), transport.get("action_id"));
+            assertEquals("inner_reason", transport.get("reason_code"));
+            assertEquals(fixture.events.get(0).get("action_id"), fixture.events.getLast().get("action_id"));
+            verify(fixture.source, times(1)).close(fixture.player, "inner");
+        }
     }
 
     private static final class Fixture implements AutoCloseable {

@@ -775,10 +775,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return kickObserved(message, reasonCode, intent, true);
     }
     public boolean kickObserved(String message, String reasonCode, String intent, boolean isAdmin) {
+        String previousReasonCode = observationReasonCode;
+        String previousIntent = observationIntent;
         observationReasonCode = reasonCode;
         observationIntent = intent;
         try { return this.kick(message, isAdmin); }
-        finally { observationReasonCode = "unclassified_server_close"; observationIntent = "unspecified"; }
+        finally { observationReasonCode = previousReasonCode; observationIntent = previousIntent; }
     }
 
     public Player(SourceInterface interfaz, Long clientID, InetSocketAddress socketAddress) {
@@ -5015,35 +5017,41 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString, boolean isAdmin) {
-        observationActionId = UUID.randomUUID().toString();
-        observeConnection("disconnect_requested", Map.of("action_id", observationActionId, "reason_code", observationReasonCode,
-            "intent", observationIntent, "kick_reason", reason == null ? "UNKNOWN" : reason.name()));
-        PlayerKickEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerKickEvent(this, reason, this.getLeaveMessage()));
-        if (!ev.isCancelled()) {
-            String message;
-            if (isAdmin) {
-                if (!this.isBanned()) {
-                    message = "Kicked by admin." + (!reasonString.isEmpty() ? " Reason: " + reasonString : "");
+        String actionId = UUID.randomUUID().toString();
+        String previousActionId = observationActionId;
+        observationActionId = actionId;
+        try {
+            observeConnection("disconnect_requested", Map.of("action_id", actionId, "reason_code", observationReasonCode,
+                "intent", observationIntent, "kick_reason", reason == null ? "UNKNOWN" : reason.name()));
+            PlayerKickEvent ev;
+            this.server.getPluginManager().callEvent(ev = new PlayerKickEvent(this, reason, this.getLeaveMessage()));
+            if (!ev.isCancelled()) {
+                String message;
+                if (isAdmin) {
+                    if (!this.isBanned()) {
+                        message = "Kicked by admin." + (!reasonString.isEmpty() ? " Reason: " + reasonString : "");
+                    } else {
+                        message = reasonString;
+                    }
                 } else {
-                    message = reasonString;
+                    if (reasonString.isEmpty()) {
+                        message = "disconnectionScreen.noReason";
+                    } else {
+                        message = reasonString;
+                    }
                 }
-            } else {
-                if (reasonString.isEmpty()) {
-                    message = "disconnectionScreen.noReason";
-                } else {
-                    message = reasonString;
-                }
+
+                this.close(ev.getQuitMessage(), message);
+
+                return true;
             }
 
-            this.close(ev.getQuitMessage(), message);
-
-            return true;
+            observeConnection("disconnect_request_cancelled", Map.of("action_id", actionId));
+            return false;
+        } finally {
+            // 事件回调可能再次踢人，内层结束只恢复外层上下文。
+            observationActionId = previousActionId;
         }
-
-        observeConnection("disconnect_request_cancelled", Map.of("action_id", observationActionId));
-        observationActionId = null;
-        return false;
     }
 
     public boolean setViewDistance(int distance) {
