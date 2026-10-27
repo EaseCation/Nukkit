@@ -45,6 +45,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.*;
+import cn.nukkit.monitor.TickRuntimeMetrics;
 import cn.nukkit.network.input.ServerInputDispatcher;
 import cn.nukkit.network.input.PlayerInputProcessor;
 import cn.nukkit.network.protocol.*;
@@ -225,6 +226,7 @@ public class Server {
 
     @Nullable
     private final ServerInputDispatcher inputDispatcher;
+    private final TickRuntimeMetrics tickRuntimeMetrics;
     @Nullable
     private PlayerInputProcessor playerInputProcessor;
     private final long inputIdleBudgetNanos;
@@ -427,6 +429,7 @@ public class Server {
         this.baseTickRate = this.getConfig("level-settings.base-tick-rate", 1);
         this.redstoneEnabled = this.getConfig("level-settings.tick-redstone", true);
 
+        this.tickRuntimeMetrics = this.getConfig("monitor.tick-runtime", true) ? new TickRuntimeMetrics() : null;
         if (this.getConfig("network.input-dispatcher.enabled", false)) {
             this.inputIdleBudgetNanos = Mth.clamp(this.getConfig("network.input-dispatcher.idle-budget-us", 5000), 1, 50000) * 1000L;
             this.inputDispatcher = new ServerInputDispatcher(this.currentThread,
@@ -1262,6 +1265,21 @@ public class Server {
             return false;
         }
 
+        if (this.tickRuntimeMetrics == null) return this.tickWorld(tickTime, tickTimeNano);
+        this.tickRuntimeMetrics.start(tickTimeNano);
+        try {
+            return this.tickWorld(tickTime, tickTimeNano);
+        } finally {
+            this.tickRuntimeMetrics.finish(System.nanoTime() - tickTimeNano);
+        }
+    }
+
+    @Nullable
+    public TickRuntimeMetrics getTickRuntimeMetrics() {
+        return this.tickRuntimeMetrics;
+    }
+
+    private boolean tickWorld(long tickTime, long tickTimeNano) {
         ++this.tickCounter;
 
         this.network.processInterfaces();
