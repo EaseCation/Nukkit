@@ -239,6 +239,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected int startAction = -1;
     protected long startActionTimestamp = -1;
+    private long actionSequence;
     private final ItemUseHandState itemUseHandState = new ItemUseHandState();
     private Item usingItemSnapshot = Items.air();
 
@@ -377,12 +378,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return startActionTimestamp;
     }
 
+    /** 动作代际独立于时钟，同一 tick 内重新开始也能使旧持有者失效。 */
+    public long getActionSequence() {
+        return actionSequence;
+    }
+
     public void startAction() {
+        this.actionSequence++;
         this.startAction = this.server.getTick();
         this.startActionTimestamp = System.currentTimeMillis();
     }
 
     public void stopAction() {
+        this.actionSequence++;
         this.startAction = -1;
         this.startActionTimestamp = -1;
     }
@@ -882,6 +890,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void setUsingItem(boolean value) {
+        this.actionSequence++;
         this.startAction = value ? this.server.getTick() : -1;
         this.startActionTimestamp = value ? System.currentTimeMillis() : -1;
         this.itemUseHandState.setUsing(value);
