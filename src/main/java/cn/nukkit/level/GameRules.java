@@ -300,7 +300,7 @@ public class GameRules {
                     pk.putLInt(value.getValueAsInteger());
                     return;
                 }
-                pk.putUnsignedVarInt(value.getValueAsInteger());
+                pk.putVarInt(value.getValueAsInteger());
             }
         },
         FLOAT {
