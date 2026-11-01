@@ -66,10 +66,6 @@ public final class SharedConstants {
     public static final boolean VANILLA_SKIN_FLOW = false;
     public static final boolean NETEASE_SKIN_FLOW = false;
 
-    // temporary
-
-    public static final boolean COMMAND_POSTFIX_PARAMETER_CRASH_FIXED = false;
-
     private SharedConstants() {
         throw new IllegalStateException();
     }

@@ -16,6 +16,7 @@ import cn.nukkit.math.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.*;
 import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import it.unimi.dsi.fastutil.booleans.BooleanCollection;
@@ -2181,6 +2182,10 @@ public class BinaryStream {
          */
         public String getGameVersion() {
             return "1.12.0";
+        }
+
+        public int getProtocolVersion() {
+            return ProtocolInfo.CURRENT_PROTOCOL;
         }
 
         public void putSkin(BinaryStream stream, Skin skin) {
