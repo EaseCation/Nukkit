@@ -41,7 +41,7 @@ public class StartGamePacket extends DataPacket {
     public boolean broadcastToLAN = true;
     public boolean broadcastToXboxLive = true;
     public boolean commandsEnabled;
-    public boolean isTexturePacksRequired = false;
+    public boolean isTexturePacksRequired = true;
     public GameRules gameRules = null;
     public boolean bonusChest = false;
     public boolean trustPlayers = false;
