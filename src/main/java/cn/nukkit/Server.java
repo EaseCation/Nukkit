@@ -354,7 +354,7 @@ public class Server {
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
                 put("auto-save", true);
-                put("force-resources", false);
+                put("force-resources", true);
                 put("bug-report", true);
                 put("enable-jmx-monitoring", false);
                 put("compression-algorithm", "snappy");
@@ -367,7 +367,7 @@ public class Server {
                 .serverPort(getPropertyInt("server-port", 19132))
                 .enableWhitelist(getPropertyBoolean("white-list", false))
                 .motd(getPropertyString("motd", "Nukkit Server For Minecraft: BE"))
-                .forceResources(getPropertyBoolean("force-resources", false))
+                .forceResources(getPropertyBoolean("force-resources", true))
                 .gameMode(getPropertyInt("gamemode", 0) & 0b11)
                 .forceGameMode(getPropertyBoolean("force-gamemode", false))
                 .hardcore(getPropertyBoolean("hardcore", false))

@@ -19,7 +19,7 @@ public class ResourcePackClientResponsePacket extends DataPacket {
     @Override
     public void decode() {
         this.responseStatus = (byte) this.getByte();
-        this.packIds = this.getArray(BinaryStream::getLShort, new String[0], BinaryStream::getString);
+        this.packIds = this.getArray(BinaryStream::getLShort, new String[0], BinaryStream::getString, Character.MAX_VALUE);
     }
 
     @Override
