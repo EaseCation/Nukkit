@@ -2349,7 +2349,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public boolean isInsideOfSolid() {
-        double y = this.y + this.getEyeHeight();
+        double y = this.y + this.getEyeHeight() * this.scale;
         Block block = this.level.getBlock(Mth.floor(this.x), Mth.floor(y), Mth.floor(this.z));
 
         if (!block.isSolid() || block.isTransparent()) {

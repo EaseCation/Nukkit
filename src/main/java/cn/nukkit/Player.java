@@ -2185,8 +2185,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.x = newPos.x;
                 this.y = newPos.y;
                 this.z = newPos.z;
-                double radius = this.getWidth() / 2;
-                this.boundingBox.setBounds(this.x - radius, this.y, this.z - radius, this.x + radius, this.y + this.getHeight(), this.z + radius);
+                double radius = this.getWidth() * this.scale / 2;
+                this.boundingBox.setBounds(this.x - radius, this.y, this.z - radius, this.x + radius, this.y + this.getHeight() * this.scale, this.z + radius);
             }
         }
 
