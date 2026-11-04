@@ -1,5 +1,7 @@
 package cn.nukkit;
 
+import cn.nukkit.observability.ConnectionObservation;
+
 import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDoor;
@@ -237,6 +239,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected int startAction = -1;
     protected long startActionTimestamp = -1;
+    private long actionSequence;
     private final ItemUseHandState itemUseHandState = new ItemUseHandState();
     private Item usingItemSnapshot = Items.air();
 
@@ -375,12 +378,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return startActionTimestamp;
     }
 
+    /** 动作代际独立于时钟，同一 tick 内重新开始也能使旧持有者失效。 */
+    public long getActionSequence() {
+        return actionSequence;
+    }
+
     public void startAction() {
+        this.actionSequence++;
         this.startAction = this.server.getTick();
         this.startActionTimestamp = System.currentTimeMillis();
     }
 
     public void stopAction() {
+        this.actionSequence++;
         this.startAction = -1;
         this.startActionTimestamp = -1;
     }
@@ -749,12 +759,57 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * Whether this player's outbound command encoder handles Bedrock's postfix remapping defect.
+     *
+     * Bedrock's remote command loader may look up a postfix index in the hard-enum mapping.
+     * A transport must align the supported native indices and safely fall back for parameters
+     * whose indices cannot be established.
+     *
+     * @return true only when the actual outbound codec implements postfix compatibility handling
+     */
+    public boolean supportsCommandPostfixParameters() {
+        return false;
+    }
+
     @Override
     public Map<String, PermissionAttachmentInfo> getEffectivePermissions() {
         if (this.perm == null) {
             return Collections.emptyMap();
         }
         return this.perm.getEffectivePermissions();
+    }
+
+    private String observationConnectionId = ConnectionObservation.BOOT_ID + ":" + UUID.randomUUID();
+    private final String observationAdmissionId = UUID.randomUUID().toString();
+    private String observationTransferId;
+    private String observationActionId;
+    private String observationReasonCode = "unclassified_server_close";
+    private String observationIntent = "unspecified";
+    private volatile boolean observationTransportClosed;
+    private volatile Map<String, Object> observationCloseData = Map.of();
+    public String getObservationConnectionId() { return observationConnectionId; }
+    public String getObservationAdmissionId() { return observationAdmissionId; }
+    public String getObservationTransferId() { return observationTransferId; }
+    public void setObservationConnectionId(String id) { observationConnectionId = id; }
+    public void setObservationTransferId(String id) { observationTransferId = id; }
+    public void observeConnection(String type, Map<String, Object> data) { ConnectionObservation.emit(this, type, data); }
+    public void observeTransportClosed(String reason) {
+        observationTransportClosed = true;
+        Map<String, Object> data = new HashMap<>(observationCloseData);
+        data.put("transport_reason", reason);
+        observeConnection("transport_closed", data);
+    }
+    public boolean kickObserved(String message, String reasonCode, String intent) {
+        return kickObserved(message, reasonCode, intent, true);
+    }
+    public boolean kickObserved(String message, String reasonCode, String intent, boolean isAdmin) {
+        String previousReasonCode = observationReasonCode;
+        String previousIntent = observationIntent;
+        observationReasonCode = reasonCode;
+        observationIntent = intent;
+        try { return this.kick(message, isAdmin); }
+        finally { observationReasonCode = previousReasonCode; observationIntent = previousIntent; }
     }
 
     public Player(SourceInterface interfaz, Long clientID, InetSocketAddress socketAddress) {
@@ -856,6 +911,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void setUsingItem(boolean value) {
+        this.actionSequence++;
         this.startAction = value ? this.server.getTick() : -1;
         this.startActionTimestamp = value ? System.currentTimeMillis() : -1;
         this.itemUseHandState.setUsing(value);
@@ -1188,6 +1244,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.server.getPluginManager().callEvent(playerJoinEvent);
 
         this.spawned = true;
+        observeConnection("world_initialized", Map.of("evidence", "server_spawn_completed"));
 
         if (!playerJoinEvent.getJoinMessage().toString().trim().isEmpty()) {
             this.server.broadcastMessage(playerJoinEvent.getJoinMessage());
@@ -2123,8 +2180,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.x = newPos.x;
                 this.y = newPos.y;
                 this.z = newPos.z;
-                double radius = this.getWidth() / 2;
-                this.boundingBox.setBounds(this.x - radius, this.y, this.z - radius, this.x + radius, this.y + this.getHeight(), this.z + radius);
+                double radius = this.getWidth() * this.scale / 2;
+                this.boundingBox.setBounds(this.x - radius, this.y, this.z - radius, this.x + radius, this.y + this.getHeight() * this.scale, this.z + radius);
             }
         }
 
@@ -3220,6 +3277,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.behaviourPacks = resourcePackEvent.getResourcePacks();
         this.forceResources = resourcePackEvent.isMustAccept();
 
+        observeConnection("resource_pack_stage", Map.of("stage", "offered"));
         ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
         infoPacket.resourcePackEntries = this.resourcePacks.values().toArray(new ResourcePack[0]);
         infoPacket.behaviourPackEntries = this.behaviourPacks.values().toArray(new ResourcePack[0]);
@@ -3289,6 +3347,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = 1; //0 old, 1 infinite, 2 flat
         startGamePacket.gameRules = this.level.gameRules;
+        startGamePacket.isTexturePacksRequired = server.getForceResources();
         startGamePacket.enchantmentSeed = ThreadLocalRandom.current().nextInt();
         this.dataPacket(startGamePacket);
 
@@ -3448,9 +3507,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     ResourcePackClientResponsePacket responsePacket = (ResourcePackClientResponsePacket) packet;
                     switch (responsePacket.responseStatus) {
                         case ResourcePackClientResponsePacket.STATUS_REFUSED:
+                            observeConnection("resource_pack_stage", Map.of("stage", "refused"));
                             this.close("", "disconnectionScreen.noReason");
                             break;
                         case ResourcePackClientResponsePacket.STATUS_SEND_PACKS:
+                            observeConnection("resource_pack_stage", Map.of("stage", "download_requested"));
                             for (String id : responsePacket.packIds) {
                                 ResourcePack resourcePack = this.resourcePacks.getOrDefault(id, this.behaviourPacks.get(id));
                                 if (resourcePack == null) {
@@ -3473,6 +3534,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                             break;
                         case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS:
+                            observeConnection("resource_pack_stage", Map.of("stage", "have_all"));
                             ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
                             stackPacket.mustAccept = this.forceResources;
                             stackPacket.resourcePackStack = this.resourcePacks.values().toArray(new ResourcePack[0]);
@@ -3480,6 +3542,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.dataPacket(stackPacket);
                             break;
                         case ResourcePackClientResponsePacket.STATUS_COMPLETED:
+                            observeConnection("resource_pack_stage", Map.of("stage", "completed"));
                             if (this.preLoginEventTask.isFinished()) {
                                 this.completeLoginSequence();
                             } else {
@@ -4972,30 +5035,41 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString, boolean isAdmin) {
-        PlayerKickEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerKickEvent(this, reason, this.getLeaveMessage()));
-        if (!ev.isCancelled()) {
-            String message;
-            if (isAdmin) {
-                if (!this.isBanned()) {
-                    message = "Kicked by admin." + (!reasonString.isEmpty() ? " Reason: " + reasonString : "");
+        String actionId = UUID.randomUUID().toString();
+        String previousActionId = observationActionId;
+        observationActionId = actionId;
+        try {
+            observeConnection("disconnect_requested", Map.of("action_id", actionId, "reason_code", observationReasonCode,
+                "intent", observationIntent, "kick_reason", reason == null ? "UNKNOWN" : reason.name()));
+            PlayerKickEvent ev;
+            this.server.getPluginManager().callEvent(ev = new PlayerKickEvent(this, reason, this.getLeaveMessage()));
+            if (!ev.isCancelled()) {
+                String message;
+                if (isAdmin) {
+                    if (!this.isBanned()) {
+                        message = "Kicked by admin." + (!reasonString.isEmpty() ? " Reason: " + reasonString : "");
+                    } else {
+                        message = reasonString;
+                    }
                 } else {
-                    message = reasonString;
+                    if (reasonString.isEmpty()) {
+                        message = "disconnectionScreen.noReason";
+                    } else {
+                        message = reasonString;
+                    }
                 }
-            } else {
-                if (reasonString.isEmpty()) {
-                    message = "disconnectionScreen.noReason";
-                } else {
-                    message = reasonString;
-                }
+
+                this.close(ev.getQuitMessage(), message);
+
+                return true;
             }
 
-            this.close(ev.getQuitMessage(), message);
-
-            return true;
+            observeConnection("disconnect_request_cancelled", Map.of("action_id", actionId));
+            return false;
+        } finally {
+            // 事件回调可能再次踢人，内层结束只恢复外层上下文。
+            observationActionId = previousActionId;
         }
-
-        return false;
     }
 
     public boolean setViewDistance(int distance) {
@@ -5218,10 +5292,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (this.inputMovementStatistics != null) {
                 this.inputMovementStatistics.clearTick();
             }
+            String closeReason = "unclassified_server_close".equals(observationReasonCode) ? ConnectionObservation.reasonCode(reason) : observationReasonCode;
+            if (observationActionId == null) {
+                observationActionId = UUID.randomUUID().toString();
+                observeConnection("disconnect_requested", Map.of("action_id", observationActionId,
+                    "reason_code", closeReason, "intent", observationIntent));
+            }
+            observationCloseData = Map.of("action_id", observationActionId, "reason_code", closeReason,
+                "intent", observationIntent, "close_origin", observationTransportClosed ? "transport" : "server");
             if (notify && !reason.isEmpty()) {
                 sendDisconnectScreen(reason);
             }
-
+            observeConnection("backend_player_closed", observationCloseData);
             this.connected = false;
             PlayerQuitEvent ev = null;
             if (this.getName() != null && !this.getName().isEmpty()) {

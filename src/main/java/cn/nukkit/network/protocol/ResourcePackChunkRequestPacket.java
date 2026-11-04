@@ -14,6 +14,7 @@ public class ResourcePackChunkRequestPacket extends DataPacket {
     public void decode() {
         this.packId = this.getString();
         this.chunkIndex = this.getLInt();
+        if (chunkIndex < 0) throw new IllegalArgumentException("Invalid chunk index");
     }
 
     @Override

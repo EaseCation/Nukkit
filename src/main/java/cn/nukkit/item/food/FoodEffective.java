@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -14,6 +15,17 @@ import java.util.concurrent.ThreadLocalRandom;
  * Package cn.nukkit.item.food in project nukkit.
  */
 public class FoodEffective extends Food {
+
+    public record EffectChance(Effect effect, float chance) { }
+
+    /** 提供原生效果的独立描述副本，供初始化或物品变化时读取，不暴露可变注册数据。 */
+    public List<EffectChance> describeEffects() {
+        List<EffectChance> result = new ArrayList<>(effects.size());
+        for (Object2FloatMap.Entry<Effect> entry : effects.object2FloatEntrySet()) {
+            result.add(new EffectChance(entry.getKey().clone(), entry.getFloatValue()));
+        }
+        return List.copyOf(result);
+    }
 
     protected final Object2FloatMap<Effect> effects = new Object2FloatLinkedOpenHashMap<>();
 

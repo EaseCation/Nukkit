@@ -1,5 +1,6 @@
 package cn.nukkit;
 
+import cn.nukkit.observability.ConnectionObservation;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.*;
 import cn.nukkit.command.*;
@@ -45,6 +46,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.*;
+import cn.nukkit.monitor.TickRuntimeMetrics;
 import cn.nukkit.network.input.ServerInputDispatcher;
 import cn.nukkit.network.input.PlayerInputProcessor;
 import cn.nukkit.network.protocol.*;
@@ -225,6 +227,7 @@ public class Server {
 
     @Nullable
     private final ServerInputDispatcher inputDispatcher;
+    private final TickRuntimeMetrics tickRuntimeMetrics;
     @Nullable
     private PlayerInputProcessor playerInputProcessor;
     private final long inputIdleBudgetNanos;
@@ -351,7 +354,7 @@ public class Server {
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
                 put("auto-save", true);
-                put("force-resources", false);
+                put("force-resources", true);
                 put("bug-report", true);
                 put("enable-jmx-monitoring", false);
                 put("compression-algorithm", "snappy");
@@ -364,7 +367,7 @@ public class Server {
                 .serverPort(getPropertyInt("server-port", 19132))
                 .enableWhitelist(getPropertyBoolean("white-list", false))
                 .motd(getPropertyString("motd", "Nukkit Server For Minecraft: BE"))
-                .forceResources(getPropertyBoolean("force-resources", false))
+                .forceResources(getPropertyBoolean("force-resources", true))
                 .gameMode(getPropertyInt("gamemode", 0) & 0b11)
                 .forceGameMode(getPropertyBoolean("force-gamemode", false))
                 .hardcore(getPropertyBoolean("hardcore", false))
@@ -427,6 +430,7 @@ public class Server {
         this.baseTickRate = this.getConfig("level-settings.base-tick-rate", 1);
         this.redstoneEnabled = this.getConfig("level-settings.tick-redstone", true);
 
+        this.tickRuntimeMetrics = this.getConfig("monitor.tick-runtime", true) ? new TickRuntimeMetrics() : null;
         if (this.getConfig("network.input-dispatcher.enabled", false)) {
             this.inputIdleBudgetNanos = Mth.clamp(this.getConfig("network.input-dispatcher.idle-budget-us", 5000), 1, 50000) * 1000L;
             this.inputDispatcher = new ServerInputDispatcher(this.currentThread,
@@ -901,6 +905,8 @@ public class Server {
             }
         } catch (Exception e) {
             log.fatal("Exception happened while shutting down", e);
+        } finally {
+            ConnectionObservation.emit(null, "instance_stopping", Map.of());
         }
     }
 
@@ -1262,6 +1268,21 @@ public class Server {
             return false;
         }
 
+        if (this.tickRuntimeMetrics == null) return this.tickWorld(tickTime, tickTimeNano);
+        this.tickRuntimeMetrics.start(tickTimeNano);
+        try {
+            return this.tickWorld(tickTime, tickTimeNano);
+        } finally {
+            this.tickRuntimeMetrics.finish(System.nanoTime() - tickTimeNano);
+        }
+    }
+
+    @Nullable
+    public TickRuntimeMetrics getTickRuntimeMetrics() {
+        return this.tickRuntimeMetrics;
+    }
+
+    private boolean tickWorld(long tickTime, long tickTimeNano) {
         ++this.tickCounter;
 
         this.network.processInterfaces();

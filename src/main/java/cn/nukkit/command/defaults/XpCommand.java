@@ -3,17 +3,15 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
-import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.data.*;
 import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.lang.TranslationContainer;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
+import javax.annotation.Nullable;
 import java.util.List;
-
-import static cn.nukkit.SharedConstants.*;
 
 /**
  * Created by Snake1999 on 2016/1/22.
@@ -28,18 +26,43 @@ public class XpCommand extends VanillaCommand {
                 CommandParameter.newType("amount", CommandParamType.INT),
                 CommandParameter.newType("player", true, CommandParamType.TARGET)
         });
-        if (!COMMAND_POSTFIX_PARAMETER_CRASH_FIXED) {
-/* Debug_Log [ERROR SYSTEM]
-Assertion failed: We failed to allocate 1686395861239 bytes.
-Condition is false: pointer || size == 0
-Function: void *__cdecl operator new(unsigned __int64) in .\handheld\src-deps\Core\src\Memory\MemoryOperators.cpp @ 19
-*/
-            return;
-        }
         this.commandParameters.put("level", new CommandParameter[]{
-                CommandParameter.newPostfix("amount", "l"),
+                CommandParameter.newPostfix("amount", CommandPostfixes.L),
                 CommandParameter.newType("player", true, CommandParamType.TARGET)
         });
+    }
+
+    @Nullable
+    @Override
+    public CommandDataVersions generateCustomCommandData(Player player) {
+        CommandDataVersions versions = super.generateCustomCommandData(player);
+        if (versions == null) {
+            return null;
+        }
+
+        // CommandData.clone() shares its collection fields. Filtering its overloads directly would
+        // also change another player's already queued command packet. Keep this recipient's maps
+        // independent, while retaining the existing parameter definitions and enum objects.
+        CommandData source = versions.versions.getFirst();
+        CommandData data = new CommandData();
+        data.aliases = source.aliases;
+        data.description = source.description;
+        data.permission = source.permission;
+        data.flags.addAll(source.flags);
+        data.chainedSubCommandData.putAll(source.chainedSubCommandData);
+        data.overloads.putAll(source.overloads);
+
+        // Bedrock's remote command loader can resolve postfix indices through its hard-enum
+        // mapping by mistake. Merely enabling the level overload used to produce XP_F0 /
+        // SYMBOL_ERROR and a client allocation failure while typing "/xp ", before execution.
+        // Only transports whose command encoder preserves the required enum/postfix relationship
+        // may advertise this overload. Older codecs and the base Nukkit codec remain opted out;
+        // the server-side l/L parser below is deliberately independent of this UI capability.
+        if (!player.supportsCommandPostfixParameters()) {
+            data.overloads.remove("level");
+        }
+        versions.versions.set(0, data);
+        return versions;
     }
 
     @Override

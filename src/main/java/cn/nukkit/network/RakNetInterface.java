@@ -102,6 +102,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
                 Player player = constructor.newInstance(this, ev.getClientId(), ev.getSocketAddress());
                 this.server.addPlayer(address, player);
                 session.player = player;
+                player.observeConnection("connection_opened", Map.of("transport", "raknet"));
                 this.sessions.put(address, session);
             } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 Server.getInstance().getLogger().logException(e);
@@ -267,6 +268,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
 
         @Override
         public void onDisconnect(DisconnectReason disconnectReason) {
+            if (player != null) player.observeTransportClosed(disconnectReason.name());
             if (disconnectReason == DisconnectReason.TIMED_OUT) {
                 this.disconnect("Timed out");
             } else {
