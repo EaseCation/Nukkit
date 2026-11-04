@@ -13,6 +13,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
  * @author CreeperFace
  */
 public abstract class ProjectileItem extends Item {
+    public static final double LAUNCH_EYE_OFFSET = 0.3;
 
     public ProjectileItem(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
@@ -24,7 +25,7 @@ public abstract class ProjectileItem extends Item {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        CompoundTag nbt = Entity.getDefaultNBT(player.x, player.y + player.getEyeHeight() - 0.3, player.z, directionVector, (float) player.yaw, (float) player.pitch);
+        CompoundTag nbt = Entity.getDefaultNBT(player.x, player.y + player.getEyeHeight() - LAUNCH_EYE_OFFSET, player.z, directionVector, (float) player.yaw, (float) player.pitch);
 
         this.correctNBT(nbt);
 

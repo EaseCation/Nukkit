@@ -13,6 +13,12 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 
 public class EntityEnderPearl extends EntityProjectile {
     public static final int NETWORK_ID = EntityID.ENDER_PEARL;
+    /**
+     * 轨迹规划与原生实体共用参数，避免玩法层复制重力、阻力和传送伤害。
+     */
+    public static final float GRAVITY = 0.03f;
+    public static final float DRAG = 0.01f;
+    public static final float TELEPORT_DAMAGE = 5f;
 
     @Override
     public int getNetworkId() {
@@ -31,12 +37,12 @@ public class EntityEnderPearl extends EntityProjectile {
 
     @Override
     protected float getGravity() {
-        return 0.03f;
+        return GRAVITY;
     }
 
     @Override
     protected float getDrag() {
-        return 0.01f;
+        return DRAG;
     }
 
     public EntityEnderPearl(FullChunk chunk, CompoundTag nbt) {
@@ -96,7 +102,7 @@ public class EntityEnderPearl extends EntityProjectile {
         this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
         this.shootingEntity.teleport(copyVec(), TeleportCause.ENDER_PEARL);
         if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
-            this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.FALL, 5f, 0f, 0f));
+            this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.FALL, TELEPORT_DAMAGE, 0f, 0f));
         }
         this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_ENDERMAN_TELEPORT);
         this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
