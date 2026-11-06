@@ -751,6 +751,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * Whether this player's outbound command encoder handles Bedrock's postfix remapping defect.
+     *
+     * Bedrock's remote command loader may look up a postfix index in the hard-enum mapping.
+     * A transport must align the supported native indices and safely fall back for parameters
+     * whose indices cannot be established.
+     *
+     * @return true only when the actual outbound codec implements postfix compatibility handling
+     */
+    public boolean supportsCommandPostfixParameters() {
+        return false;
+    }
+
     @Override
     public Map<String, PermissionAttachmentInfo> getEffectivePermissions() {
         if (this.perm == null) {
@@ -2172,8 +2185,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.x = newPos.x;
                 this.y = newPos.y;
                 this.z = newPos.z;
-                double radius = this.getWidth() / 2;
-                this.boundingBox.setBounds(this.x - radius, this.y, this.z - radius, this.x + radius, this.y + this.getHeight(), this.z + radius);
+                double radius = this.getWidth() * this.scale / 2;
+                this.boundingBox.setBounds(this.x - radius, this.y, this.z - radius, this.x + radius, this.y + this.getHeight() * this.scale, this.z + radius);
             }
         }
 
