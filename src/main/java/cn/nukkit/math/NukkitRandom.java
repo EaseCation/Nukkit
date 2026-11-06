@@ -1,5 +1,7 @@
 package cn.nukkit.math;
 
+import cn.nukkit.Server;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -9,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Nukkit Project
  */
 public class NukkitRandom implements RandomSource {
+    private static final NukkitRandom MAIN_CACHE = new NukkitRandom(0);
     private static final ThreadLocal<NukkitRandom> LOCAL = ThreadLocal.withInitial(NukkitRandom::new);
     private static final AtomicLong SEED_UNIQUIFIER = new AtomicLong(RandomSupport.mixStafford13(System.currentTimeMillis()) ^ RandomSupport.mixStafford13(System.nanoTime()));
 
@@ -144,6 +147,15 @@ public class NukkitRandom implements RandomSource {
         for (int i = 0; i < count; i++) {
             nextLong();
         }
+    }
+
+    public static NukkitRandom main(long seed) {
+        if (!Server.getInstance().isPrimaryThread()) {
+            return new NukkitRandom(seed);
+        }
+        NukkitRandom main = MAIN_CACHE;
+        main.setSeed(seed);
+        return main;
     }
 
     public static NukkitRandom current() {

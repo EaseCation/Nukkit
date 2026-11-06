@@ -29,6 +29,11 @@ public abstract class BlockFence extends BlockTransparent {
     public static final int DARK_OAK = 5;
 
     @Override
+    public boolean isCollisionLevelRequired(boolean terrain) {
+        return true;
+    }
+
+    @Override
     public float getHardness() {
         return 2;
     }

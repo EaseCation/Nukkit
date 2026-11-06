@@ -21,6 +21,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockDripstonePointed extends BlockTransparent {
     public static final int THICKNESS_TIP = 0;
     public static final int THICKNESS_FRUSTUM = 1;
@@ -201,6 +203,10 @@ public class BlockDripstonePointed extends BlockTransparent {
                 break;
         }
 
+        if (true || V1_21_80.isAvailable()) {
+            return randomOffset(getFloorX(), getFloorZ(), 0.125f, aabb);
+        }
+
         Vector3 offset = getRandomBlockPositionOffset();
         return aabb.offset(offset.getX(), offset.getY(), offset.getZ());
     }
@@ -279,9 +285,14 @@ public class BlockDripstonePointed extends BlockTransparent {
     private Vector3 getRandomBlockPositionOffset() {
         int seed = Mth.getSeed(getFloorX(), 0, getFloorZ());
         return new Vector3(
-                Mth.clamp((seed & 0xf) * (1.0 / 30) - 4.0 / 16, -2.0 / 16, 2.0 / 16),
+                Mth.clamp((seed & 0xf) * (1f / 30) - 0.25f, -0.125f, 0.125f),
                 0,
-                Mth.clamp(((seed >> 8) & 0xf) * (1.0 / 30) - 4.0 / 16, -2.0 / 16, 2.0 / 16));
+                Mth.clamp(((seed >>> 8) & 0xf) * (1f / 30) - 0.25f, -0.125f, 0.125f));
+    }
+
+    @Override
+    public boolean hasRandomOffset() {
+        return true;
     }
 
     private boolean updateColumnThickness() {

@@ -23,6 +23,11 @@ public abstract class BlockDoor extends BlockTransparent implements Faceable {
     public static final int DOOR_HINGE_BIT = 0b10000;
 
     @Override
+    public boolean isCollisionLevelRequired(boolean terrain) {
+        return true;
+    }
+
+    @Override
     public boolean canBeActivated() {
         return true;
     }
