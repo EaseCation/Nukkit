@@ -25,6 +25,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by CreeperFace on 18.3.2017.
  */
 public class ItemMap extends Item {
+    public static final int MAX_SCALE = 4;
+
     public static final int NORMAL_MAP = 0;
     public static final int BASIC_MAP = 1;
     public static final int ENHANCED_MAP = 2;
@@ -199,7 +201,7 @@ public class ItemMap extends Item {
         pk.mapId = getMapId();
         pk.parentMapIds = new long[]{getMapId()};
         pk.update = ClientboundMapItemDataPacket.TEXTURE_UPDATE;
-        pk.scale = 0;
+        pk.scale = MAX_SCALE;
         pk.width = 128;
         pk.height = 128;
         pk.offsetX = 0;
