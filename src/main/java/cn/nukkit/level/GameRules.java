@@ -88,6 +88,9 @@ public class GameRules {
             throw new IllegalArgumentException("Gamerule does not exist");
         }
         gameRules.get(gameRule).setValue(value, Type.BOOLEAN);
+        if (gameRule == LOCATOR_BAR && gameRules.containsKey(PLAYER_WAYPOINTS)) {
+            gameRules.get(PLAYER_WAYPOINTS).setValue((value ? PlayerWaypointsMode.EVERYONE : PlayerWaypointsMode.OFF).ordinal(), Type.INTEGER);
+        }
         stale = true;
     }
 
@@ -95,16 +98,21 @@ public class GameRules {
         if (!gameRules.containsKey(gameRule)) {
             throw new IllegalArgumentException("Gamerule does not exist");
         }
+        if (gameRule == PLAYER_WAYPOINTS) {
+            Preconditions.checkArgument(value == PlayerWaypointsMode.OFF.ordinal() || value == PlayerWaypointsMode.EVERYONE.ordinal(), "Invalid player waypoints mode");
+        }
         gameRules.get(gameRule).setValue(value, Type.INTEGER);
+        if (gameRule == PLAYER_WAYPOINTS && gameRules.containsKey(LOCATOR_BAR)) {
+            gameRules.get(LOCATOR_BAR).setValue(value == PlayerWaypointsMode.EVERYONE.ordinal(), Type.BOOLEAN);
+        }
         stale = true;
     }
 
     public void setGameRule(GameRule gameRule, Enum<?> value) {
-        if (!gameRules.containsKey(gameRule)) {
-            throw new IllegalArgumentException("Gamerule does not exist");
+        if (gameRule == PLAYER_WAYPOINTS) {
+            Preconditions.checkArgument(value instanceof PlayerWaypointsMode, "Invalid player waypoints mode");
         }
-        gameRules.get(gameRule).setValue(value.ordinal(), Type.INTEGER);
-        stale = true;
+        setGameRule(gameRule, value.ordinal());
     }
 
     public void setGameRule(GameRule gameRule, float value) {
@@ -133,7 +141,8 @@ public class GameRules {
             case INTEGER:
                 if (wrapper instanceof EnumValue enumWrapper) {
                     for (Enum<?> element : enumWrapper.values) {
-                        if (element.toString().equalsIgnoreCase(value)) {
+                        if (element.toString().equalsIgnoreCase(value)
+                                || gameRule == PLAYER_WAYPOINTS && Integer.toString(element.ordinal()).equals(value)) {
                             setGameRule(gameRule, element);
                             return;
                         }
@@ -188,9 +197,14 @@ public class GameRules {
 
     public void readNBT(CompoundTag nbt) {
         Preconditions.checkNotNull(nbt);
+        String playerWaypointsKey = null;
         for (String key : nbt.getTags().keySet()) {
             Optional<GameRule> gameRule = GameRule.parseString(key);
             if (gameRule.isEmpty()) {
+                continue;
+            }
+            if (gameRule.get() == PLAYER_WAYPOINTS) {
+                playerWaypointsKey = key;
                 continue;
             }
 
@@ -199,6 +213,9 @@ public class GameRules {
             } catch (Exception e) {
                 Server.getInstance().getLogger().logException(e);
             }
+        }
+        if (playerWaypointsKey != null) {
+            readPlayerWaypoints(nbt.get(playerWaypointsKey));
         }
     }
 
@@ -225,6 +242,9 @@ public class GameRules {
 
     public void readBedrockNBT(CompoundTag nbt) {
         gameRules.forEach((gameRule, value) -> {
+            if (gameRule == PLAYER_WAYPOINTS) {
+                return;
+            }
             String name = gameRule.getBedrockName();
             Tag tag = nbt.get(name);
             if (tag == null) {
@@ -272,6 +292,27 @@ public class GameRules {
                     break;
             }
         });
+        if (nbt.contains(PLAYER_WAYPOINTS.getBedrockName())) {
+            readPlayerWaypoints(nbt.get(PLAYER_WAYPOINTS.getBedrockName()));
+        }
+    }
+
+    private void readPlayerWaypoints(Tag tag) {
+        String value;
+        if (tag instanceof IntTag integerTag) {
+            value = Integer.toString(integerTag.data);
+        } else if (tag instanceof StringTag stringTag) {
+            value = stringTag.data;
+        } else {
+            return;
+        }
+        for (PlayerWaypointsMode mode : PlayerWaypointsMode.getValues()) {
+            if (mode.toString().equalsIgnoreCase(value) || Integer.toString(mode.ordinal()).equals(value)) {
+                setGameRule(PLAYER_WAYPOINTS, mode);
+                return;
+            }
+        }
+        Server.getInstance().getLogger().warn("Invalid value for game rule {}: {}", PLAYER_WAYPOINTS.getName(), value);
     }
 
     @Override

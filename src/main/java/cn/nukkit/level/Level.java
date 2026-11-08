@@ -5683,8 +5683,11 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
+        player.clearLocators();
         for (Player viewer : getPlayers().values()) {
-            viewer.hideLocator(player.getId());
+            if (viewer != player) {
+                viewer.hideLocator(player.getId());
+            }
         }
     }
 
