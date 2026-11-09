@@ -160,6 +160,20 @@ public abstract class EntityProjectile extends Entity {
         return true;
     }
 
+    /**
+     * 为专用投射物提供实体碰撞盒扩展点，默认保留原有命中宽容范围。
+     */
+    protected AxisAlignedBB getEntityCollisionBox(Entity entity) {
+        return entity.boundingBox.grow(0.3, 0.3, 0.3);
+    }
+
+    /**
+     * 传递原生循环选定的精确接触点；默认继续分派到现有单参数回调。
+     */
+    protected boolean onCollideWithEntity(Entity entity, MovingObjectPosition hitResult) {
+        return onCollideWithEntity(entity);
+    }
+
     protected void postHurt(Entity entity) {
     }
 
@@ -337,13 +351,14 @@ public abstract class EntityProjectile extends Entity {
 
             double nearDistance = Integer.MAX_VALUE;
             Entity nearEntity = null;
+            MovingObjectPosition nearEntityHit = null;
 
             for (Entity entity : list) {
                 if (!entity.canCollide() || /*!entity.canCollideWith(this) ||*/ !this.canCollideWith(entity) || (entity == this.shootingEntity && this.ticksLived < 5)) {
                     continue;
                 }
 
-                AxisAlignedBB axisalignedbb = entity.boundingBox.grow(0.3, 0.3, 0.3);
+                AxisAlignedBB axisalignedbb = getEntityCollisionBox(entity);
                 MovingObjectPosition ob = axisalignedbb.calculateIntercept(this, moveVector);
 
                 if (ob == null) {
@@ -359,10 +374,11 @@ public abstract class EntityProjectile extends Entity {
                 if (distance < nearDistance) {
                     nearDistance = distance;
                     nearEntity = entity;
+                    nearEntityHit = ob;
                 }
             }
 
-            if (nearEntity != null && onCollideWithEntity(nearEntity)) {
+            if (nearEntity != null && onCollideWithEntity(nearEntity, nearEntityHit)) {
                 return true;
             }
 

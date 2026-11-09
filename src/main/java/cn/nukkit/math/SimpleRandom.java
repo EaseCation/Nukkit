@@ -1,9 +1,12 @@
 package cn.nukkit.math;
 
+import cn.nukkit.Server;
+
 /**
  * Linear Congruential Generator (Java Legacy Random)
  */
 public class SimpleRandom implements RandomSource {
+    private static final SimpleRandom MAIN_CACHE = new SimpleRandom();
     private static final ThreadLocal<SimpleRandom> LOCAL = ThreadLocal.withInitial(SimpleRandom::new);
 
     private static final long MULTIPLIER = 0x5deece66dL;
@@ -82,6 +85,15 @@ public class SimpleRandom implements RandomSource {
     @Override
     public double nextGaussian() {
         return gaussianSource.nextGaussian();
+    }
+
+    public static SimpleRandom main(long seed) {
+        if (!Server.getInstance().isPrimaryThread()) {
+            return new SimpleRandom(seed);
+        }
+        SimpleRandom main = MAIN_CACHE;
+        main.setSeed(seed);
+        return main;
     }
 
     public static SimpleRandom current() {

@@ -24,6 +24,11 @@ public class BlockVine extends BlockFlowable {
     }
 
     @Override
+    public boolean isCollisionLevelRequired(boolean terrain) {
+        return !terrain;
+    }
+
+    @Override
     public String getName() {
         return "Vines";
     }

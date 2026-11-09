@@ -1530,6 +1530,21 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    public boolean hasRandomOffset() {
+        return false;
+    }
+
+    public boolean isCollisionLevelRequired() {
+        return isCollisionLevelRequired(true);
+    }
+
+    /**
+     * @param terrain {@code true} physics collision, {@code false} trigger collision
+     */
+    public boolean isCollisionLevelRequired(boolean terrain) {
+        return false;
+    }
+
     /**
      * @return physics collision boxes
      */
@@ -1924,6 +1939,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     protected static AxisAlignedBB box(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
         return new SimpleAxisAlignedBB(minX / 16, minY / 16, minZ / 16, maxX / 16, maxY / 16, maxZ / 16);
+    }
+
+    /**
+     * @since 1.21.80
+     */
+    protected static AxisAlignedBB randomOffset(int x, int z, float maxOffset, AxisAlignedBB box) {
+        return BlockRandomOffset.applyHorizontal(x, z, maxOffset, box);
     }
 
     @ToString

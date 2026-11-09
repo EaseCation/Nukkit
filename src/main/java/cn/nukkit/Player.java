@@ -368,7 +368,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Attribute movementSpeedAttribute = Attribute.getAttribute(Attribute.MOVEMENT);
 
     protected boolean hiddenLocator;
-    protected final Vector3f locatorPos = new Vector3f(Float.NaN, Float.NaN, Float.NaN);
 
     public int getStartActionTick() {
         return startAction;
@@ -8118,42 +8117,51 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void hideLocator(long entityUniqueId) {
     }
 
+    /**
+     * @since 1.21.80
+     */
+    public void clearLocators() {
+    }
+
     public boolean isLocatorBarEnabled() {
         return false;
     }
 
     protected void updateLocatorBar() {
-        if (!level.gameRules.getBoolean(GameRule.LOCATOR_BAR)) {
+        if (!loggedIn || level == null) {
+            return;
+        }
+        if (!level.getGameRules().getBoolean(GameRule.LOCATOR_BAR)) {
+            hiddenLocator = false;
+            clearLocators();
             return;
         }
 
-        Item helmet;
-        if (!isAlive() || isSpectator() || hasEffect(Effect.INVISIBILITY) || isSneaking() || (helmet = armorInventory.getHelmet()).isSkull() || helmet.is(ItemBlockID.CARVED_PUMPKIN)) {
-            if (!hiddenLocator) {
-                hiddenLocator = true;
+        boolean unavailable = !spawned || armorInventory == null || !isAlive() || isSpectator();
+        boolean hidden = unavailable || hasEffect(Effect.INVISIBILITY) || isSneaking();
+        if (!hidden) {
+            Item helmet = armorInventory.getHelmet();
+            hidden = helmet.isSkull() || helmet.is(ItemBlockID.CARVED_PUMPKIN);
+        }
 
-                for (Player player : level.getPlayers().values()) {
-                    if (player == this) {
-                        continue;
-                    }
-                    player.hideLocator(getId());
-                }
-            }
+        boolean wasHidden = hiddenLocator;
+        hiddenLocator = hidden;
+        if (hidden && wasHidden && !unavailable) {
             return;
         }
-        hiddenLocator = false;
 
-        Vector3f currentPos = asVector3f();
-        if (locatorPos.equalsVec(currentPos)) {
-            return;
-        }
-        locatorPos.setComponents(currentPos);
-
+        float locatorX = (float) x;
+        float locatorY = (float) y;
+        float locatorZ = (float) z;
         for (Player player : level.getPlayers().values()) {
-            if (player == this) {
+            if (player == this || !player.spawned || !player.loggedIn) {
                 continue;
             }
-            player.updateLocator(getId(), currentPos.x, currentPos.y, currentPos.z);
+            if (hidden) {
+                player.hideLocator(getId());
+            } else {
+                player.updateLocator(getId(), locatorX, locatorY, locatorZ);
+            }
         }
     }
 
