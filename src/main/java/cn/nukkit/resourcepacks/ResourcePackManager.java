@@ -89,6 +89,8 @@ public class ResourcePackManager {
                 pack.setCdnUrl(cdn);
             }
 
+            pack = pack.withSubPack(config.getString(packId + ".subpack"));
+
             if (pack.isBehaviorPack()) {
                 behaviorStack.put(packId, pack);
             } else {
@@ -192,7 +194,7 @@ public class ResourcePackManager {
 
                 Collection<File> files = new TreeSet<>(FileUtils.listFiles(directory, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE));
                 for (File file : files) {
-                    ZipEntry entry = new ZipEntry(directory.toPath().relativize(file.toPath()).toString())
+                    ZipEntry entry = new ZipEntry(directory.toPath().relativize(file.toPath()).toString().replace('\\', '/'))
                             .setCreationTime(time)
                             .setLastModifiedTime(time)
                             .setLastAccessTime(time);

@@ -3277,8 +3277,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         PlayerRequestResourcePackEvent resourcePackEvent = new PlayerRequestResourcePackEvent(this, this.server.getResourcePackManager().getResourcePacksMap(), this.server.getResourcePackManager().getBehaviorPacksMap(), this.server.getForceResources());
         this.server.getPluginManager().callEvent(resourcePackEvent);
-        this.resourcePacks = resourcePackEvent.getResourcePacks();
-        this.behaviourPacks = resourcePackEvent.getResourcePacks();
+        this.resourcePacks = new LinkedHashMap<>(resourcePackEvent.getResourcePacks());
+        this.behaviourPacks = new LinkedHashMap<>(resourcePackEvent.getBehaviourPacks());
         this.forceResources = resourcePackEvent.isMustAccept();
 
         observeConnection("resource_pack_stage", Map.of("stage", "offered"));
