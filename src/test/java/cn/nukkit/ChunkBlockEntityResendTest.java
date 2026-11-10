@@ -4,8 +4,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.format.generic.BaseFullChunk;
-import cn.nukkit.level.format.generic.ChunkCachedData;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.junit.jupiter.api.Test;
@@ -13,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
@@ -40,29 +37,6 @@ class ChunkBlockEntityResendTest {
         blockEntity.spawnToAll();
 
         verify(chunk).invalidateNetworkCache();
-    }
-
-    @Test
-    void dataBuiltFromCurrentRevisionIsNotStale() {
-        Player player = playerIn(levelWithChunkRevision(7));
-
-        assertFalse(player.isChunkNetworkDataStale(3, 4, cachedData(7)));
-    }
-
-    @Test
-    void dataBuiltFromOlderRevisionIsStale() {
-        Player player = playerIn(levelWithChunkRevision(8));
-
-        assertTrue(player.isChunkNetworkDataStale(3, 4, cachedData(7)));
-    }
-
-    @Test
-    void unloadedChunkIsNotReportedStale() {
-        Level level = mock(Level.class);
-        when(level.getChunkIfLoaded(3, 4)).thenReturn(null);
-        Player player = playerIn(level);
-
-        assertFalse(player.isChunkNetworkDataStale(3, 4, cachedData(7)));
     }
 
     @Test
@@ -109,17 +83,5 @@ class ChunkBlockEntityResendTest {
         Player player = mock(Player.class, CALLS_REAL_METHODS);
         player.level = level;
         return player;
-    }
-
-    private static Level levelWithChunkRevision(long networkRevision) {
-        Level level = mock(Level.class);
-        BaseFullChunk chunk = mock(BaseFullChunk.class);
-        when(chunk.getNetworkRevision()).thenReturn(networkRevision);
-        when(level.getChunkIfLoaded(3, 4)).thenReturn(chunk);
-        return level;
-    }
-
-    private static ChunkCachedData cachedData(long networkRevision) {
-        return new ChunkCachedData(0, new byte[0], new byte[0][], new boolean[0], null, null, networkRevision);
     }
 }

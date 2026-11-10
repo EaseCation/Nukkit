@@ -100,8 +100,7 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
      * 把方块实体当前的数据推送给所有能看到它的玩家。
      * <p>
      * 修改了会下发给客户端的数据后，必须调用本方法（或 {@link #setDirty()}）。
-     * 区块发送时客户端拿到的方块实体数据来自区块网络缓存里内嵌的那一份，
-     * 之后不会再逐个补发，所以这里同时让区块网络缓存失效，后进入视野的玩家才能看到新数据。
+     * 同时让区块网络缓存失效，避免后进入视野的玩家先收到旧的内嵌数据，再被独立数据包纠正。
      */
     public void spawnToAll() {
         spawnToAll(false);

@@ -27,8 +27,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 /**
- * 验证区块网络版本号：它决定异步序列化出的区块网络数据能否进入缓存，
- * 而区块发送后不再逐个补发方块实体数据，正确性完全依赖这份缓存不过期。
+ * 验证区块网络版本号：异步序列化期间内容发生变化时，旧的区块网络数据不能进入缓存。
  */
 class ChunkNetworkRevisionTest {
 
