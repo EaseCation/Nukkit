@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static cn.nukkit.level.format.generic.EmptyChunkSection.*;
 
@@ -91,6 +92,20 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     protected boolean isInit;
 
     protected transient ChunkCachedData cachedData;
+
+    /**
+     * 网络数据版本号的全局来源。
+     * 每个区块对象创建时、每次失效时都取一个全局唯一的新值，
+     * 这样同一坐标的区块对象被替换（卸载后重新加载等）之后，旧对象上生成的网络数据也不会被误认为是最新的。
+     */
+    private static final AtomicLong NETWORK_REVISIONS = new AtomicLong();
+
+    /**
+     * 网络数据版本号，与存盘用的 changes 相互独立。
+     * changes 会在存盘后归零，不能用来判断异步序列化出的网络数据是否仍然是最新的。
+     * 未修改过的克隆与原区块内容相同，共用同一个版本号和同一份网络缓存。
+     */
+    protected transient volatile long networkRevision = NETWORK_REVISIONS.incrementAndGet();
 
     @Override
     public BaseFullChunk clone() {
@@ -503,7 +518,18 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     @Override
     public void setChanged() {
         this.changes++;
-        cachedData = null;
+        this.invalidateNetworkCache();
+    }
+
+    @Override
+    public long getNetworkRevision() {
+        return this.networkRevision;
+    }
+
+    @Override
+    public void invalidateNetworkCache() {
+        this.networkRevision = NETWORK_REVISIONS.incrementAndGet();
+        this.cachedData = null;
     }
 
     @Override

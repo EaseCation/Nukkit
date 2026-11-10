@@ -1061,13 +1061,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(packet);
         if (chunkContext != null && !chunkContext.isCurrent(this)) return;
 
-        for (BlockEntity blockEntity : this.level.getChunkBlockEntities(x, z).values()) {
-            if (!(blockEntity instanceof BlockEntitySpawnable)) {
-                continue;
-            }
-            ((BlockEntitySpawnable) blockEntity).spawnTo(this);
-            if (chunkContext != null && !chunkContext.isCurrent(this)) return;
-        }
+        if (!this.spawnChunkBlockEntities(x, z, chunkContext)) return;
 
         if (this.spawned) {
             for (Entity entity : new ObjectArrayList<>(this.level.getChunkEntities(x, z).values())) {
@@ -1095,13 +1089,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
         if (chunkContext != null && !chunkContext.isCurrent(this)) return;
 
-        for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
-            if (!(entity instanceof BlockEntitySpawnable)) {
-                continue;
-            }
-            ((BlockEntitySpawnable) entity).spawnTo(this);
-            if (chunkContext != null && !chunkContext.isCurrent(this)) return;
-        }
+        if (!this.spawnChunkBlockEntities(x, z, chunkContext)) return;
 
         if (this.spawned) {
             for (Entity entity : new ObjectArrayList<>(this.level.getChunkEntities(x, z).values())) {
@@ -1111,6 +1099,59 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
         }
+    }
+
+    /**
+     * 区块发送后补发方块实体数据包的统一入口，所有区块发送路径都从这里走，不要在各处另写循环。
+     * <p>
+     * 区块的网络数据本身已经内嵌了方块实体数据（见 {@link cn.nukkit.level.format.generic.ChunkRequestTask}）：
+     * 整区块模式下在区块数据末尾，子区块请求模式下在各个子区块响应的末尾。补发规则是：
+     * <ul>
+     * <li>整区块模式：区块数据发出后调用本方法全量补发。数据包紧跟区块数据到达，客户端可以正常应用。</li>
+     * <li>子区块请求模式：区块列发出后不补发。此时客户端还没有对应的子区块，数据包无法应用，
+     * 在客户端区块缓存未命中时还会堵住后面所有的数据包。
+     * 只有发出的子区块数据已经过期时，才在子区块响应之后用 {@link #spawnSubChunkBlockEntities} 补发。</li>
+     * </ul>
+     * 内嵌数据是否最新由区块网络版本号保证，见 {@link BlockEntitySpawnable#spawnToAll()}。
+     *
+     * @return 发送上下文是否仍然有效，为 false 时调用方应立即结束本次区块发送
+     */
+    protected boolean spawnChunkBlockEntities(int chunkX, int chunkZ, @Nullable ChunkSendContext chunkContext) {
+        for (BlockEntity blockEntity : this.level.getChunkBlockEntities(chunkX, chunkZ).values()) {
+            if (!(blockEntity instanceof BlockEntitySpawnable spawnable)) {
+                continue;
+            }
+            spawnable.spawnTo(this);
+            if (chunkContext != null && !chunkContext.isCurrent(this)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * 只补发位于指定子区块内的方块实体数据包，规则见 {@link #spawnChunkBlockEntities}。
+     *
+     * @param subChunkYs 子区块的 Y 坐标集合
+     * @return 发送上下文是否仍然有效
+     */
+    protected boolean spawnSubChunkBlockEntities(int chunkX, int chunkZ, IntSet subChunkYs, @Nullable ChunkSendContext chunkContext) {
+        for (BlockEntity blockEntity : this.level.getChunkBlockEntities(chunkX, chunkZ).values()) {
+            if (!(blockEntity instanceof BlockEntitySpawnable spawnable) || !subChunkYs.contains(blockEntity.getSubChunkY())) {
+                continue;
+            }
+            spawnable.spawnTo(this);
+            if (chunkContext != null && !chunkContext.isCurrent(this)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * 即将发出的区块网络数据是否已经过期，即生成之后区块内容或方块实体数据又发生过变化。
+     * 只会出现在异步序列化期间区块被修改的情况下，已缓存的数据在变化时就已被丢弃。
+     */
+    protected boolean isChunkNetworkDataStale(int chunkX, int chunkZ, ChunkCachedData cachedData) {
+        // 只查已加载的区块，避免在这里触发同步读盘
+        BaseFullChunk chunk = this.level.getChunkIfLoaded(chunkX, chunkZ);
+        return chunk != null && chunk.getNetworkRevision() != cachedData.getNetworkRevision();
     }
 
     protected void sendNextChunk() {
