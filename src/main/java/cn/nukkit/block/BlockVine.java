@@ -105,6 +105,15 @@ public class BlockVine extends BlockFlowable {
             f5 = 1;
             flag = true;
         }
+        if ((this.getDamage() & 0x04) > 0) {
+            f3 = 0;
+            f6 = Math.max(f6, 0.0625);
+            f1 = 0;
+            f4 = 1;
+            f2 = 0;
+            f5 = 1;
+            flag = true;
+        }
         if (!flag && this.up().isSolid()) {
             f2 = 0.9375;
             f5 = 1;
