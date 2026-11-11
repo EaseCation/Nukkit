@@ -26,6 +26,11 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public boolean isCollisionLevelRequired(boolean terrain) {
+        return terrain;
+    }
+
+    @Override
     public double getMinY() {
         // TODO: this seems wrong
         return this.y + (isUpsideDown() ? 0.5 : 0);

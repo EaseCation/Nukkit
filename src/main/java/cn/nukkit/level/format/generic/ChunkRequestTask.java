@@ -46,7 +46,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
 
     private static final byte[] EMPTY = new byte[0];
 
-    private final long timestamp;
+    private final long networkRevision;
     private final Chunk chunk;
     private final int chunkX;
     private final int chunkZ;
@@ -77,7 +77,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
         level = provider.getLevel();
         this.requestedVersions = EnumSet.copyOf(PRELOAD_VERSIONS);
         this.requestedVersions.addAll(level.getRequestChunkVersions().keySet());
-        timestamp = chunk.getChanges();
+        networkRevision = chunk.getNetworkRevision();
     }
 
     @Override
@@ -356,7 +356,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 packetCache = null;
             }
 
-            chunkCachedData = new ChunkCachedData(count, heightmapType, heightmapData, emptySection, new ChunkBlobCache(blobIds.toLongArray(), blobs, blobIdsLegacy.toLongArray(), blobsLegacy, cacheModeFullChunkPayload, borderBlocks, subChunkBlockEntities), packetCache);
+            chunkCachedData = new ChunkCachedData(count, heightmapType, heightmapData, emptySection, new ChunkBlobCache(blobIds.toLongArray(), blobs, blobIdsLegacy.toLongArray(), blobsLegacy, cacheModeFullChunkPayload, borderBlocks, subChunkBlockEntities), packetCache, networkRevision);
         } catch (Exception e) {
             log.warn("Chunk network serialization failed: [{},{}] {}", chunkX, chunkZ, level.getFolderName(), e);
         }
@@ -368,7 +368,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
             level.chunkRequestFailureCallback(chunkX, chunkZ);
             return;
         }
-        level.chunkRequestCallback(timestamp, chunkX, chunkZ, chunkCachedData, fullChunkPayloads, subRequestModeFullChunkPayload, subRequestModeFullChunkPayloadLegacy, subChunkPayloads);
+        level.chunkRequestCallback(networkRevision, chunkX, chunkZ, chunkCachedData, fullChunkPayloads, subRequestModeFullChunkPayload, subRequestModeFullChunkPayloadLegacy, subChunkPayloads);
     }
 
     public static boolean addPreloadVersion(StaticVersion version) {

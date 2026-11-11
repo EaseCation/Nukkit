@@ -1,9 +1,12 @@
 package cn.nukkit.math;
 
+import cn.nukkit.Server;
+
 /**
  * Mersenne Twister 19937 (mt19937_32)
  */
 public class BedrockRandom implements RandomSource {
+    private static final BedrockRandom MAIN_CACHE = new BedrockRandom();
     private static final ThreadLocal<BedrockRandom> LOCAL = ThreadLocal.withInitial(BedrockRandom::new);
 
     /**
@@ -39,7 +42,7 @@ public class BedrockRandom implements RandomSource {
     /**
      * 0x1.0p-32
      */
-    private static final double REAL2_UNIT = 2.328306436538696e-10;
+    private static final double REAL2_UNIT = 0x1.0p-32;
 
     private final int[] mt;
     private int initedIdx;
@@ -62,7 +65,7 @@ public class BedrockRandom implements RandomSource {
 
     @Override
     public BedrockRandom fork() {
-        return new BedrockRandom(genRandInt32());
+        return new BedrockRandom(nextLong());
     }
 
     public void setSeed(int seed) {
@@ -101,6 +104,7 @@ public class BedrockRandom implements RandomSource {
             mti = 0;
         } else if (mti > STATE_SIZE) {
             initGenRand(DEFAULT_SEED);
+            mti = 0;
         }
 
         if (mti >= STATE_SIZE - SHIFT_SIZE) {
@@ -110,26 +114,26 @@ public class BedrockRandom implements RandomSource {
                 mt[mti] = MAGIC01[mt[mti + 1] & 1] ^ ((mt[mti + 1] & 0x7fffffff | mt[mti] & 0x80000000) >>> 1) ^ mt[mti - (STATE_SIZE - SHIFT_SIZE)];
             }
         } else {
-            mt[mti] = MAGIC01[mt[mti + 1] & 1] ^ ((mt[mti + 1] & 0x7fffffff | mt[mti] & 0x80000000) >> 1) ^ mt[mti + SHIFT_SIZE];
+            mt[mti] = MAGIC01[mt[mti + 1] & 1] ^ ((mt[mti + 1] & 0x7fffffff | mt[mti] & 0x80000000) >>> 1) ^ mt[mti + SHIFT_SIZE];
 
             if (initedIdx < STATE_SIZE) {
                 mt[initedIdx] = initedIdx + INITIALIZATION_MULTIPLIER * ((mt[initedIdx - 1] >>> 30) ^ mt[initedIdx - 1]);
+                initedIdx++;
             }
         }
 
         int y = mt[mti++];
-        y = ((y ^ (y >> 11)) << 7) & TEMPERING_B ^ y ^ (y >> 11);
-        return (y << 15) & TEMPERING_C ^ y ^ (((y << 15) & TEMPERING_C ^ y) >> 18);
+        y = ((y ^ (y >>> 11)) << 7) & TEMPERING_B ^ y ^ (y >>> 11);
+        return (y << 15) & TEMPERING_C ^ y ^ (((y << 15) & TEMPERING_C ^ y) >>> 18);
     }
 
     private double genRandReal2() {
-//        return (genRandInt32() & 0xffffffffL) * REAL2_UNIT;
-        return genRandInt32() * 0x1.0p-31;
+        return Integer.toUnsignedLong(genRandInt32()) * REAL2_UNIT;
     }
 
     @Override
     public int nextInt() {
-        return genRandInt32();
+        return genRandInt32() >>> 1;
     }
 
     @Override
@@ -142,7 +146,12 @@ public class BedrockRandom implements RandomSource {
         if (bound == 0) {
             return 0;
         }
-        return genRandInt32() % bound;
+        return Integer.remainderUnsigned(genRandInt32(), bound);
+    }
+
+    @Override
+    public int nextBoundedInt(int bound) {
+        return nextInt(bound);
     }
 
     @Override
@@ -152,8 +161,7 @@ public class BedrockRandom implements RandomSource {
 
     @Override
     public boolean nextBoolean() {
-//        return genRandInt32() < 0;
-        return (genRandInt32() << 1) < 0;
+        return (genRandInt32() & 0x08000000) != 0;
     }
 
     @Override
@@ -169,6 +177,15 @@ public class BedrockRandom implements RandomSource {
     @Override
     public double nextGaussian() {
         return gaussianSource.nextGaussian();
+    }
+
+    public static BedrockRandom main(long seed) {
+        if (!Server.getInstance().isPrimaryThread()) {
+            return new BedrockRandom(seed);
+        }
+        BedrockRandom main = MAIN_CACHE;
+        main.setSeed(seed);
+        return main;
     }
 
     public static BedrockRandom current() {

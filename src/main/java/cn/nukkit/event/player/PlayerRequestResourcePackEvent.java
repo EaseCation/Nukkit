@@ -36,6 +36,21 @@ public class PlayerRequestResourcePackEvent extends PlayerEvent {
         }
     }
 
+    /**
+     * Select the resource subpack for this login; an empty name preserves the client's default selection behavior.
+     */
+    public void setResourcePackSubPack(String packId, String folderName) {
+        selectSubPack(resourcePacks, packId, folderName);
+    }
+
+    private static void selectSubPack(Map<String, ResourcePack> packs, String packId, String folderName) {
+        ResourcePack pack = packs.get(packId);
+        if (pack == null) {
+            throw new IllegalArgumentException("Resource pack is not offered: " + packId);
+        }
+        packs.replace(packId, pack.withSubPack(folderName));
+    }
+
     public Map<String, ResourcePack> getBehaviourPacks() {
         return behaviourPacks;
     }
@@ -44,6 +59,13 @@ public class PlayerRequestResourcePackEvent extends PlayerEvent {
         for (ResourcePack p : pack) {
             this.behaviourPacks.put(p.getPackId(), p);
         }
+    }
+
+    /**
+     * Select the behavior subpack for this login; an empty name preserves the client's default selection behavior.
+     */
+    public void setBehaviorPackSubPack(String packId, String folderName) {
+        selectSubPack(behaviourPacks, packId, folderName);
     }
 
     public boolean isMustAccept() {

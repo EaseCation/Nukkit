@@ -368,7 +368,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Attribute movementSpeedAttribute = Attribute.getAttribute(Attribute.MOVEMENT);
 
     protected boolean hiddenLocator;
-    protected final Vector3f locatorPos = new Vector3f(Float.NaN, Float.NaN, Float.NaN);
 
     public int getStartActionTick() {
         return startAction;
@@ -1070,13 +1069,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(packet);
         if (chunkContext != null && !chunkContext.isCurrent(this)) return;
 
-        for (BlockEntity blockEntity : this.level.getChunkBlockEntities(x, z).values()) {
-            if (!(blockEntity instanceof BlockEntitySpawnable)) {
-                continue;
-            }
-            ((BlockEntitySpawnable) blockEntity).spawnTo(this);
-            if (chunkContext != null && !chunkContext.isCurrent(this)) return;
-        }
+        if (!this.spawnChunkBlockEntities(x, z, chunkContext)) return;
 
         if (this.spawned) {
             for (Entity entity : new ObjectArrayList<>(this.level.getChunkEntities(x, z).values())) {
@@ -1104,13 +1097,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
         if (chunkContext != null && !chunkContext.isCurrent(this)) return;
 
-        for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
-            if (!(entity instanceof BlockEntitySpawnable)) {
-                continue;
-            }
-            ((BlockEntitySpawnable) entity).spawnTo(this);
-            if (chunkContext != null && !chunkContext.isCurrent(this)) return;
-        }
+        if (!this.spawnChunkBlockEntities(x, z, chunkContext)) return;
 
         if (this.spawned) {
             for (Entity entity : new ObjectArrayList<>(this.level.getChunkEntities(x, z).values())) {
@@ -1120,6 +1107,48 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
         }
+    }
+
+    /**
+     * 区块发送后补发方块实体数据包的统一入口，所有区块发送路径都从这里走，不要在各处另写循环。
+     * <p>
+     * 区块网络数据虽已内嵌方块实体数据，但仍需独立发送 {@link BlockEntityDataPacket} 完成同步。补发规则是：
+     * <ul>
+     * <li>整区块模式：区块数据发出后调用本方法全量补发。数据包紧跟区块数据到达，客户端可以正常应用。</li>
+     * <li>子区块请求模式：区块列发出后不补发。此时子区块可能尚未准备好，
+     * 若客户端仍在处理区块列，提前补发还会暂停普通数据包处理。
+     * 每次子区块响应发出后，都用 {@link #spawnSubChunkBlockEntities} 补发本次响应范围内的方块实体。</li>
+     * </ul>
+     * 补发不依赖区块网络版本号，也不依赖区块缓存是否命中。
+     *
+     * @return 发送上下文是否仍然有效，为 false 时调用方应立即结束本次区块发送
+     */
+    protected boolean spawnChunkBlockEntities(int chunkX, int chunkZ, @Nullable ChunkSendContext chunkContext) {
+        for (BlockEntity blockEntity : this.level.getChunkBlockEntities(chunkX, chunkZ).values()) {
+            if (!(blockEntity instanceof BlockEntitySpawnable spawnable)) {
+                continue;
+            }
+            spawnable.spawnTo(this);
+            if (chunkContext != null && !chunkContext.isCurrent(this)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * 只补发位于指定子区块内的方块实体数据包，规则见 {@link #spawnChunkBlockEntities}。
+     *
+     * @param subChunkYs 子区块的 Y 坐标集合
+     * @return 发送上下文是否仍然有效
+     */
+    protected boolean spawnSubChunkBlockEntities(int chunkX, int chunkZ, IntSet subChunkYs, @Nullable ChunkSendContext chunkContext) {
+        for (BlockEntity blockEntity : this.level.getChunkBlockEntities(chunkX, chunkZ).values()) {
+            if (!(blockEntity instanceof BlockEntitySpawnable spawnable) || !subChunkYs.contains(blockEntity.getSubChunkY())) {
+                continue;
+            }
+            spawnable.spawnTo(this);
+            if (chunkContext != null && !chunkContext.isCurrent(this)) return false;
+        }
+        return true;
     }
 
     protected void sendNextChunk() {
@@ -3273,8 +3302,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         PlayerRequestResourcePackEvent resourcePackEvent = new PlayerRequestResourcePackEvent(this, this.server.getResourcePackManager().getResourcePacksMap(), this.server.getResourcePackManager().getBehaviorPacksMap(), this.server.getForceResources());
         this.server.getPluginManager().callEvent(resourcePackEvent);
-        this.resourcePacks = resourcePackEvent.getResourcePacks();
-        this.behaviourPacks = resourcePackEvent.getResourcePacks();
+        this.resourcePacks = new LinkedHashMap<>(resourcePackEvent.getResourcePacks());
+        this.behaviourPacks = new LinkedHashMap<>(resourcePackEvent.getBehaviourPacks());
         this.forceResources = resourcePackEvent.isMustAccept();
 
         observeConnection("resource_pack_stage", Map.of("stage", "offered"));
@@ -8113,42 +8142,51 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void hideLocator(long entityUniqueId) {
     }
 
+    /**
+     * @since 1.21.80
+     */
+    public void clearLocators() {
+    }
+
     public boolean isLocatorBarEnabled() {
         return false;
     }
 
     protected void updateLocatorBar() {
-        if (!level.gameRules.getBoolean(GameRule.LOCATOR_BAR)) {
+        if (!loggedIn || level == null) {
+            return;
+        }
+        if (!level.getGameRules().getBoolean(GameRule.LOCATOR_BAR)) {
+            hiddenLocator = false;
+            clearLocators();
             return;
         }
 
-        Item helmet;
-        if (!isAlive() || isSpectator() || hasEffect(Effect.INVISIBILITY) || isSneaking() || (helmet = armorInventory.getHelmet()).isSkull() || helmet.is(ItemBlockID.CARVED_PUMPKIN)) {
-            if (!hiddenLocator) {
-                hiddenLocator = true;
+        boolean unavailable = !spawned || armorInventory == null || !isAlive() || isSpectator();
+        boolean hidden = unavailable || hasEffect(Effect.INVISIBILITY) || isSneaking();
+        if (!hidden) {
+            Item helmet = armorInventory.getHelmet();
+            hidden = helmet.isSkull() || helmet.is(ItemBlockID.CARVED_PUMPKIN);
+        }
 
-                for (Player player : level.getPlayers().values()) {
-                    if (player == this) {
-                        continue;
-                    }
-                    player.hideLocator(getId());
-                }
-            }
+        boolean wasHidden = hiddenLocator;
+        hiddenLocator = hidden;
+        if (hidden && wasHidden && !unavailable) {
             return;
         }
-        hiddenLocator = false;
 
-        Vector3f currentPos = asVector3f();
-        if (locatorPos.equalsVec(currentPos)) {
-            return;
-        }
-        locatorPos.setComponents(currentPos);
-
+        float locatorX = (float) x;
+        float locatorY = (float) y;
+        float locatorZ = (float) z;
         for (Player player : level.getPlayers().values()) {
-            if (player == this) {
+            if (player == this || !player.spawned || !player.loggedIn) {
                 continue;
             }
-            player.updateLocator(getId(), currentPos.x, currentPos.y, currentPos.z);
+            if (hidden) {
+                player.hideLocator(getId());
+            } else {
+                player.updateLocator(getId(), locatorX, locatorY, locatorZ);
+            }
         }
     }
 

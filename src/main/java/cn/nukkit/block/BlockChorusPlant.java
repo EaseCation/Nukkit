@@ -19,6 +19,11 @@ public class BlockChorusPlant extends BlockFlowable {
     }
 
     @Override
+    public boolean isCollisionLevelRequired(boolean terrain) {
+        return true;
+    }
+
+    @Override
     public int getId() {
         return CHORUS_PLANT;
     }

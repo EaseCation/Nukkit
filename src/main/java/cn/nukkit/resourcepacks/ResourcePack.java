@@ -13,6 +13,14 @@ public interface ResourcePack {
 
     List<String> getCapabilities();
 
+    List<PackManifest.SubPack> getSubPacks();
+
+    String getSubPackName();
+
+    default ResourcePack withSubPack(String folderName) {
+        return ResourceSubPack.select(this, folderName);
+    }
+
     default boolean isBehaviorPack() {
         return "data".equals(getPackType());
     }

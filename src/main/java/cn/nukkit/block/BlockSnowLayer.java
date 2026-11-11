@@ -51,7 +51,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public boolean canBeReplaced() {
-        return !isFull() && (!isCovered() || level.getExtraBlock(this).canBeReplaced());
+        return !isFull() && (!isCovered() || level != null && level.getExtraBlock(this).canBeReplaced());
     }
 
     @Override

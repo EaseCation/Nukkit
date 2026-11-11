@@ -88,8 +88,22 @@ public class BlockBamboo extends BlockTransparent {
         double inset = 1 - (isThick() ? 3 / 16.0 : 2 / 16.0);
         AxisAlignedBB aabb = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1 - inset, this.y + 1, this.z + 1 - inset); // northwest corner, not the center
 
+        if (true || V1_21_80.isAvailable()) {
+            aabb.offset(0.5, 0, 0.5);
+            return randomOffset(getFloorX(), getFloorZ(), 0.25f, aabb);
+        }
+
         int seed = Mth.getSeed(getFloorX(), 0, getFloorZ());
-        return aabb.offset(((seed % 12) + 1) / 16.0, 0, (((seed >> 8) % 12) + 1) / 16.0);
+        return aabb.offset(
+                (Integer.remainderUnsigned(seed, 12) + 1) / 16f,
+                0,
+                (Integer.remainderUnsigned(seed >>> 8, 12) + 1) / 16f
+        );
+    }
+
+    @Override
+    public boolean hasRandomOffset() {
+        return true;
     }
 
     @Override
@@ -239,6 +253,10 @@ public class BlockBamboo extends BlockTransparent {
             }
         }
 
+        growAmount = Math.min(growAmount, maxHeight - height);
+        if (growAmount <= 0) {
+            return false;
+        }
         int newHeight = height + growAmount;
         int stemMeta = getDamage() & ~(AGE_BIT | LEAF_SIZE_MASK);
         if (newHeight > 4) {
@@ -293,7 +311,7 @@ public class BlockBamboo extends BlockTransparent {
     }
 
     private static int getMaxHeight(int x, int z) {
-        return 12 + Mth.getSeed(x, 0, z) % 5;
+        return 12 + ((Mth.getSeed(x, 0, z) >>> 24) % 5);
     }
 
     public boolean isReady() {
@@ -305,7 +323,7 @@ public class BlockBamboo extends BlockTransparent {
     }
 
     public boolean isThick() {
-        return (getDamage() & AGE_BIT) == AGE_BIT;
+        return (getDamage() & STALK_THICKNESS_BIT) == STALK_THICKNESS_BIT;
     }
 
     public void setThick(boolean thick) {

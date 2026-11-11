@@ -4117,7 +4117,7 @@ public class Level implements ChunkManager, Metadatable {
      * Chunk request callback on main thread
      * If this.cacheChunks == false, the ChunkPacketCache can be null;
      */
-    public void chunkRequestCallback(long timestamp, int x, int z, ChunkCachedData cachedData, Map<StaticVersion, byte[]> fullChunkPayloads, byte[] subRequestModeFullChunkPayload, byte[] subRequestModeFullChunkPayloadLegacy, Map<StaticVersion, byte[][]> subChunkPayloads) {
+    public void chunkRequestCallback(long networkRevision, int x, int z, ChunkCachedData cachedData, Map<StaticVersion, byte[]> fullChunkPayloads, byte[] subRequestModeFullChunkPayload, byte[] subRequestModeFullChunkPayloadLegacy, Map<StaticVersion, byte[][]> subChunkPayloads) {
         long index = Level.chunkHash(x, z);
         int subChunkCount = cachedData.getSubChunkCount();
         byte[] heightMapType = cachedData.getHeightMapType();
@@ -4125,7 +4125,8 @@ public class Level implements ChunkManager, Metadatable {
 
         if (this.provider != null) {
             BaseFullChunk chunk = getChunk(x, z, false);
-            if (chunk != null && chunk.getChanges() <= timestamp) {
+            // 序列化期间区块内容或方块实体数据发生过变化时，这份数据不能进缓存
+            if (chunk != null && chunk.getNetworkRevision() == networkRevision) {
                 chunk.setCachedData(cachedData);
             }
         }
@@ -5683,8 +5684,11 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
+        player.clearLocators();
         for (Player viewer : getPlayers().values()) {
-            viewer.hideLocator(player.getId());
+            if (viewer != player) {
+                viewer.hideLocator(player.getId());
+            }
         }
     }
 

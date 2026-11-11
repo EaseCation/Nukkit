@@ -206,6 +206,18 @@ public interface FullChunk extends Cloneable {
 
     void setChanged(boolean changed);
 
+    /**
+     * 区块网络数据的版本号，只增不减。
+     * 任何会改变下发给客户端内容的变化都会让它递增，存盘不会让它回退。
+     */
+    long getNetworkRevision();
+
+    /**
+     * 使区块的网络缓存失效，但不把区块标记为需要存盘。
+     * 用于只影响客户端显示的变化，例如方块实体把新数据推送给观察者。
+     */
+    void invalidateNetworkCache();
+
     boolean compress();
 
     default boolean isEmpty() {

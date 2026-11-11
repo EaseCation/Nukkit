@@ -16,6 +16,11 @@ public abstract class BlockThin extends BlockTransparent {
     }
 
     @Override
+    public boolean isCollisionLevelRequired(boolean terrain) {
+        return true;
+    }
+
+    @Override
     public boolean isSolid() {
         return false;
     }
