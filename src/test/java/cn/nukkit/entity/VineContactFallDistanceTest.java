@@ -42,7 +42,7 @@ class VineContactFallDistanceTest {
 
     @Test
     void everyNonemptyVineOrientationContainsItsAttachedFacesInsideTheBlock() {
-        // Legacy metadata: south=1, west=2, north=4, east=8. Faces are 1/16 thick.
+        // 旧版朝向状态：南=1，西=2，北=4，东=8；每个接触面厚度为1/16格。
         int[] faces = {1, 2, 4, 8};
         Vector3[] faceCenters = {
                 new Vector3(0.5, 0.5, 0.96875), new Vector3(0.03125, 0.5, 0.5),
