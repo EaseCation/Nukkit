@@ -96,14 +96,32 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         return getSpawnPacket();
     }
 
+    /**
+     * 把方块实体当前的数据推送给所有能看到它的玩家。
+     * <p>
+     * 修改了会下发给客户端的数据后，必须调用本方法（或 {@link #setDirty()}）。
+     * 同时让区块网络缓存失效，避免后进入视野的玩家先收到旧的内嵌数据，再被独立数据包纠正。
+     */
     public void spawnToAll() {
         spawnToAll(false);
+    }
+
+    /**
+     * 使所在区块的网络缓存失效。
+     * 不经过 {@link #spawnToAll()} 而自行广播数据包的子类，在广播前调用。
+     */
+    protected final void invalidateChunkNetworkCache() {
+        if (this.chunk != null) {
+            this.chunk.invalidateNetworkCache();
+        }
     }
 
     public void spawnToAll(boolean empty) {
         if (this.isClosed()) {
             return;
         }
+
+        this.invalidateChunkNetworkCache();
 
         for (Player player : this.getLevel().getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values()) {
             if (player.spawned) {

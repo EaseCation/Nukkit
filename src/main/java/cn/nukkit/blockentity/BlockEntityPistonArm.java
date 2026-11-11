@@ -166,6 +166,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.attachedBlocks = attachedBlocks;
         this.movable = false;
 
+        this.invalidateChunkNetworkCache();
         BlockEntityDataPacket packet = this.getSpawnPacket();
         if (packet != null) {
             this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
@@ -240,6 +241,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             hasUpdate = false;
         }
 
+        this.invalidateChunkNetworkCache();
         BlockEntityDataPacket packet = this.getSpawnPacket();
         if (packet != null) {
             this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);

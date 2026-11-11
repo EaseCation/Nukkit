@@ -1,5 +1,6 @@
 package cn.nukkit.resourcepacks;
 
+import cn.nukkit.resourcepacks.PackManifest.SubPack;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public abstract class AbstractResourcePack implements ResourcePack {
     protected String version;
     protected String type;
     protected final List<String> capabilities = new ArrayList<>();
+    protected final List<SubPack> subPacks = new ArrayList<>();
 
     protected String encryptionKey = "";
     protected String cdnUrl = "";
@@ -40,6 +42,16 @@ public abstract class AbstractResourcePack implements ResourcePack {
     @Override
     public List<String> getCapabilities() {
         return capabilities;
+    }
+
+    @Override
+    public List<SubPack> getSubPacks() {
+        return subPacks;
+    }
+
+    @Override
+    public String getSubPackName() {
+        return "";
     }
 
     @Override

@@ -4,3 +4,4 @@
 #"00000000-0000-0000-0000-000000000000":
 # key: "0123456789abcdefGHIJKLMNOPQRSTUV"
 # cdn: "http://127.0.0.1/00000000-0000-0000-0000-000000000000/0.0.1.mcpack"
+# subpack: "" # Leave empty to let the client choose; when specified, enter the folder_name declared in the manifest.

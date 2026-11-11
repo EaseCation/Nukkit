@@ -2,15 +2,14 @@ package cn.nukkit.resourcepacks;
 
 import cn.nukkit.utils.JsonUtil;
 import cn.nukkit.utils.SemVersion;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 public class PackManifest {
@@ -29,8 +28,47 @@ public class PackManifest {
 
     private List<SubPack> subpacks = Collections.emptyList();
 
+    /**
+     * @since format version 3 (1.21.110)
+     */
+    private List<Map<String, ?>> settings = Collections.emptyList();
+
     public static PackManifest load(InputStream stream) throws IOException {
-        return JsonUtil.TRUSTED_JSON_MAPPER.readValue(stream, PackManifest.class);
+        PackManifest manifest = JsonUtil.TRUSTED_JSON_MAPPER.readValue(stream, PackManifest.class);
+        manifest.validateSubPacks();
+        return manifest;
+    }
+
+    private void validateSubPacks() {
+        if (subpacks == null) {
+            throw new IllegalArgumentException("Resource pack subpacks must be an array");
+        }
+        Set<String> folders = new HashSet<>();
+        for (SubPack subPack : subpacks) {
+            if (subPack == null) {
+                throw new IllegalArgumentException("Resource pack subpack must not be null");
+            }
+            String folderName = subPack.folderName();
+            if (folderName == null || folderName.isBlank() || folderName.equals(".") || folderName.equals("..")
+                    || folderName.indexOf('/') >= 0 || folderName.indexOf('\\') >= 0 || folderName.indexOf(':') >= 0
+                    || folderName.chars().anyMatch(Character::isISOControl)) {
+                throw new IllegalArgumentException("Invalid resource pack subpack folder name: " + folderName);
+            }
+            if (!folders.add(folderName)) {
+                throw new IllegalArgumentException("Duplicate resource pack subpack folder name: " + folderName);
+            }
+            if (subPack.name() == null || subPack.name().isBlank()) {
+                throw new IllegalArgumentException("Resource pack subpack name must not be empty: " + folderName);
+            }
+            if (subPack.memoryTier() < 0) {
+                throw new IllegalArgumentException("Resource pack subpack memory_tier must not be negative: " + folderName);
+            }
+            Integer performanceTier = subPack.memoryPerformanceTier();
+            if (performanceTier != null && (performanceTier < 1 || performanceTier > 5)) {
+                throw new IllegalArgumentException("Resource pack subpack memory_performance_tier must be between 1 and 5: " + folderName);
+            }
+        }
+        subpacks = List.copyOf(subpacks);
     }
 
     public boolean isValid() {
@@ -97,12 +135,32 @@ public class PackManifest {
         private String moduleName;
     }
 
-    @Data
-    public static class SubPack {
-        @JsonProperty("folder_name")
-        private String folderName;
-        private String name;
-        @JsonProperty("memory_tier")
-        private int memoryTier;
+    public record SubPack(
+            @JsonProperty("folder_name")
+            String folderName,
+            String name,
+            @JsonProperty("memory_tier")
+            int memoryTier,
+            @Nullable
+            @JsonProperty("memory_performance_tier")
+            Integer memoryPerformanceTier
+    ) {
+        @JsonCreator
+        public SubPack(
+                @JsonProperty("folder_name")
+                String folderName,
+                @JsonProperty("name")
+                String name,
+                @JsonProperty("memory_tier")
+                int memoryTier,
+                @Nullable
+                @JsonProperty("memory_performance_tier")
+                Integer memoryPerformanceTier
+        ) {
+            this.folderName = folderName;
+            this.name = name;
+            this.memoryTier = memoryTier;
+            this.memoryPerformanceTier = memoryPerformanceTier;
+        }
     }
 }
