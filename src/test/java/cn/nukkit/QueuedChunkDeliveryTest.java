@@ -1,6 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.entity.attribute.Attribute;
@@ -27,6 +28,7 @@ class QueuedChunkDeliveryTest {
         Attribute.init();
         when(server.getConfiguration()).thenReturn(mock(ServerConfiguration.class));
         when(server.getDefaultLevel()).thenReturn(level);
+        when(level.getDimension()).thenReturn(Dimension.OVERWORLD);
         when(server.getPluginManager()).thenReturn(mock(PluginManager.class));
         when(level.populateChunk(anyInt(), anyInt())).thenReturn(true);
         ProbePlayer player;
