@@ -388,6 +388,7 @@ public class LevelDB implements LevelProvider {
     }
 
     public static void updateLevelData(CompoundTag levelData) {
+        levelData.setName(null);
         levelData.putLong("LastPlayed", System.currentTimeMillis() / 1000)
                 .putString("baseGameVersion", "*")
                 .putString("InventoryVersion", GameVersion.getFeatureVersion().toString())

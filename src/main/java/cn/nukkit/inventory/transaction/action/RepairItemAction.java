@@ -3,6 +3,7 @@ package cn.nukkit.inventory.transaction.action;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 
+@Deprecated
 public class RepairItemAction extends InventoryAction {
 
     private final int type;

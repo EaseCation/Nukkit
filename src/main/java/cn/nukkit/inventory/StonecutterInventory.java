@@ -17,6 +17,11 @@ public class StonecutterInventory extends FakeBlockUIComponent {
     }
 
     @Override
+    public RecipeTag getRecipeTag() {
+        return RecipeTag.STONECUTTER;
+    }
+
+    @Override
     public void onOpen(Player who) {
         super.onOpen(who);
         who.craftingType = Player.CRAFTING_STONECUTTER;
@@ -28,6 +33,10 @@ public class StonecutterInventory extends FakeBlockUIComponent {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
         who.recipeTag = RecipeTag.CRAFTING_TABLE;
+
+        if (who.isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
 
         for (Item drop : who.getInventory().addItem(getItem(INPUT_SLOT))) {
             who.dropItem(drop);

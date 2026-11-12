@@ -342,7 +342,11 @@ public class EntityLlama extends EntityAnimal implements EntityInteractable, Ent
             return;
         }
 
-        player.addWindow(getInventory());
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            player.setCurrentWindow(getInventory());
+        } else {
+            player.addWindow(getInventory());
+        }
     }
 
     @Override

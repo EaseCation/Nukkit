@@ -280,7 +280,7 @@ public class Binary {
     public static EntityMetadata readMetadata(byte[] payload) {
         BinaryStream stream = new BinaryStream();
         stream.setBuffer(payload);
-        int count = (int) stream.getUnsignedVarInt();
+        int count = stream.getUnsignedVarInt(4096);
         EntityMetadata m = new EntityMetadata();
         for (int i = 0; i < count; i++) {
             int key = (int) stream.getUnsignedVarInt();

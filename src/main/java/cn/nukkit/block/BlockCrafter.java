@@ -7,12 +7,18 @@ import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.dispenser.CrafterBehavior;
 import cn.nukkit.dispenser.DispenseBehavior;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.BaseInventory;
+import cn.nukkit.inventory.CrafterInventory;
+import cn.nukkit.inventory.CraftingGridMatch;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.loot.Lootable;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import it.unimi.dsi.fastutil.ints.IntObjectPair;
 
 import javax.annotation.Nullable;
 
@@ -217,14 +223,85 @@ public class BlockCrafter extends BlockDispenser {
 
     @Override
     protected String getBlockEntityId() {
-        return BlockEntity.DROPPER;
+        return BlockEntity.CRAFTER;
     }
 
     @Override
-    protected IntObjectPair<Item> selectItemStack(Inventory inventory) {
-        //TODO: match crafting recipe
-        return null;
-        //TODO: multiple output recipe
+    public int onUpdate(int type) {
+        if (!level.isRedstoneEnabled()) {
+            return 0;
+        }
+        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+            dispense();
+            return type;
+        }
+        if (type == Level.BLOCK_UPDATE_REDSTONE) {
+            boolean powered = level.isBlockPowered(copyPos()) || level.isBlockPowered(upVec());
+            if (powered != isTriggered()) {
+                setTriggered(powered);
+                level.setBlock(this, this, true, false);
+                if (powered) {
+                    level.scheduleUpdate(this, this, 4);
+                }
+            }
+            return type;
+        }
+        return 0;
+    }
+
+    @Override
+    public void dispense() {
+        BlockEntityCrafter blockEntity = getBlockEntity();
+        if (blockEntity == null || blockEntity.isClosed()) {
+            return;
+        }
+        blockEntity.unpackLootTable();
+        CrafterInventory inventory = blockEntity.getInventory();
+        Item[] grid = new Item[inventory.getSize()];
+        for (int slot = 0; slot < grid.length; slot++) {
+            grid[slot] = inventory.getItem(slot);
+        }
+        CraftingGridMatch match = level.getServer().getCraftingManager().matchCraftingGrid(grid, blockEntity.getDisabledSlots());
+        Vector3 position = getDispensePosition();
+        if (match == null) {
+            onDispenseFail(position);
+            return;
+        }
+        BlockFace facing = getBlockFace();
+        BlockEntity neighbor = level.getBlockEntity(getSideVec(facing));
+        if (neighbor instanceof Lootable lootable) {
+            lootable.unpackLootTable();
+        }
+        BaseInventory target = neighbor instanceof InventoryHolder holder && holder.getInventory() instanceof BaseInventory base ? base : null;
+        Level craftingLevel = level;
+        Vector3 motion = new Vector3(facing.getXOffset() * 0.3, 0.2 + facing.getYOffset() * 0.3, facing.getZOffset() * 0.3);
+        boolean crafted = inventory.craft(match, target, facing,
+                event -> craftingLevel.getServer().getPluginManager().callEvent(event),
+                output -> {
+                    FullChunk dropChunk = craftingLevel.getChunk(position.getChunkX(), position.getChunkZ(), true);
+                    if (dropChunk == null || dropChunk.getProvider() == null) {
+                        return null;
+                    }
+                    Vector3 dropPosition = new Vector3(position.x, position.y, position.z);
+                    Vector3 dropMotion = new Vector3(motion.x, motion.y, motion.z);
+                    Item droppedItem = output.clone();
+                    return () -> craftingLevel.dropItem(dropChunk, dropPosition, droppedItem, dropMotion, 10);
+                },
+                () -> !blockEntity.isClosed() && craftingLevel.getBlockEntity(this) == blockEntity
+                        && craftingLevel.getBlock(this).getId() == CRAFTER
+                        && (neighbor == null || !neighbor.isClosed() && craftingLevel.getBlockEntity(getSideVec(facing)) == neighbor));
+        if (!crafted) {
+            onDispenseFail(position);
+            return;
+        }
+        Block current = craftingLevel.getBlock(this);
+        if (current instanceof BlockCrafter crafter) {
+            crafter.setCrafting(true);
+            craftingLevel.setBlock(crafter, crafter, true, false);
+            blockEntity.setCraftingTicksRemaining(6);
+        }
+        craftingLevel.addLevelEvent(position, LevelEventPacket.EVENT_PARTICLE_SHOOT_WHITE_SMOKE, 3 * (facing.getZOffset() + 1) + facing.getXOffset() + 1);
+        craftingLevel.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_CRAFTER_CRAFT, getFullId());
     }
 
     @Override
@@ -232,21 +309,4 @@ public class BlockCrafter extends BlockDispenser {
         level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_CRAFTER_FAILED, getFullId());
     }
 
-    @Override
-    protected void onDispenseSuccess(Vector3 pos, @Nullable BlockFace facing, Inventory inventory, int slot, Item result) {
-        if (facing != null) {
-            level.addLevelEvent(pos, LevelEventPacket.EVENT_PARTICLE_SHOOT_WHITE_SMOKE, 3 * (facing.getZOffset() + 1) + facing.getXOffset() + 1);
-        }
-
-        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_CRAFTER_CRAFT, getFullId());
-
-        for (int i = 0; i < inventory.getSize(); i++) {
-            Item item = inventory.getItem(i);
-            if (item.isNull()) {
-                continue;
-            }
-            item.pop();
-            inventory.setItem(i, item);
-        }
-    }
 }

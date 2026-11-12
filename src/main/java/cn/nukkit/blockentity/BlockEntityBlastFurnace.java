@@ -39,7 +39,7 @@ public class BlockEntityBlastFurnace extends BlockEntityFurnace {
     }
 
     @Override
-    protected RecipeTag getRecipeTag() {
+    public RecipeTag getRecipeTag() {
         return RecipeTag.BLAST_FURNACE;
     }
 

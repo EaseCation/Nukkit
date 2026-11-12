@@ -8,6 +8,7 @@ import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.inventory.RecipeType;
+import cn.nukkit.inventory.recipe.descriptor.DefaultItemDescriptor;
 import cn.nukkit.inventory.recipe.RecipeIngredient;
 import cn.nukkit.item.*;
 import cn.nukkit.level.GameRule;
@@ -149,20 +150,18 @@ public class BinaryStream {
     }
 
     public byte[] get(int len) {
-        if (len < 0) {
-            this.offset = this.count - 1;
-            return new byte[0];
+        if (!isReadable(len)) {
+            throw new IndexOutOfBoundsException("Buffer length mismatch");
         }
-        len = Math.min(len, this.count - this.offset);
         this.offset += len;
         return Arrays.copyOfRange(this.buffer, this.offset - len, this.offset);
     }
 
     public void skip(int len) {
-        if (len <= 0) {
-            return;
+        if (!isReadable(len)) {
+            throw new IndexOutOfBoundsException("Buffer length mismatch");
         }
-        this.offset += Math.min(len, this.count - this.offset);
+        this.offset += len;
     }
 
     public void put(byte[] bytes) {
@@ -227,6 +226,10 @@ public class BinaryStream {
         return Binary.readInt(this.get(4));
     }
 
+    public int getInt(int maxLength) {
+        return checkLength(getInt(), maxLength);
+    }
+
     public void putInt(int i) {
         int index = this.prepareWriterIndex(4);
         Binary.writeInt(i, this.buffer, index);
@@ -243,6 +246,10 @@ public class BinaryStream {
 
     public int getLInt() {
         return Binary.readLInt(this.get(4));
+    }
+
+    public int getLInt(int maxLength) {
+        return checkLength(getLInt(), maxLength);
     }
 
     public void putLInt(int i) {
@@ -379,7 +386,7 @@ public class BinaryStream {
      */
     public Attribute[] getAttributeList() throws Exception {
         List<Attribute> list = new ObjectArrayList<>();
-        int count = (int) this.getUnsignedVarInt();
+        int count = this.getUnsignedVarInt(4096);
 
         for (int i = 0; i < count; ++i) {
             String name = this.getString();
@@ -479,7 +486,7 @@ public class BinaryStream {
         skin.setSkinResourcePatch(this.getString());
         skin.setSkinData(this.getImage());
 
-        int animationCount = this.getLInt();
+        int animationCount = this.getLInt(4096);
         for (int i = 0; i < animationCount; i++) {
             SerializedImage image = this.getImage();
             int type = this.getLInt();
@@ -552,7 +559,7 @@ public class BinaryStream {
         if (nbtLen < Short.MAX_VALUE) {
             nbt = this.get(nbtLen);
         } else if (nbtLen == 65535) {
-            int nbtTagCount = (int) getUnsignedVarInt();
+            int nbtTagCount = getUnsignedVarInt(4096);
             int offset = getOffset();
             FastByteArrayInputStream stream = new FastByteArrayInputStream(get());
             for (int i = 0; i < nbtTagCount; i++) {
@@ -585,11 +592,8 @@ public class BinaryStream {
         }
 
         Set<String> canPlace;
-        int canPlaceCount = this.getVarInt();
+        int canPlaceCount = this.getVarInt(4096);
         if (canPlaceCount > 0) {
-            if (canPlaceCount > 4096) {
-                throw new IndexOutOfBoundsException("Too many CanPlaceOn blocks");
-            }
             canPlace = new ObjectOpenHashSet<>();
             for (int i = 0; i < canPlaceCount; i++) {
                 canPlace.add(this.getString());
@@ -599,11 +603,8 @@ public class BinaryStream {
         }
 
         Set<String> canBreak;
-        int canBreakCount = this.getVarInt();
+        int canBreakCount = this.getVarInt(4096);
         if (canBreakCount > 0) {
-            if (canBreakCount > 4096) {
-                throw new IndexOutOfBoundsException("Too many CanDestroy blocks");
-            }
             canBreak = new ObjectOpenHashSet<>();
             for (int i = 0; i < canBreakCount; i++) {
                 canBreak.add(this.getString());
@@ -735,11 +736,8 @@ public class BinaryStream {
         }
 
         Set<String> canPlace;
-        int canPlaceCount = this.getVarInt();
+        int canPlaceCount = this.getVarInt(4096);
         if (canPlaceCount > 0) {
-            if (canPlaceCount > 4096) {
-                throw new IndexOutOfBoundsException("Too many CanPlaceOn blocks");
-            }
             canPlace = new ObjectOpenHashSet<>();
             for (int i = 0; i < canPlaceCount; i++) {
                 canPlace.add(this.getString());
@@ -749,11 +747,8 @@ public class BinaryStream {
         }
 
         Set<String> canBreak;
-        int canBreakCount = this.getVarInt();
+        int canBreakCount = this.getVarInt(4096);
         if (canBreakCount > 0) {
-            if (canBreakCount > 4096) {
-                throw new IndexOutOfBoundsException("Too many CanDestroy blocks");
-            }
             canBreak = new ObjectOpenHashSet<>();
             for (int i = 0; i < canBreakCount; i++) {
                 canBreak.add(this.getString());
@@ -861,6 +856,28 @@ public class BinaryStream {
         this.putVarInt(ingredient.getCount());
     }
 
+    public void putRecipeIngredient(RecipeIngredient ingredient) {
+        if (this.helper != null) {
+            this.helper.putRecipeIngredient(this, ingredient);
+            return;
+        }
+        if (ingredient == null || ingredient.getDescriptor().getType() == ItemDescriptorType.NONE) {
+            putVarInt(ItemID.AIR);
+            return;
+        }
+        if (!(ingredient.getDescriptor() instanceof DefaultItemDescriptor descriptor)) {
+            throw new UnsupportedOperationException("Unsupported recipe ingredient descriptor: " + ingredient.getDescriptor().getType());
+        }
+        Item item = descriptor.getItem();
+        if (item.getId() == ItemID.AIR) {
+            putVarInt(ItemID.AIR);
+            return;
+        }
+        putVarInt(item.getId());
+        putVarInt(item.hasMeta() ? item.getDamage() : 0x7fff);
+        putVarInt(ingredient.getCount());
+    }
+
     public byte[] getByteArray() {
         return this.getByteArray(-1, false);
     }
@@ -874,15 +891,11 @@ public class BinaryStream {
     }
 
     public byte[] getByteArray(int maxLength, boolean nonEmpty) {
-        int len = (int) this.getUnsignedVarInt();
-        if (maxLength > -1 && len > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + len + " > " + maxLength);
-        }
-        if (nonEmpty && len <= 0) {
+        long length = this.getUnsignedVarInt();
+        int limit = maxLength > -1 ? Math.min(maxLength, this.count - this.offset) : this.count - this.offset;
+        int len = checkLength(length, limit);
+        if (nonEmpty && len == 0) {
             throw new IndexOutOfBoundsException("array length must be greater than 0");
-        }
-        if (!isReadable(len)) {
-            throw new IndexOutOfBoundsException("array length mismatch");
         }
         return this.get(len);
     }
@@ -940,12 +953,20 @@ public class BinaryStream {
         return VarInt.readUnsignedVarInt(this);
     }
 
+    public int getUnsignedVarInt(int maxLength) {
+        return checkLength(getUnsignedVarInt(), maxLength);
+    }
+
     public void putUnsignedVarInt(long v) {
         VarInt.writeUnsignedVarInt(this, v);
     }
 
     public int getVarInt() {
         return VarInt.readVarInt(this);
+    }
+
+    public int getVarInt(int maxLength) {
+        return checkLength(getVarInt(), maxLength);
     }
 
     public void putVarInt(int v) {
@@ -1122,11 +1143,7 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public <T> T[] getArray(T[] array, Function<BinaryStream, T> function, int maxLength) {
-        int count = (int) getUnsignedVarInt();
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(getUnsignedVarInt(maxLength), array, function, maxLength);
     }
 
     /**
@@ -1140,14 +1157,15 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public <T> T[] getArray(ToIntFunction<BinaryStream> lengthReader, T[] array, Function<BinaryStream, T> function, int maxLength) {
-        int count = lengthReader.applyAsInt(this);
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(lengthReader.applyAsInt(this), array, function, maxLength);
     }
 
     public <T> T[] getArray(int length, T[] array, Function<BinaryStream, T> function) {
+        return getArray(length, array, function, 4096);
+    }
+
+    public <T> T[] getArray(int length, T[] array, Function<BinaryStream, T> function, int maxLength) {
+        checkLength(length, maxLength);
         Collection<T> collection = new ArrayList<>();
         for (int i = 0; i < length; i++) {
             collection.add(function.apply(this));
@@ -1166,11 +1184,7 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public byte[] getArray(byte[] array, Object2ByteFunction<BinaryStream> function, int maxLength) {
-        int count = (int) getUnsignedVarInt();
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(getUnsignedVarInt(maxLength), array, function, maxLength);
     }
 
     /**
@@ -1184,14 +1198,15 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public byte[] getArray(ToIntFunction<BinaryStream> lengthReader, byte[] array, Object2ByteFunction<BinaryStream> function, int maxLength) {
-        int count = lengthReader.applyAsInt(this);
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(lengthReader.applyAsInt(this), array, function, maxLength);
     }
 
     public byte[] getArray(int length, byte[] array, Object2ByteFunction<BinaryStream> function) {
+        return getArray(length, array, function, 4096);
+    }
+
+    public byte[] getArray(int length, byte[] array, Object2ByteFunction<BinaryStream> function, int maxLength) {
+        checkLength(length, maxLength);
         ByteCollection collection = new ByteArrayList();
         for (int i = 0; i < length; i++) {
             collection.add(function.getByte(this));
@@ -1210,11 +1225,7 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public short[] getArray(short[] array, Object2ShortFunction<BinaryStream> function, int maxLength) {
-        int count = (int) getUnsignedVarInt();
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(getUnsignedVarInt(maxLength), array, function, maxLength);
     }
 
     /**
@@ -1228,14 +1239,15 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public short[] getArray(ToIntFunction<BinaryStream> lengthReader, short[] array, Object2ShortFunction<BinaryStream> function, int maxLength) {
-        int count = lengthReader.applyAsInt(this);
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(lengthReader.applyAsInt(this), array, function, maxLength);
     }
 
     public short[] getArray(int length, short[] array, Object2ShortFunction<BinaryStream> function) {
+        return getArray(length, array, function, 4096);
+    }
+
+    public short[] getArray(int length, short[] array, Object2ShortFunction<BinaryStream> function, int maxLength) {
+        checkLength(length, maxLength);
         ShortCollection collection = new ShortArrayList();
         for (int i = 0; i < length; i++) {
             collection.add(function.getShort(this));
@@ -1254,11 +1266,7 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public char[] getArray(char[] array, Object2CharFunction<BinaryStream> function, int maxLength) {
-        int count = (int) getUnsignedVarInt();
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(getUnsignedVarInt(maxLength), array, function, maxLength);
     }
 
     /**
@@ -1272,14 +1280,15 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public char[] getArray(ToIntFunction<BinaryStream> lengthReader, char[] array, Object2CharFunction<BinaryStream> function, int maxLength) {
-        int count = lengthReader.applyAsInt(this);
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(lengthReader.applyAsInt(this), array, function, maxLength);
     }
 
     public char[] getArray(int length, char[] array, Object2CharFunction<BinaryStream> function) {
+        return getArray(length, array, function, 4096);
+    }
+
+    public char[] getArray(int length, char[] array, Object2CharFunction<BinaryStream> function, int maxLength) {
+        checkLength(length, maxLength);
         CharCollection collection = new CharArrayList();
         for (int i = 0; i < length; i++) {
             collection.add(function.getChar(this));
@@ -1298,11 +1307,7 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public int[] getArray(int[] array, ToIntFunction<BinaryStream> function, int maxLength) {
-        int count = (int) getUnsignedVarInt();
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(getUnsignedVarInt(maxLength), array, function, maxLength);
     }
 
     /**
@@ -1316,14 +1321,15 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public int[] getArray(ToIntFunction<BinaryStream> lengthReader, int[] array, ToIntFunction<BinaryStream> function, int maxLength) {
-        int count = lengthReader.applyAsInt(this);
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(lengthReader.applyAsInt(this), array, function, maxLength);
     }
 
     public int[] getArray(int length, int[] array, ToIntFunction<BinaryStream> function) {
+        return getArray(length, array, function, 4096);
+    }
+
+    public int[] getArray(int length, int[] array, ToIntFunction<BinaryStream> function, int maxLength) {
+        checkLength(length, maxLength);
         IntCollection collection = new IntArrayList();
         for (int i = 0; i < length; i++) {
             collection.add(function.applyAsInt(this));
@@ -1342,11 +1348,7 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public long[] getArray(long[] array, ToLongFunction<BinaryStream> function, int maxLength) {
-        int count = (int) getUnsignedVarInt();
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(getUnsignedVarInt(maxLength), array, function, maxLength);
     }
 
     /**
@@ -1360,14 +1362,15 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public long[] getArray(ToIntFunction<BinaryStream> lengthReader, long[] array, ToLongFunction<BinaryStream> function, int maxLength) {
-        int count = lengthReader.applyAsInt(this);
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(lengthReader.applyAsInt(this), array, function, maxLength);
     }
 
     public long[] getArray(int length, long[] array, ToLongFunction<BinaryStream> function) {
+        return getArray(length, array, function, 4096);
+    }
+
+    public long[] getArray(int length, long[] array, ToLongFunction<BinaryStream> function, int maxLength) {
+        checkLength(length, maxLength);
         LongCollection collection = new LongArrayList();
         for (int i = 0; i < length; i++) {
             collection.add(function.applyAsLong(this));
@@ -1386,11 +1389,7 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public float[] getArray(float[] array, Object2FloatFunction<BinaryStream> function, int maxLength) {
-        int count = (int) getUnsignedVarInt();
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(getUnsignedVarInt(maxLength), array, function, maxLength);
     }
 
     /**
@@ -1404,14 +1403,15 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public float[] getArray(ToIntFunction<BinaryStream> lengthReader, float[] array, Object2FloatFunction<BinaryStream> function, int maxLength) {
-        int count = lengthReader.applyAsInt(this);
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(lengthReader.applyAsInt(this), array, function, maxLength);
     }
 
     public float[] getArray(int length, float[] array, Object2FloatFunction<BinaryStream> function) {
+        return getArray(length, array, function, 4096);
+    }
+
+    public float[] getArray(int length, float[] array, Object2FloatFunction<BinaryStream> function, int maxLength) {
+        checkLength(length, maxLength);
         FloatCollection collection = new FloatArrayList();
         for (int i = 0; i < length; i++) {
             collection.add(function.getFloat(this));
@@ -1430,11 +1430,7 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public double[] getArray(double[] array, ToDoubleFunction<BinaryStream> function, int maxLength) {
-        int count = (int) getUnsignedVarInt();
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(getUnsignedVarInt(maxLength), array, function, maxLength);
     }
 
     /**
@@ -1448,14 +1444,15 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public double[] getArray(ToIntFunction<BinaryStream> lengthReader, double[] array, ToDoubleFunction<BinaryStream> function, int maxLength) {
-        int count = lengthReader.applyAsInt(this);
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(lengthReader.applyAsInt(this), array, function, maxLength);
     }
 
     public double[] getArray(int length, double[] array, ToDoubleFunction<BinaryStream> function) {
+        return getArray(length, array, function, 4096);
+    }
+
+    public double[] getArray(int length, double[] array, ToDoubleFunction<BinaryStream> function, int maxLength) {
+        checkLength(length, maxLength);
         DoubleCollection collection = new DoubleArrayList();
         for (int i = 0; i < length; i++) {
             collection.add(function.applyAsDouble(this));
@@ -1474,11 +1471,7 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public boolean[] getArray(boolean[] array, Object2BooleanFunction<BinaryStream> function, int maxLength) {
-        int count = (int) getUnsignedVarInt();
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(getUnsignedVarInt(maxLength), array, function, maxLength);
     }
 
     /**
@@ -1492,14 +1485,15 @@ public class BinaryStream {
      * @throws IndexOutOfBoundsException if the length of the array is greater than max length
      */
     public boolean[] getArray(ToIntFunction<BinaryStream> lengthReader, boolean[] array, Object2BooleanFunction<BinaryStream> function, int maxLength) {
-        int count = lengthReader.applyAsInt(this);
-        if (count > maxLength) {
-            throw new IndexOutOfBoundsException("array length exceeds max limit: " + count + " > " + maxLength);
-        }
-        return getArray(count, array, function);
+        return getArray(lengthReader.applyAsInt(this), array, function, maxLength);
     }
 
     public boolean[] getArray(int length, boolean[] array, Object2BooleanFunction<BinaryStream> function) {
+        return getArray(length, array, function, 4096);
+    }
+
+    public boolean[] getArray(int length, boolean[] array, Object2BooleanFunction<BinaryStream> function, int maxLength) {
+        checkLength(length, maxLength);
         BooleanCollection collection = new BooleanArrayList();
         for (int i = 0; i < length; i++) {
             collection.add(function.getBoolean(this));
@@ -2103,8 +2097,22 @@ public class BinaryStream {
         return BitSet.valueOf(bitSet);
     }
 
+    public static int checkLength(int length, int maxLength) {
+        if (length < 0 || length > maxLength) {
+            throw new IndexOutOfBoundsException("Invalid length: " + length + " (maximum " + maxLength + ")");
+        }
+        return length;
+    }
+
+    public static int checkLength(long length, int maxLength) {
+        if (length < 0 || length > maxLength) {
+            throw new IndexOutOfBoundsException("Invalid length: " + length + " (maximum " + maxLength + ")");
+        }
+        return (int) length;
+    }
+
     public boolean isReadable(int length) {
-        return count - offset >= length;
+        return length >= 0 && offset >= 0 && offset <= count && length <= count - offset;
     }
 
     public boolean feof() {

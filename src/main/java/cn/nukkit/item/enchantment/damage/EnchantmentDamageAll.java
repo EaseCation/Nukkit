@@ -25,11 +25,6 @@ public class EnchantmentDamageAll extends EnchantmentDamage {
     }
 
     @Override
-    public int getMaxEnchantableLevel() {
-        return 4;
-    }
-
-    @Override
     public float getDamageBonus(Entity attacker, Entity entity) {
         if (level <= 0) {
             return 0;

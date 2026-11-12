@@ -126,7 +126,11 @@ public class BlockBrewingStand extends BlockTransparent {
             }
 
             brewing.unpackLootTable();
-            player.addWindow(brewing.getInventory());
+            if (player.isServerAuthoritativeInventoryEnabled()) {
+                player.setCurrentWindow(brewing.getInventory());
+            } else {
+                player.addWindow(brewing.getInventory());
+            }
         }
 
         return true;

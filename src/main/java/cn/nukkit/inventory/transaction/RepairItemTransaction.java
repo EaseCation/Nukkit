@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Deprecated
 public class RepairItemTransaction extends InventoryTransaction {
 
     private static final int MAX_NAME_LENGTH = 30;
@@ -130,7 +131,11 @@ public class RepairItemTransaction extends InventoryTransaction {
                 return true;
             }
 
-            if (!this.executeAnvilActions()) {
+            if (source.isServerAuthoritativeInventoryEnabled()) {
+                for (InventoryAction action : this.actions) {
+                    action.execute(source);
+                }
+            } else if (!this.executeAnvilActions()) {
                 this.source.removeAllWindows(false);
                 this.sendInventories();
                 return false;
@@ -195,7 +200,9 @@ public class RepairItemTransaction extends InventoryTransaction {
 
             // 执行所有变更动作
             for (InventoryAction action : this.actions) {
-                if (action.execute(this.source)) {
+                if (source.isServerAuthoritativeInventoryEnabled()) {
+                    action.execute(source);
+                } else if (action.execute(this.source)) {
                     action.onExecuteSuccess(this.source);
                 } else {
                     action.onExecuteFail(this.source);
@@ -210,7 +217,9 @@ public class RepairItemTransaction extends InventoryTransaction {
             return true;
         } else if (inventory instanceof SmithingTableInventory smithingInventory) {
             for (InventoryAction action : this.actions) {
-                if (action.execute(this.source)) {
+                if (source.isServerAuthoritativeInventoryEnabled()) {
+                    action.execute(source);
+                } else if (action.execute(this.source)) {
                     action.onExecuteSuccess(this.source);
                 } else {
                     action.onExecuteFail(this.source);

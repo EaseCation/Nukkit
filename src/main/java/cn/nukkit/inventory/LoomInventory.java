@@ -2,8 +2,15 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBannerPattern;
+import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Position;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.utils.BannerPattern.Type;
+
+import javax.annotation.Nullable;
 
 import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
 
@@ -30,6 +37,10 @@ public class LoomInventory extends FakeBlockUIComponent {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
         who.recipeTag = RecipeTag.CRAFTING_TABLE;
+
+        if (who.isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
 
         for (int i = 0; i < SIZE; i++) {
             for (Item drop : who.getInventory().addItem(getItem(i))) {
@@ -83,5 +94,41 @@ public class LoomInventory extends FakeBlockUIComponent {
 
     public Item getPatternSlot() {
         return getItem(PATTERN_SLOT);
+    }
+
+    @Nullable
+    public Item getOutput(String patternId) {
+        return getOutput(patternId, getBannerSlot(), getDyeSlot(), getPatternSlot());
+    }
+
+    @Nullable
+    public static Item getOutput(String patternId, Item bannerItem, Item dyeItem, Item patternItem) {
+        if (!bannerItem.is(ItemID.BANNER) || bannerItem.isNull()
+                || !(dyeItem instanceof ItemDye dye) || dyeItem.isNull()) {
+            return null;
+        }
+        Type type = Type.getByName(patternId);
+        if (type == null || type == Type.PATTERN_ILLAGER) {
+            return null;
+        }
+        if (type.getId() != -1) {
+            if (!(patternItem instanceof ItemBannerPattern pattern) || patternItem.isNull() || pattern.getPattern() != type) {
+                return null;
+            }
+        } else if (!patternItem.isNull()) {
+            return null;
+        }
+        Item result = bannerItem.clone();
+        CompoundTag nbt = result.getOrCreateNamedTag();
+        ListTag<CompoundTag> patterns = nbt.getList("Patterns", CompoundTag.class);
+        if (patterns.size() >= 6) {
+            return null;
+        }
+        patterns.addCompound(new CompoundTag()
+                .putInt("Color", dye.getDyeColor().getDyeData())
+                .putString("Pattern", patternId));
+        result.setNamedTag(nbt.putList("Patterns", patterns));
+        result.setCount(1);
+        return result;
     }
 }

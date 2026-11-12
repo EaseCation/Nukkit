@@ -51,8 +51,16 @@ class CrossbowLoadItemSourceTest {
     @Test void quickChargeUsesTheExistingDuration() { check("quick", true, true, 1, 7, 1, 1); }
     @Test void disabledModeRetainsCancelledDebitBehavior() { check("ammo-cancel", false, true, 1, 8, 1, 1); }
     @Test void disabledModeRetainsCurrentHandWrite() { check("ammo-slot", false, true, 0, 7, 0, 1); }
+    @Test void authoritativeInventoryProtectsLoadingWithoutMainThreadInput() {
+        check("ammo-replace", false, false, 0, 8, 0, 0, true);
+        check("ammo-slot", false, true, 1, 7, 1, 1, true);
+    }
 
     private void check(String variant, boolean enabled, boolean accepted, int chargedCount, int arrows, int damage, int notifications) {
+        check(variant, enabled, accepted, chargedCount, arrows, damage, notifications, false);
+    }
+
+    private void check(String variant, boolean enabled, boolean accepted, int chargedCount, int arrows, int damage, int notifications, boolean authoritative) {
         // 库存与回调执行真实核心方法；只替代本核心测试没有的 Synapse 物品序列化。
         try (MockedStatic<ItemSerializer> serializers = mockStatic(ItemSerializer.class);
              MockedStatic<ItemUpgrader> upgraders = mockStatic(ItemUpgrader.class);
@@ -87,6 +95,7 @@ class CrossbowLoadItemSourceTest {
             when(player.getOffhandInventory()).thenReturn(offhand);
             when(player.getViewers()).thenReturn(Map.of());
             when(player.isMainThreadInputEnabled()).thenReturn(enabled);
+            when(player.isServerAuthoritativeInventoryEnabled()).thenReturn(authoritative);
             when(player.isSurvivalLike()).thenReturn(!variant.equals("creative-empty"));
             when(player.isCreative()).thenReturn(variant.equals("creative-empty"));
             player.level = mock(Level.class);
@@ -121,7 +130,7 @@ class CrossbowLoadItemSourceTest {
             assertEquals(damage, actual.getDamage());
             verify(player, times(notifications)).dataPacket(argThat(packet -> packet instanceof EntityEventPacket event
                     && event.event == EntityEventPacket.CHARGED_ITEM));
-            if (variant.equals("ammo-slot") && !enabled) {
+            if (variant.equals("ammo-slot") && !enabled && !authoritative) {
                 assertEquals(ItemID.CROSSBOW, inventory.getItem(0).getId());
                 assertEquals(1, ((ItemCrossbow) inventory.getItem(0)).getChargedItem().getCount());
             } else assertEquals(ItemID.AIR, inventory.getItem(0).getId());

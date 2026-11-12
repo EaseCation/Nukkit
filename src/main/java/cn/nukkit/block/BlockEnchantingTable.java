@@ -6,6 +6,8 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnchantTable;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.EnchantInventory;
+import cn.nukkit.inventory.FakeBlockUIComponent;
+import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
@@ -103,7 +105,14 @@ public class BlockEnchantingTable extends BlockTransparent {
                 }
             }
 
-            player.addWindow(new EnchantInventory(player.getUIInventory(), this), Player.ENCHANT_WINDOW_ID);
+            if (player.isServerAuthoritativeInventoryEnabled()) {
+                if (FakeBlockUIComponent.isCurrentWindowAt(player, InventoryType.ENCHANT_TABLE, this)) {
+                    return true;
+                }
+                player.setCurrentWindow(new EnchantInventory(player.getUIInventory(), this));
+            } else {
+                player.addWindow(new EnchantInventory(player.getUIInventory(), this), Player.ENCHANT_WINDOW_ID);
+            }
         }
 
         return true;

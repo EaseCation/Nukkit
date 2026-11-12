@@ -871,6 +871,50 @@ public class Item implements Cloneable, ItemID {
         return this;
     }
 
+    public String getFilteredCustomName() {
+        Tag display = this.getNamedTagEntry("display");
+        if (display instanceof CompoundTag compound && compound.get("FilteredName") instanceof StringTag filteredName) {
+            return filteredName.data;
+        }
+        return "";
+    }
+
+    public Item setFilteredCustomName(String filteredName) {
+        if (filteredName == null || filteredName.isEmpty()) {
+            return this.clearFilteredCustomName();
+        }
+
+        CompoundTag tag = this.getOrCreateNamedTag();
+        if (tag.get("display") instanceof CompoundTag display) {
+            display.putString("FilteredName", filteredName);
+        } else {
+            tag.putCompound("display", new CompoundTag()
+                    .putString("FilteredName", filteredName)
+            );
+        }
+        this.setNamedTag(tag);;
+        return this;
+    }
+
+    public Item clearFilteredCustomName() {
+        if (!this.hasCompoundTag()) {
+            return this;
+        }
+
+        CompoundTag tag = this.getNamedTag();
+
+        if (tag.get("display") instanceof CompoundTag display) {
+            display.remove("FilteredName");
+            if (display.isEmpty()) {
+                tag.remove("display");
+            }
+
+            this.setNamedTag(tag);
+        }
+
+        return this;
+    }
+
     public String[] getLore() {
         Tag tag = this.getNamedTagEntry("display");
         List<String> lines = new ObjectArrayList<>();
@@ -1173,7 +1217,7 @@ public class Item implements Cloneable, ItemID {
     public Tag getNamedTagEntry(String name) {
         CompoundTag tag = this.getNamedTag();
         if (tag != null) {
-            return tag.contains(name) ? tag.get(name) : null;
+            return tag.get(name);
         }
 
         return null;

@@ -21,7 +21,13 @@ public class RCONPacket {
     }
 
     public RCONPacket(ByteBuffer buffer) throws IOException {
+        if (buffer.remaining() < Integer.BYTES) {
+            throw new IOException("Incomplete RCON length");
+        }
         int size = buffer.getInt();
+        if (size < 10 || size > buffer.remaining()) {
+            throw new IOException("Invalid RCON packet length: " + size);
+        }
 
         this.id = buffer.getInt();
         this.type = buffer.getInt();

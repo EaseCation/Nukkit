@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.FakeBlockUIComponent;
+import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.inventory.LoomInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
@@ -68,7 +70,14 @@ public class BlockLoom extends BlockSolid implements Faceable {
         if (player == null) {
             return false;
         }
-        player.addWindow(new LoomInventory(player.getUIInventory(), this), Player.WORKBENCH_WINDOW_ID);
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            if (FakeBlockUIComponent.isCurrentWindowAt(player, InventoryType.LOOM, this)) {
+                return true;
+            }
+            player.setCurrentWindow(new LoomInventory(player.getUIInventory(), this));
+        } else {
+            player.addWindow(new LoomInventory(player.getUIInventory(), this), Player.WORKBENCH_WINDOW_ID);
+        }
         return true;
     }
 

@@ -15,6 +15,11 @@ public class EnchantmentMaceBreach extends EnchantmentMace {
     }
 
     @Override
+    public int getMinEnchantAbility(int level) {
+        return 9 * level + 6;
+    }
+
+    @Override
     public int getMaxEnchantAbility(int level) {
         return level + 8 * (level + 7);
     }

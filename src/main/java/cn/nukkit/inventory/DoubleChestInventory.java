@@ -10,6 +10,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -64,6 +65,11 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     }
 
     @Override
+    public boolean isHolderValid() {
+        return left.isHolderValid() && right.isHolderValid();
+    }
+
+    @Override
     protected void initSetContents(Map<Integer, Item> items) {
     }
 
@@ -75,6 +81,24 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     @Override
     public boolean setItem(int index, Item item, boolean send) {
         return index < this.left.getSize() ? this.left.setItem(index, item, send) : this.right.setItem(index - this.right.getSize(), item, send);
+    }
+
+    @Override
+    @Nullable
+    public PreparedInventorySlotChange captureAuthoritativeSlotChange(int index, Item source, Item target) {
+        if (!slotExists(index)) {
+            return null;
+        }
+        return index < left.getSize()
+                ? left.captureAuthoritativeSlotChange(index, source, target)
+                : right.captureAuthoritativeSlotChange(index - left.getSize(), source, target);
+    }
+
+    @Override
+    public boolean isPublishingAuthoritativeSlotChange(int index) {
+        return slotExists(index) && (index < left.getSize()
+                ? left.isPublishingAuthoritativeSlotChange(index)
+                : right.isPublishingAuthoritativeSlotChange(index - left.getSize()));
     }
 
     @Override
@@ -201,6 +225,9 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
         pk.item = inv.getItem(index);
 
         for (Player player : players) {
+            if (sendAuthoritativeSlot(pk.slot, player)) {
+                continue;
+            }
             int id = player.getWindowId(this);
             if (id == -1) {
                 this.close(player);

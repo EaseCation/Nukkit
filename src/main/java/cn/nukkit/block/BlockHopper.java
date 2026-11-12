@@ -95,7 +95,12 @@ public class BlockHopper extends BlockTransparent implements Faceable {
         }
 
         blockEntity.unpackLootTable();
-        return player.addWindow(blockEntity.getInventory()) != -1;
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            player.setCurrentWindow(blockEntity.getInventory());
+        } else {
+            return player.addWindow(blockEntity.getInventory()) != -1;
+        }
+        return true;
     }
 
     @Override

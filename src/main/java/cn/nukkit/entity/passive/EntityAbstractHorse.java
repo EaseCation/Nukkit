@@ -207,7 +207,11 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
             return;
         }
 
-        player.addWindow(getInventory());
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            player.setCurrentWindow(getInventory());
+        } else {
+            player.addWindow(getInventory());
+        }
     }
 
     @Override

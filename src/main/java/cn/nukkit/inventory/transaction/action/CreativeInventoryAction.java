@@ -7,6 +7,7 @@ import lombok.ToString;
 /**
  * @author CreeperFace
  */
+@Deprecated
 @ToString
 public class CreativeInventoryAction extends InventoryAction {
     /**

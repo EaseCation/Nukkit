@@ -16,7 +16,7 @@ public class EnchantmentWaterBreath extends Enchantment {
 
     @Override
     public int getMaxEnchantAbility(int level) {
-        return this.getMinEnchantAbility(level) + 30;
+        return this.getMinEnchantAbility(level) * 30;
     }
 
     @Override

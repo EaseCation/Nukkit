@@ -20,7 +20,7 @@ public abstract class EnchantmentLoot extends Enchantment {
 
     @Override
     public int getMaxEnchantAbility(int level) {
-        return this.getMinEnchantAbility(level) + 50;
+        return super.getMinEnchantAbility(level) + 50;
     }
 
     @Override
@@ -28,8 +28,4 @@ public abstract class EnchantmentLoot extends Enchantment {
         return 3;
     }
 
-    @Override
-    public boolean checkCompatibility(Enchantment enchantment) {
-        return super.checkCompatibility(enchantment) && enchantment.id != Enchantment.SILK_TOUCH;
-    }
 }

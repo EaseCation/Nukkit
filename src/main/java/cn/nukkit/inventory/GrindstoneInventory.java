@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 
+import javax.annotation.Nullable;
+
 import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
 
 public class GrindstoneInventory extends FakeBlockUIComponent {
@@ -31,6 +33,10 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         who.craftingType = Player.CRAFTING_SMALL;
         who.recipeTag = RecipeTag.CRAFTING_TABLE;
 
+        if (who.isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
+
         for (int i = 0; i < SIZE; ++i) {
             for (Item drop : who.getInventory().addItem(getItem(i))) {
                 who.dropItem(drop);
@@ -47,5 +53,15 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
 
     public Item getMaterialSlot() {
         return getItem(INGREDIENT_SLOT);
+    }
+
+    @Nullable
+    public static FakeBlockRecipeResult calculateResult(Item input, Item material) {
+        return FakeBlockRecipeHelper.grindstone(input, material);
+    }
+
+    @Nullable
+    public static FakeBlockRecipeResult calculateResult(Item input, Item material, boolean netEase) {
+        return FakeBlockRecipeHelper.grindstone(input, material, netEase);
     }
 }

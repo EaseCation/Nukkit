@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 
+import javax.annotation.Nullable;
+
 import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
 
 /**
@@ -29,6 +31,10 @@ public class AnvilInventory extends FakeBlockUIComponent {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
         who.recipeTag = RecipeTag.CRAFTING_TABLE;
+
+        if (who.isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
 
         for (int i = 0; i < SIZE; ++i) {
             for (Item drop : who.getInventory().addItem(getItem(i))) {
@@ -61,5 +67,10 @@ public class AnvilInventory extends FakeBlockUIComponent {
 
     public void setCost(int cost) {
         this.cost = cost;
+    }
+
+    @Nullable
+    public static FakeBlockRecipeResult calculateResult(Item input, Item material, @Nullable String name, boolean creative) {
+        return FakeBlockRecipeHelper.anvil(input, material, name, creative);
     }
 }

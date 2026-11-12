@@ -202,6 +202,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
     protected IntSet permanentWindows = new IntOpenHashSet();
+    protected List<Inventory> permanentWindowList = new ArrayList<>();
     protected int messageCounter = 2;
 
     public Vector3 speed = null;
@@ -215,6 +216,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected CraftingTransaction craftingTransaction;
     protected EnchantTransaction enchantTransaction;
     protected RepairItemTransaction repairItemTransaction;
+
+    protected Inventory currentWindow;
 
     protected int enchantmentSeed;
 
@@ -1924,6 +1927,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     public Item[] getDrops() {
         if (!this.isCreative()) {
+            if (isServerAuthoritativeInventoryEnabled()) {
+                List<Item> drops = new ArrayList<>();
+                for (Inventory inventory : collectAuthoritativeDeathInventories(List.of())) {
+                    drops.addAll(inventory.getContents().values());
+                }
+                return drops.toArray(new Item[0]);
+            }
             return super.getDrops();
         }
 
@@ -2586,23 +2596,42 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     /** 完成一次使用后只续接仍属于当前手的状态，不把来源身份锁定到整段蓄力。 */
     protected final void completeItemUse(Item item, int ticksUsed, boolean explicitShieldUse) {
-        InventorySlotReference source = this.isMainThreadInputEnabled() ? this.inventory.captureHeldItem() : null;
+        this.completeItemUse(item, ticksUsed, explicitShieldUse, true);
+    }
+
+    private boolean completeItemUse(Item item, int ticksUsed, boolean explicitShieldUse, boolean continueUsing) {
+        InventorySlotReference source = (this.isMainThreadInputEnabled() || this.isServerAuthoritativeInventoryEnabled() || !continueUsing) ? this.inventory.captureHeldItem() : null;
         long movementEpoch = source == null ? 0 : this.getMovementEpoch();
         this.setUsingItem(false);
         if (source != null && (this.startAction != -1 || !this.isItemUseSourceCurrent(source, movementEpoch)
                 || !source.getSnapshot().equalsExact(item))) {
             source.sendContents(this);
-            return;
+            return false;
         }
-        if (!item.onUse(this, ticksUsed)) {
+        boolean completed = item.onUse(this, ticksUsed);
+        if (!completed) {
             this.inventory.sendContents(this);
         }
-        if ((item.canRelease() || explicitShieldUse) && !item.isNull()
+        if (continueUsing && (item.canRelease() || explicitShieldUse) && !item.isNull()
                 && (source == null || (item.canContinueUsing() || explicitShieldUse)
                 && this.startAction == -1 && this.canContinueItemUse(movementEpoch)
                 && source.isSelectedBy(this.inventory) && this.inventory.getItemInHand().getId() == item.getId())) {
             this.setUsingItem(true);
         }
+        return completed && (continueUsing || !this.isUsingItem());
+    }
+
+    /**
+     * 权威物品栏仅写回使用回调实际改变的物品，同值物品仍须核对原槽身份。
+     */
+    protected final boolean updateAuthoritativeItemUse(Item before, Item after, @Nullable InventorySlotReference source) {
+        if (source != null && !source.isCurrent()) {
+            return false;
+        }
+        if (before.equalsExact(after)) {
+            return true;
+        }
+        return source == null ? this.inventory.setItemInHand(after) : source.setItem(after);
     }
 
     private boolean isItemUseSourceCurrent(@Nullable InventorySlotReference source, long movementEpoch) {
@@ -2627,22 +2656,51 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     /** 世界周期负责持续使用；回调失效只结束本次物品步骤，不跳过后续实体周期职责。 */
     void tickActiveItemUse() {
+        this.tickActiveItemUse(false);
+    }
+
+    /**
+     * 挖掘请求可能早于同 tick 的世界更新到达，先结算到期的持续使用，未到期则保留原计时。
+     */
+    protected final boolean finishItemUseBeforeBlockBreaking() {
+        if (!this.isUsingItem()) {
+            return true;
+        }
+        Item item = this.isUsingOffhandItem() ? this.getOffhandInventory().getItem(0) : this.inventory.getItemInHand();
+        int duration = item.getUseDuration();
+        if (!item.canRelease() || duration <= 0) {
+            return true;
+        }
+        if (this.server.getTick() - this.startAction < duration) {
+            return false;
+        }
+        Level origin = this.level;
+        long movementEpoch = this.getMovementEpoch();
+        int heldSlot = this.inventory.getHeldItemIndex();
+        boolean offhand = this.isUsingOffhandItem();
+        return this.tickActiveItemUse(true) && this.canContinueItemUse(movementEpoch)
+                && (!this.isMainThreadInputEnabled() || this.isAcceptingInputPackets()) && this.level == origin
+                && (offhand || this.inventory.getHeldItemIndex() == heldSlot);
+    }
+
+    private boolean tickActiveItemUse(boolean finishBeforeBreaking) {
         ItemUseHand previousHand = null;
         if (this.isUsingOffhandItem()) {
             previousHand = this.setItemInteractionHand(ItemUseHand.OFF_HAND);
         }
         try {
             Item item = this.inventory.getItemInHand();
-            InventorySlotReference source = this.isMainThreadInputEnabled() ? this.inventory.captureHeldItem() : null;
+            Item beforeUse = this.isServerAuthoritativeInventoryEnabled() ? item.clone() : null;
+            InventorySlotReference source = (this.isMainThreadInputEnabled() || this.isServerAuthoritativeInventoryEnabled() || finishBeforeBreaking) ? this.inventory.captureHeldItem() : null;
             long movementEpoch = source == null ? 0 : this.getMovementEpoch();
             int actionStart = this.startAction;
             long actionTimestamp = this.startActionTimestamp;
             if (this.isUsingOffhandItem() && !this.isUsingSameItem(item)) {
                 this.setUsingItem(false);
-                return;
+                return false;
             }
             if (!item.canRelease()) {
-                return;
+                return false;
             }
             int ticksUsed = this.server.getTick() - this.startAction;
             int timeUsedTicks = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
@@ -2650,11 +2708,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 item.onUsing(this, timeUsedTicks);
             }
             if (!this.canContinueActiveItemUse(source, movementEpoch, actionStart, actionTimestamp)) {
-                return;
+                return false;
             }
             int useDuration = item.getUseDuration();
-            if (useDuration <= 0 || ticksUsed <= useDuration) {
-                return;
+            if (useDuration <= 0 || (finishBeforeBreaking ? ticksUsed < useDuration : ticksUsed <= useDuration)) {
+                return false;
             }
             Vector3 directionVector = this.getDirectionVector();
             PlayerInteractEvent event = new PlayerInteractEvent(this, item, directionVector, null, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
@@ -2664,38 +2722,48 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             event.call();
             if (event.isCancelled()) {
                 this.inventory.sendHeldItem(this);
-                return;
+                return false;
             }
             if (!this.canContinueActiveItemUse(source, movementEpoch, actionStart, actionTimestamp)) {
-                return;
+                return false;
             }
             if (!item.onClickAir(this, directionVector)) {
-                return;
+                return false;
             }
             if (!this.canContinueActiveItemUse(source, movementEpoch, actionStart, actionTimestamp)) {
-                return;
+                return false;
             }
             if (this.isSurvivalLike()) {
-                if (source == null) {
+                if (beforeUse != null) {
+                    if (!this.updateAuthoritativeItemUse(beforeUse, item, source)) {
+                        if (source == null) {
+                            this.inventory.sendContents(this);
+                        } else {
+                            source.sendContents(this);
+                        }
+                        return false;
+                    }
+                } else if (source == null) {
                     this.inventory.setItemInHand(item);
                 } else if (!source.setItem(item)) {
                     source.sendContents(this);
-                    return;
+                    return false;
                 }
             }
             if (source != null && (!this.canContinueItemUse(movementEpoch) || !source.isSelectedBy(this.inventory))) {
                 if (this.startAction == actionStart && this.startActionTimestamp == actionTimestamp) {
                     this.setUsingItem(false);
                 }
-                return;
+                return false;
             }
             if (source != null && (this.startAction != actionStart || this.startActionTimestamp != actionTimestamp)) {
-                return;
+                return false;
             }
             if (!this.isUsingItem()) {
                 this.setUsingItem(item.canRelease());
+                return false;
             } else {
-                this.completeItemUse(item, ticksUsed, false);
+                return this.completeItemUse(item, ticksUsed, false, !finishBeforeBreaking);
             }
         } finally {
             if (previousHand != null) {
@@ -4241,6 +4309,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
+                    removeCurrentWindow();
                     this.resetCraftingGridType();
                     this.craftingType = CRAFTING_SMALL;
 
@@ -4547,7 +4616,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         } else if (inventory.getItemInHand().equals(useItemData.itemInHand)) {
                                             Item i = inventory.getItemInHand();
                                             Item oldItem = i.clone();
-                                            //TODO: Implement adventure mode checks
                                             if ((i = this.level.useItemOn(blockVector.asVector3(), i, face, useItemData.clickPos.x, useItemData.clickPos.y, useItemData.clickPos.z, this)) != null) {
                                                 if (i.getId() != 10000) {  // Hack
                                                     if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
@@ -4591,6 +4659,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         break packetswitch;
                                     }
 
+                                    removeCurrentWindow();
                                     this.resetCraftingGridType();
 
                                     Item i = this.getInventory().getItemInHand();
@@ -4906,7 +4975,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         return;
                     }
 
-                    if (isCreative()) {
+                    if (isCreative() && !isServerAuthoritativeInventoryEnabled()) {
                         // handled in InventoryTransactionPacket
                         return;
                     }
@@ -5008,6 +5077,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
+        removeCurrentWindow();
         this.resetCraftingGridType();
         this.craftingType = CRAFTING_SMALL;
 
@@ -5321,6 +5391,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void close(TextContainer message, String reason, boolean notify) {
+        if (deferCloseDuringAuthoritativeDeath(message, reason, notify)) {
+            return;
+        }
         if (this.connected && !this.closed) {
             this.advanceMovementEpoch();
             if (this.inputMovementStatistics != null) {
@@ -5358,6 +5431,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.hiddenPlayers = new Object2ObjectOpenHashMap<>();
 
+            removeCurrentWindow();
             this.removeAllWindows(true);
 
             List<Player> needRemovePlayerListFrom = this.getServer().getOnlinePlayers().values().stream()
@@ -5400,6 +5474,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.getAddress(),
                     this.getPort(),
                     reason));
+            removeCurrentWindow();
+            removePermanentInventories();
             this.windows.clear();
             this.windowIndex.clear();
             this.usedChunks = new Long2BooleanOpenHashMap();
@@ -5434,6 +5510,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void save(boolean async) {
+        if (deferSaveDuringAuthoritativeDeath(async)) {
+            return;
+        }
         if (this.closed) {
             throw new IllegalStateException("Tried to save closed player");
         }
@@ -5499,6 +5578,93 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public void kill() {
+        if (!isServerAuthoritativeInventoryEnabled()) {
+            killWithInventoryMode();
+            return;
+        }
+        if (settlingAuthoritativeDeath) {
+            return;
+        }
+        settlingAuthoritativeDeath = true;
+        try {
+            killWithInventoryMode();
+        } finally {
+            settlingAuthoritativeDeath = false;
+            finishAuthoritativeDeathLifecycle();
+        }
+    }
+
+    private boolean settlingAuthoritativeDeath;
+    private boolean deferredDeathSave;
+    private boolean deferredDeathSaveAsync;
+    @Nullable
+    private DeferredDeathClose deferredDeathClose;
+
+    protected final DeferredCloseObservation captureDeferredCloseObservation() {
+        return new DeferredCloseObservation(observationActionId, observationReasonCode, observationIntent);
+    }
+
+    protected final void closeWithObservation(TextContainer message, String reason, boolean notify,
+                                             DeferredCloseObservation observation) {
+        DeferredCloseObservation previous = captureDeferredCloseObservation();
+        observationActionId = observation.actionId();
+        observationReasonCode = observation.reasonCode();
+        observationIntent = observation.intent();
+        try {
+            close(message, reason, notify);
+        } finally {
+            observationActionId = previous.actionId();
+            observationReasonCode = previous.reasonCode();
+            observationIntent = previous.intent();
+        }
+    }
+
+    protected record DeferredCloseObservation(@Nullable String actionId, String reasonCode, String intent) {
+    }
+
+    protected final boolean deferCloseDuringAuthoritativeDeath(TextContainer message, String reason, boolean notify) {
+        if (!settlingAuthoritativeDeath) {
+            return false;
+        }
+        if (connected && !closed && deferredDeathClose == null) {
+            deferredDeathClose = new DeferredDeathClose(message, reason, notify, captureDeferredCloseObservation());
+        }
+        return true;
+    }
+
+    protected final boolean deferSaveDuringAuthoritativeDeath(boolean async) {
+        if (!settlingAuthoritativeDeath) {
+            return false;
+        }
+        deferredDeathSaveAsync = deferredDeathSave ? deferredDeathSaveAsync && async : async;
+        deferredDeathSave = true;
+        return true;
+    }
+
+    private void finishAuthoritativeDeathLifecycle() {
+        DeferredDeathClose close = deferredDeathClose;
+        boolean save = deferredDeathSave;
+        boolean async = deferredDeathSaveAsync;
+        deferredDeathClose = null;
+        deferredDeathSave = false;
+        deferredDeathSaveAsync = false;
+        try {
+            if (save && !isClosed()) {
+                // 若还要关闭，先同步保存，避免旧异步快照覆盖 QuitEvent 后的最终自动保存。
+                save(close == null && async);
+            }
+        } finally {
+            if (close != null) {
+                closeWithObservation(close.message(), close.reason(), close.notifyClient(), close.observation());
+            }
+        }
+    }
+
+    private record DeferredDeathClose(TextContainer message, String reason, boolean notifyClient,
+                                      DeferredCloseObservation observation) {
+    }
+
+    private void killWithInventoryMode() {
         if (!this.spawned) {
             return;
         }
@@ -5821,8 +5987,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         float health = this.health;
         this.health = 0;
 
-        PlayerDeathEvent ev = new PlayerDeathEvent(this, this.getDrops(), new TranslationContainer(message, params.toArray()), this.getExperienceLevel());
-        ev.setKeepExperience(this.level.gameRules.getBoolean(GameRule.KEEP_INVENTORY));
+        List<Inventory> deathInventories = isServerAuthoritativeInventoryEnabled()
+                ? collectAuthoritativeDeathInventories(List.of()) : List.of();
+        Item[] deathDrops = this.getDrops();
+        if (isServerAuthoritativeInventoryEnabled()) {
+            deathDrops = getAuthoritativeDeathDrops(deathDrops);
+        }
+        PlayerDeathEvent ev = new PlayerDeathEvent(this, deathDrops, new TranslationContainer(message, params.toArray()), this.getExperienceLevel());
+        ev.setKeepExperience(this.level.getGameRules().getBoolean(GameRule.KEEP_INVENTORY));
         ev.setKeepInventory(ev.getKeepExperience());
         this.server.getPluginManager().callEvent(ev);
 
@@ -5839,13 +6011,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.scheduleUpdate();
 
         if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+            if (isServerAuthoritativeInventoryEnabled()) {
+                clearAuthoritativeDeathInventories(collectAuthoritativeDeathInventories(deathInventories));
+            }
             for (Item item : ev.getDrops()) {
                 if (item.getId() == Item.ENCHANTED_BOOK || !item.hasEnchantment(Enchantment.VANISHING)) {
                     this.level.dropItem(this, item, null, true, 40);
                 }
             }
 
-            if (this.inventory != null) {
+            if (!isServerAuthoritativeInventoryEnabled() && this.inventory != null) {
                 for (int slot = 0; slot < inventory.getSize(); slot++) {
                     Item item = inventory.getItem(slot);
                     if (!item.isKeepOnDeath()) {
@@ -5853,7 +6028,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                 }
             }
-            if (this.offhandInventory != null) {
+            if (!isServerAuthoritativeInventoryEnabled() && this.offhandInventory != null) {
                 Item item = offhandInventory.getItem(0);
                 if (!item.isKeepOnDeath()) {
                     offhandInventory.setItem(0, Items.air());
@@ -5884,6 +6059,74 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    protected List<Inventory> getAuthoritativeDeathInventories() {
+        List<Inventory> inventories = new ArrayList<>();
+        if (inventory != null) inventories.add(inventory);
+        if (armorInventory != null) inventories.add(armorInventory);
+        if (offhandInventory != null) inventories.add(offhandInventory);
+        if (playerUIInventory != null) inventories.addAll(playerUIInventory.getTemporaryInventories());
+        return inventories;
+    }
+
+    private List<Inventory> collectAuthoritativeDeathInventories(List<Inventory> previous) {
+        Set<Inventory> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        List<Inventory> inventories = new ArrayList<>();
+        for (Inventory inventory : previous) {
+            if (visited.add(inventory)) inventories.add(inventory);
+        }
+        // 死亡事件可以关闭窗口并把临时物品移入新的恢复区，两个阶段的库存都必须参与清理。
+        for (Inventory inventory : getAuthoritativeDeathInventories()) {
+            if (visited.add(inventory)) inventories.add(inventory);
+        }
+        return inventories;
+    }
+
+    private Item[] getAuthoritativeDeathDrops(Item[] items) {
+        List<Item> drops = new ArrayList<>();
+        for (Item item : items) {
+            if (!item.isNull() && !item.isKeepOnDeath()) {
+                drops.add(item.clone());
+            }
+        }
+        return drops.toArray(new Item[0]);
+    }
+
+    private void clearAuthoritativeDeathInventories(List<Inventory> inventories) {
+        List<PreparedInventorySlotChange> changes = new ArrayList<>();
+        for (Inventory inventory : inventories) {
+            if (!(inventory instanceof BaseInventory base)) {
+                throw new IllegalStateException("Personal inventory does not support authoritative death cleanup");
+            }
+            for (Int2ObjectMap.Entry<Item> entry : inventory.getContents().int2ObjectEntrySet()) {
+                Item item = entry.getValue();
+                if (item.isNull() || item.isKeepOnDeath()) {
+                    continue;
+                }
+                PreparedInventorySlotChange change = base.captureAuthoritativeSlotChange(entry.getIntKey(), item, Items.air());
+                if (change == null) {
+                    throw new IllegalStateException("Personal inventory changed during authoritative death cleanup");
+                }
+                changes.add(change);
+            }
+        }
+        // PlayerDeathEvent 已决定保留与掉落；不能再由可取消槽事件令物品同时留在背包和地上。
+        for (PreparedInventorySlotChange change : changes) {
+            if (!change.commit()) {
+                for (int index = changes.size() - 1; index >= 0; index--) {
+                    changes.get(index).rollback();
+                }
+                throw new IllegalStateException("Personal inventory changed while committing authoritative death cleanup");
+            }
+        }
+        for (PreparedInventorySlotChange change : changes) {
+            try {
+                change.publish();
+            } catch (RuntimeException exception) {
+                log.error("Failed to publish authoritative death inventory cleanup for {}", getName(), exception);
+            }
+        }
+    }
+
     protected void respawn() {
         if (this.server.isHardcore()) {
             this.setBanned(true);
@@ -5892,6 +6135,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.craftingType = CRAFTING_SMALL;
         this.resetCraftingGridType();
+        removeCurrentWindow();
 
         PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, this.getSpawn());
         this.server.getPluginManager().callEvent(playerRespawnEvent);
@@ -6519,6 +6763,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (this.isMainThreadInputEnabled() && cause != null && from.getLevel() != this.level) {
                 this.sendWorldSpawnPosition(this.level);
             }
+            removeCurrentWindow();
             this.removeAllWindows();
 
             postTeleport(false);
@@ -6593,6 +6838,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         Location from = this.getLocation();
         if (super.teleport(location, cause)) {
             this.advanceMovementEpoch();
+            removeCurrentWindow();
             this.removeAllWindows();
 
             if (from.getLevel() != location.getLevel()) { //Different level, update compass position
@@ -6732,6 +6978,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public int getWindowId(Inventory inventory) {
+        if (isServerAuthoritativeInventoryEnabled()) {
+            InventoryListener listener = getInventoryListener();
+            if (listener != null) {
+                int windowId = listener.getWindowId(inventory);
+                if (windowId != Integer.MIN_VALUE) {
+                    return windowId;
+                }
+            }
+            return -1;
+        }
+
         Integer id = this.windows.get(inventory);
         if (id != null) {
             return id;
@@ -6741,6 +6998,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public Inventory getWindowById(int id) {
+        if (isServerAuthoritativeInventoryEnabled()) {
+            InventoryListener listener = getInventoryListener();
+            return listener != null ? listener.getWindowById(id) : null;
+        }
+
         return this.windowIndex.get(id);
     }
 
@@ -6761,6 +7023,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent, boolean alwaysOpen) {
+        if (isServerAuthoritativeInventoryEnabled()) {
+            return setCurrentWindow(inventory) ? getWindowId(inventory) : -1;
+        }
+
         Integer index = this.windows.get(inventory);
         if (index != null) {
             return index;
@@ -6788,11 +7054,80 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * Returns the inventory the player is currently viewing. This might be a chest, furnace, or any other container.
+     */
+    @Nullable
+    public Inventory getCurrentWindow() {
+        return currentWindow;
+    }
+
+    /**
+     * Opens an inventory window to the player. Returns if it was successful.
+     */
+    public boolean setCurrentWindow(Inventory inventory) {
+        if (!isServerAuthoritativeInventoryEnabled()) {
+            return addWindow(inventory) != -1;
+        }
+        if (currentWindow == inventory) {
+            return true;
+        }
+
+        InventoryOpenEvent event = new InventoryOpenEvent(inventory, this);
+        event.call();
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        removeCurrentWindow();
+
+        log.debug("{} opening inventory {}@{}", getName(), inventory.getClass().getSimpleName(), System.identityHashCode(inventory));
+        inventory.onOpen(this);
+        currentWindow = inventory;
+        return true;
+    }
+
+    public void removeCurrentWindow() {
+        if (!isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
+        doCloseInventory();
+        if (currentWindow == null) {
+            return;
+        }
+        Inventory currentWindow = this.currentWindow;
+        log.debug("{} closing inventory {}@{}", getName(), currentWindow.getClass().getSimpleName(), System.identityHashCode(inventory));
+        currentWindow.onClose(this);
+        this.currentWindow = null;
+        new InventoryCloseEvent(currentWindow, this).call();
+    }
+
+    protected void doCloseInventory() {
+    }
+
+    protected void removePermanentInventories() {
+    }
+
+    /**
+     * 清理个人 UI 时同步清除尚未返还的临时库存恢复数据。
+     */
+    public void clearPendingInventoryRecovery() {
+    }
+
     public Optional<Inventory> getTopWindow() {
+        if (isServerAuthoritativeInventoryEnabled()) {
+            return Optional.ofNullable(currentWindow);
+        }
         return Optional.ofNullable(this.windowIndex.get(windowCnt));
     }
 
     public void removeWindow(Inventory inventory) {
+        if (isServerAuthoritativeInventoryEnabled()) {
+            if (currentWindow == inventory) {
+                removeCurrentWindow();
+            }
+            return;
+        }
         if (!this.beginInventoryWindowRemoval(inventory)) {
             return;
         }
@@ -6921,12 +7256,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendAllInventories() {
+        if (isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
         for (Inventory inv : this.windowIndex.values()) {
             inv.sendContents(this);
         }
     }
 
     protected void addDefaultWindows() {
+        if (isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
         this.addWindow(this.getInventory(), ContainerIds.INVENTORY, true, true);
         this.addWindow(this.armorInventory, ContainerIds.ARMOR, true, true);
 
@@ -6959,6 +7300,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void resetCraftingGridType() {
+        if (isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
+
         if (this.craftingGrid != null) {
             Item[] drops = this.inventory.addItem(this.craftingGrid.getContents().values().toArray(new Item[0]));
             for (Item drop : drops) {
@@ -6990,6 +7335,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void removeAllWindows(boolean permanent) {
+        if (isServerAuthoritativeInventoryEnabled()) {
+            removeCurrentWindow();
+            if (permanent) {
+                removePermanentInventories();
+            }
+            return;
+        }
+
         for (Entry<Integer, Inventory> entry : new ObjectArrayList<>(this.windowIndex.entrySet())) {
             if (!permanent && this.permanentWindows.contains(entry.getKey())) {
                 continue;
@@ -7163,7 +7516,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     pk.entityId = this.getId();
                     pk.target = entity.getId();
                     Server.broadcastPacket(entity.getViewers().values(), pk);
-                    this.dataPacket(pk);
+                    if (!isServerAuthoritativeInventoryEnabled()) {
+                        this.dataPacket(pk);
+                    }
 
                     ev.getInventory().addItem(item);
                 } else {
@@ -7195,7 +7550,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     pk.entityId = this.getId();
                     pk.target = entity.getId();
                     Server.broadcastPacket(entity.getViewers().values(), pk);
-                    this.dataPacket(pk);
+                    if (!isServerAuthoritativeInventoryEnabled()) {
+                        this.dataPacket(pk);
+                    }
 
                     ev.getInventory().addItem(item);
                 } else {
@@ -7233,7 +7590,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             pk.entityId = this.getId();
                             pk.target = entity.getId();
                             Server.broadcastPacket(entity.getViewers().values(), pk);
-                            this.dataPacket(pk);
+                            if (!isServerAuthoritativeInventoryEnabled()) {
+                                this.dataPacket(pk);
+                            }
 
                             entity.close();
                         }
@@ -8133,6 +8492,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.16.0
      */
     public void sendEnchantingTableOptions(List<EnchantmentOption> options) {
+    }
+
+    @Nullable
+    public InventoryListener getInventoryListener() {
+        return null;
     }
 
     /**

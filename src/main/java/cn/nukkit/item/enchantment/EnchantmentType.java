@@ -38,7 +38,10 @@ public enum EnchantmentType {
             return true;
         }
         if (item instanceof ItemArmor) {
-            if (this == ARMOR || this == WEARABLE) {
+            if (this == ARMOR) {
+                return !item.is(Item.ELYTRA);
+            }
+            if (this == WEARABLE) {
                 return true;
             }
 
@@ -55,7 +58,7 @@ public enum EnchantmentType {
         } else {
             switch (this) {
                 case SWORD:
-                    return !item.is(Item.MACE) && (item.isSword() || item.isSpear());
+                    return !item.is(Item.MACE) && !item.is(Item.TRIDENT) && (item.isSword() || item.isSpear());
                 case DIGGER:
                     return item.isPickaxe() || item.isShovel() || item.isAxe() || item.isHoe();
                 case BOW:
@@ -73,7 +76,7 @@ public enum EnchantmentType {
                 case SPEAR:
                     return item.isSpear();
                 case MELEE_WEAPON:
-                    return item.isSword() || item.isSpear() || item.is(Item.MACE);
+                    return !item.is(Item.TRIDENT) && (item.isSword() || item.isSpear() || item.is(Item.MACE));
             }
         }
         return false;

@@ -163,6 +163,10 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
         }
         lastUpdate = currentTick;
 
+        int prevCookTime = cookTime;
+        int prevBurnTime = burnTime;
+        int prevMaxTime = maxTime;
+
         boolean ret = false;
         Item fuel = this.inventory.getFuel();
         Item raw = this.inventory.getSmelting();
@@ -229,23 +233,27 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
         }
 
         for (Player player : this.getInventory().getViewers()) {
-            int windowId = player.getWindowId(this.getInventory());
-            if (windowId > 0) {
-                ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
-                pk1.windowId = windowId;
-                pk1.property = ContainerSetDataPacket.PROPERTY_FURNACE_SMELT_PROGRESS;
-                pk1.value = cookTime;
-                player.dataPacket(pk1);
-
-                ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
-                pk2.windowId = windowId;
-                pk2.property = ContainerSetDataPacket.PROPERTY_FURNACE_REMAINING_FUEL_TIME;
-                pk2.value = burnDuration;
-                player.dataPacket(pk2);
+            if (player.isServerAuthoritativeInventoryEnabled()) {
+                sendAuthoritativeProgress(player, prevCookTime, prevBurnTime, prevMaxTime);
+                continue;
             }
+            player.sendContainerData(inventory, ContainerSetDataPacket.PROPERTY_FURNACE_SMELT_PROGRESS, cookTime);
+            player.sendContainerData(inventory, ContainerSetDataPacket.PROPERTY_FURNACE_REMAINING_FUEL_TIME, burnDuration);
         }
 
         return ret;
+    }
+
+    private void sendAuthoritativeProgress(Player player, int prevCookTime, int prevBurnTime, int prevMaxTime) {
+        if (prevCookTime != cookTime) {
+            player.sendContainerData(inventory, ContainerSetDataPacket.PROPERTY_FURNACE_SMELT_PROGRESS, cookTime);
+        }
+        if (prevBurnTime != burnTime) {
+            player.sendContainerData(inventory, ContainerSetDataPacket.PROPERTY_FURNACE_REMAINING_FUEL_TIME, burnTime);
+        }
+        if (prevMaxTime != maxTime) {
+            player.sendContainerData(inventory, ContainerSetDataPacket.PROPERTY_FURNACE_MAX_FUEL_TIME, maxTime);
+        }
     }
 
     protected int getUnlitBlockId() {
@@ -303,7 +311,7 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
         return result;
     }
 
-    protected RecipeTag getRecipeTag() {
+    public RecipeTag getRecipeTag() {
         return RecipeTag.FURNACE;
     }
 

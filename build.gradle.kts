@@ -258,6 +258,7 @@ dependencies {
     api(libs.zstd)
     testImplementation(libs.jupiter.engine)
     testImplementation(libs.mockito.core)
+    testCompileOnly(libs.javax.annotations)
     testRuntimeOnly(libs.junit.launcher)
     annotationProcessor(libs.lombok)
     annotationProcessor(libs.log4j.core)

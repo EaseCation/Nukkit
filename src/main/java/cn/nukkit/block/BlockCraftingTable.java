@@ -1,6 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.CraftingInventory;
+import cn.nukkit.inventory.FakeBlockUIComponent;
+import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.inventory.RecipeTag;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
@@ -60,6 +63,13 @@ public class BlockCraftingTable extends BlockSolid {
     private void openCraftingTable(Player player) {
         player.craftingType = Player.CRAFTING_BIG;
         player.recipeTag = RecipeTag.CRAFTING_TABLE;
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            if (FakeBlockUIComponent.isCurrentWindowAt(player, InventoryType.WORKBENCH, this)) {
+                return;
+            }
+            player.setCurrentWindow(new CraftingInventory(player.getUIInventory(), this));
+            return;
+        }
         player.setCraftingGrid(player.getUIInventory().getBigCraftingGrid());
 
         ContainerOpenPacket packet = new ContainerOpenPacket();

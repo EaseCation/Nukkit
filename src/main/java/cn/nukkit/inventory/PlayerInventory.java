@@ -73,7 +73,7 @@ public class PlayerInventory extends BaseInventory {
         return true;
     }
 
-    private boolean isHotbarSlot(int slot) {
+    public boolean isHotbarSlot(int slot) {
         return slot >= 0 && slot < this.getHotbarSize();
     }
 
@@ -86,6 +86,10 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public void setHeldItemIndex(int index, boolean send) {
+        if (getHolder() instanceof Player player && player.isServerAuthoritativeInventoryEnabled()) {
+            setHeldItemIndexAuthoritative(index, send);
+            return;
+        }
         if (isHotbarSlot(index)) {
             this.itemInHandIndex = index;
 
@@ -96,6 +100,21 @@ public class PlayerInventory extends BaseInventory {
                 packet.windowId = ContainerIds.INVENTORY;
                 packet.selectHotbarSlot = true;
                 player.dataPacket(packet);
+            }
+
+            this.sendHeldItem(this.getHolder().getViewers().values());
+        }
+    }
+
+    private void setHeldItemIndexAuthoritative(int index, boolean send) {
+        if (isHotbarSlot(index)) {
+            this.itemInHandIndex = index;
+
+            if (send && this.getHolder() instanceof Player player) {
+                InventoryListener listener = player.getInventoryListener();
+                if (listener != null) {
+                    listener.syncSelectedHotbarSlot();
+                }
             }
 
             this.sendHeldItem(this.getHolder().getViewers().values());
@@ -164,6 +183,10 @@ public class PlayerInventory extends BaseInventory {
 
         for (Player player : players) {
             if (player == this.getHolder()) {
+                if (player.isServerAuthoritativeInventoryEnabled()) {
+                    continue;
+                }
+
                 this.sendSlot(this.getHeldItemIndex(), player);
 
                 if (forceEquip) {
@@ -191,6 +214,10 @@ public class PlayerInventory extends BaseInventory {
 
     @Override
     public void onSlotChange(int index, Item before, Item after, boolean send) {
+        if (getHolder() instanceof Player player && player.isServerAuthoritativeInventoryEnabled()) {
+            onAuthoritativeSlotChange(index, before, after, send);
+            return;
+        }
         EntityHuman holder = this.getHolder();
         if (holder instanceof Player player) {
             if (after != null && index == getHeldItemIndex()) {
@@ -203,6 +230,49 @@ public class PlayerInventory extends BaseInventory {
         }
 
         super.onSlotChange(index, before, after, send);
+    }
+
+    private void onAuthoritativeSlotChange(int index, Item before, Item after, boolean send) {
+        notifyAuthoritativeSlotChange(index);
+
+        EntityHuman holder = this.getHolder();
+        if (holder instanceof Player player) {
+            if (after != null && index == getHeldItemIndex()) {
+                player.setButtonText(after.getInteractText(player));
+            }
+
+            if (!player.spawned) {
+                return;
+            }
+        }
+
+        broadcastAuthoritativeHeldItemChange(index, before);
+
+        if (send) {
+            sendSlotToLegacyViewers(index);
+        }
+    }
+
+    private void broadcastAuthoritativeHeldItemChange(int index, Item before) {
+        if (index != getHeldItemIndex()) {
+            return;
+        }
+        Item item = getItem(index);
+        if (item.equalsExact(before)) {
+            return;
+        }
+        EntityHuman holder = getHolder();
+        for (Player viewer : holder.getViewers().values()) {
+            if (viewer == holder) {
+                continue;
+            }
+            MobEquipmentPacket packet = new MobEquipmentPacket();
+            packet.eid = holder.getId();
+            packet.item = item;
+            packet.inventorySlot = packet.hotbarSlot = index;
+            packet.windowId = ContainerIds.INVENTORY;
+            viewer.dataPacket(packet);
+        }
     }
 
     public int getHotbarSize() {
@@ -233,6 +303,9 @@ public class PlayerInventory extends BaseInventory {
         }
 
         for (Player player : players) {
+            if (sendAuthoritativeContents(player)) {
+                continue;
+            }
             int id = player.getWindowId(this);
             if (id == ContainerIds.NONE || !player.spawned) {
                 if (this.getHolder() != player) this.close(player);
@@ -250,6 +323,9 @@ public class PlayerInventory extends BaseInventory {
         Item item = this.getItem(index);
 
         for (Player player : players) {
+            if (sendAuthoritativeSlot(index, player)) {
+                continue;
+            }
             if (player == this.getHolder()) {
                 InventorySlotPacket pk = new InventorySlotPacket();
                 pk.slot = index;
@@ -289,21 +365,30 @@ public class PlayerInventory extends BaseInventory {
     }
 
     @Override
+    public DataPacket createContainerOpenPacket(Player player, int windowId) {
+        ContainerOpenPacket pk = new ContainerOpenPacket();
+        pk.windowId = windowId;
+        pk.type = this.getType().getNetworkType();
+        pk.x = player.getFloorX();
+        pk.y = player.getFloorY();
+        pk.z = player.getFloorZ();
+        return pk;
+    }
+
+    @Override
     public void onOpen(Player who) {
         super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = who.getWindowId(this);
-        who.setLastOpenedWindowId(pk.windowId);
-        pk.type = this.getType().getNetworkType();
-        pk.x = who.getFloorX();
-        pk.y = who.getFloorY();
-        pk.z = who.getFloorZ();
-        who.dataPacket(pk);
+        if (who.isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
+        int windowId = who.getWindowId(this);
+        who.setLastOpenedWindowId(windowId);
+        who.dataPacket(createContainerOpenPacket(who, windowId));
     }
 
     @Override
     public void onClose(Player who) {
-        if (who.getClosingWindowId() != Integer.MAX_VALUE) {
+        if (!who.isServerAuthoritativeInventoryEnabled() && who.getClosingWindowId() != Integer.MAX_VALUE) {
             int windowId = who.getWindowId(this);
             if (windowId != ContainerIds.NONE) {
                 ContainerClosePacket pk = new ContainerClosePacket();

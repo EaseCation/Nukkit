@@ -60,7 +60,7 @@ public class ItemBow extends ItemTool {
     @Override
     public boolean onRelease(Player player, int ticksUsed, Vector3 rotation) {
         // 仅持有本次释放的来源，不把物品对象身份锁定到整段蓄力。
-        InventorySlotReference source = player.isMainThreadInputEnabled() ? player.getInventory().captureHeldItem() : null;
+        InventorySlotReference source = (player.isMainThreadInputEnabled() || player.isServerAuthoritativeInventoryEnabled()) ? player.getInventory().captureHeldItem() : null;
         long movementEpoch = source == null ? 0 : player.getMovementEpoch();
         if (source != null && (!player.canContinueItemUse(movementEpoch)
                 || !player.getInventory().getItemInHand().equalsExact(this))) {

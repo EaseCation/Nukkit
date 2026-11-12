@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockCrafter;
 import cn.nukkit.inventory.CrafterInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
@@ -23,6 +24,7 @@ public class BlockEntityCrafter extends BlockEntityAbstractContainer {
         disabledSlots = namedTag.getShort("disabled_slots");
 
         super.initBlockEntity();
+        setDisabledSlots(disabledSlots);
     }
 
     @Override
@@ -87,6 +89,7 @@ public class BlockEntityCrafter extends BlockEntityAbstractContainer {
         } else {
             disabledSlots &= ~(1 << slot);
         }
+        setDirty();
         return true;
     }
 
@@ -95,7 +98,12 @@ public class BlockEntityCrafter extends BlockEntityAbstractContainer {
     }
 
     public void setDisabledSlots(int slotFlags) {
-        disabledSlots = slotFlags;
+        disabledSlots = slotFlags & 0x1ff;
+        for (int slot = 0; slot < getSize(); slot++) {
+            if (!inventory.getItem(slot).isNull()) {
+                disabledSlots &= ~(1 << slot);
+            }
+        }
     }
 
     public int getCraftingTicksRemaining() {
@@ -103,6 +111,31 @@ public class BlockEntityCrafter extends BlockEntityAbstractContainer {
     }
 
     public void setCraftingTicksRemaining(int ticks) {
-        craftingTicksRemaining = ticks;
+        craftingTicksRemaining = Math.max(0, ticks);
+        lastUpdate = server.getTick();
+        if (craftingTicksRemaining > 0) {
+            scheduleUpdate();
+        }
+        spawnToAll();
+    }
+
+    @Override
+    public boolean onUpdate() {
+        int tick = server.getTick();
+        int elapsed = tick - lastUpdate;
+        if (elapsed <= 0) {
+            return craftingTicksRemaining > 0;
+        }
+        lastUpdate = tick;
+        craftingTicksRemaining = Math.max(0, craftingTicksRemaining - elapsed);
+        if (craftingTicksRemaining == 0) {
+            Block block = getBlock();
+            if (block instanceof BlockCrafter crafter && crafter.isCrafting()) {
+                crafter.setCrafting(false);
+                level.setBlock(crafter, crafter, true, false);
+                spawnToAll();
+            }
+        }
+        return craftingTicksRemaining > 0;
     }
 }

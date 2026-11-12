@@ -7,6 +7,7 @@ import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.network.protocol.DataPacket;
 
 import java.util.Map;
 
@@ -32,11 +33,9 @@ public abstract class ContainerInventory extends BaseInventory {
     }
 
     @Override
-    public void onOpen(Player who) {
-        super.onOpen(who);
+    public DataPacket createContainerOpenPacket(Player player, int windowId) {
         ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = who.getWindowId(this);
-        who.setLastOpenedWindowId(pk.windowId);
+        pk.windowId = windowId;
         pk.type = this.getType().getNetworkType();
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Vector3) {
@@ -49,15 +48,25 @@ public abstract class ContainerInventory extends BaseInventory {
         if (holder instanceof Entity && !(holder instanceof Player)) {
             pk.entityId = ((Entity) holder).getId();
         }
+        return pk;
+    }
 
-        who.dataPacket(pk);
+    @Override
+    public void onOpen(Player who) {
+        super.onOpen(who);
+        if (who.isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
+        int windowId = who.getWindowId(this);
+        who.setLastOpenedWindowId(windowId);
+        who.dataPacket(createContainerOpenPacket(who, windowId));
 
         this.sendContents(who);
     }
 
     @Override
     public void onClose(Player who) {
-        if (who.getClosingWindowId() != Integer.MAX_VALUE) {
+        if (!who.isServerAuthoritativeInventoryEnabled() && who.getClosingWindowId() != Integer.MAX_VALUE) {
             ContainerClosePacket pk = new ContainerClosePacket();
             pk.windowId = who.getWindowId(this);
             pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;

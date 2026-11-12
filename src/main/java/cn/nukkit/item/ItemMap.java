@@ -134,7 +134,7 @@ public class ItemMap extends Item {
         setNamedTag(nbt);
     }
 
-    static long getNewMapId() {
+    public static long getNewMapId() {
 //        return Utils.createUniqueId();
         return MAP_UNIQUE_ID.getAndIncrement();
     }
@@ -201,7 +201,7 @@ public class ItemMap extends Item {
         pk.mapId = getMapId();
         pk.parentMapIds = new long[]{getMapId()};
         pk.update = ClientboundMapItemDataPacket.TEXTURE_UPDATE;
-        pk.scale = MAX_SCALE;
+        pk.scale = (byte) getImageMapScale();
         pk.width = 128;
         pk.height = 128;
         pk.offsetX = 0;
@@ -209,6 +209,11 @@ public class ItemMap extends Item {
         pk.image = image;
 
         p.dataPacket(pk);
+    }
+
+    private int getImageMapScale() {
+        CompoundTag tag = getNamedTag();
+        return tag != null && tag.contains("map_scale") ? getMapScale() : MAX_SCALE;
     }
 
     @Override
@@ -237,6 +242,19 @@ public class ItemMap extends Item {
             return 0;
         }
         return tag.getInt("map_name_index");
+    }
+
+    public int getMapScale() {
+        CompoundTag tag = getNamedTag();
+        return tag == null ? 0 : Math.max(0, Math.min(MAX_SCALE, tag.getInt("map_scale")));
+    }
+
+    public ItemMap setMapScale(int scale) {
+        if (scale < 0 || scale > MAX_SCALE) {
+            throw new IllegalArgumentException("Map scale must be between 0 and 4");
+        }
+        setNamedTag(getOrCreateNamedTag().putInt("map_scale", scale));
+        return this;
     }
 
     public ItemMap setMapNameIndex(int nameIndex) {

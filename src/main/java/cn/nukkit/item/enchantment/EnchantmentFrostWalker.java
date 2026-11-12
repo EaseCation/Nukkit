@@ -6,6 +6,11 @@ public class EnchantmentFrostWalker extends Enchantment {
     }
 
     @Override
+    public int getMinEnchantAbility(int level) {
+        return 10 * level;
+    }
+
+    @Override
     public int getMaxEnchantAbility(int level) {
         return this.getMinEnchantAbility(level) + 15;
     }

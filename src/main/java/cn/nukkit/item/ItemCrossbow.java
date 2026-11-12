@@ -75,7 +75,7 @@ public class ItemCrossbow extends ItemTool {
                 return false;
             }
 
-            InventorySlotReference source = player.isMainThreadInputEnabled() ? player.getInventory().captureHeldItem() : null;
+            InventorySlotReference source = (player.isMainThreadInputEnabled() || player.isServerAuthoritativeInventoryEnabled()) ? player.getInventory().captureHeldItem() : null;
             long movementEpoch = source == null ? 0 : player.getMovementEpoch();
             if (source != null && (!player.canContinueItemUse(movementEpoch)
                     || !source.getSnapshot().equalsExact(this))) {
@@ -233,7 +233,7 @@ public class ItemCrossbow extends ItemTool {
             return false;
         }
 
-        InventorySlotReference source = player.isMainThreadInputEnabled() ? player.getInventory().captureHeldItem() : null;
+        InventorySlotReference source = (player.isMainThreadInputEnabled() || player.isServerAuthoritativeInventoryEnabled()) ? player.getInventory().captureHeldItem() : null;
         long movementEpoch = source == null ? 0 : player.getMovementEpoch();
         if (source != null && (!player.canContinueItemUse(movementEpoch)
                 || !source.getSnapshot().equalsExact(this) || !getChargedItem().isNull())) {

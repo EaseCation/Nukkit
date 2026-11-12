@@ -1234,6 +1234,7 @@ public final class Items {
                         item.setCompoundTag(tags);
                     }
 
+                    item.initItem();
                     return item;
                 }
             }
@@ -1258,6 +1259,7 @@ public final class Items {
             item.setCompoundTag(tags);
         }
 
+        item.initItem();
         return item;
     }
 
@@ -1277,6 +1279,7 @@ public final class Items {
                             item.setCompoundTag(tags);
                         }
 
+                        item.initItem();
                         return item;
                     }
                 }
@@ -1302,6 +1305,7 @@ public final class Items {
             item.setCompoundTag(tags);
         }
 
+        item.initItem();
         return item;
     }
 

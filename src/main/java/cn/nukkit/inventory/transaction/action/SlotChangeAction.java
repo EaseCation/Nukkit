@@ -2,6 +2,7 @@ package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
 import cn.nukkit.inventory.ArmorInventory;
+import cn.nukkit.inventory.CrafterInventory;
 import cn.nukkit.inventory.FurnaceInventory;
 import cn.nukkit.inventory.ExplicitItemUseHandPolicy;
 import cn.nukkit.inventory.Inventory;
@@ -55,6 +56,17 @@ public class SlotChangeAction extends InventoryAction {
      */
     @Override
     public boolean isValid(Player source) {
+        if (!inventory.isHolderValid()) {
+            return false;
+        }
+        if (source.isServerAuthoritativeInventoryEnabled()
+                && (!inventory.slotExists(inventorySlot) || sourceItem.getCount() < 0 || targetItem.getCount() < 0)) {
+            return false;
+        }
+        if (source.isServerAuthoritativeInventoryEnabled() && inventory instanceof CrafterInventory crafter
+                && !targetItem.isNull() && crafter.getHolder().isSlotDisabled(inventorySlot)) {
+            return false;
+        }
         if (inventory instanceof PlayerOffhandInventory
                 && !ExplicitItemUseHandPolicy.isOffhandSlotChangeAllowed(source, targetItem)) {
             return false;
@@ -93,7 +105,7 @@ public class SlotChangeAction extends InventoryAction {
      */
     @Override
     public boolean execute(Player source) {
-        return this.inventory.setItem(this.inventorySlot, this.targetItem, false);
+        return this.inventory.isHolderValid() && this.inventory.setItem(this.inventorySlot, this.targetItem, false);
     }
 
     /**

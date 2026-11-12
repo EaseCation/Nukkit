@@ -54,8 +54,16 @@ class BowReleaseItemSourceTest {
     @Test void infinityStillConsumesTippedArrows() { check("infinity-tipped", true, true, 7, 1, false); }
     @Test void creativeCanReleaseWithoutAmmo() { check("creative-empty", true, true, 0, 0, false); }
     @Test void disabledModeRetainsLegacyCancelledConsumption() { check("ammo-cancel", false, true, 8, 1, false); }
+    @Test void authoritativeInventoryRejectsSourceChangesWithoutMainThreadInput() {
+        check("early-slot", false, false, 8, 0, false, true);
+        check("ammo-replace", false, false, 8, 0, false, true);
+    }
 
     private void check(String variant, boolean inputMode, boolean launched, int arrowCount, int bowDamage, boolean duplicate) {
+        check(variant, inputMode, launched, arrowCount, bowDamage, duplicate, false);
+    }
+
+    private void check(String variant, boolean inputMode, boolean launched, int arrowCount, int bowDamage, boolean duplicate, boolean authoritative) {
         Player player = mock(Player.class);
         PlayerInventory inventory = new PlayerInventory(player);
         PlayerOffhandInventory offhand = new PlayerOffhandInventory(player);
@@ -75,6 +83,7 @@ class BowReleaseItemSourceTest {
         when(player.isOffhandItemInteraction()).thenReturn(offhandUse);
         when(player.getViewers()).thenReturn(Map.of());
         when(player.isMainThreadInputEnabled()).thenReturn(inputMode);
+        when(player.isServerAuthoritativeInventoryEnabled()).thenReturn(authoritative);
         when(player.isSurvivalLike()).thenReturn(!variant.equals("creative-empty"));
         when(player.isCreative()).thenReturn(variant.equals("creative-empty"));
         when(player.getEyePosition()).thenReturn(new Vector3(0, 2, 0));

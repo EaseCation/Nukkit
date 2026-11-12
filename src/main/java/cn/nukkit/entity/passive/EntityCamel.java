@@ -320,6 +320,10 @@ public class EntityCamel extends EntityAnimal implements EntityInteractable, Ent
             return;
         }
 
+        if (!getInventory().getItem(0).is(Item.SADDLE)) {
+            return;
+        }
+
         motionX *= 0.3f;
         if (motionY > 0) {
             motionY *= 0.5f;

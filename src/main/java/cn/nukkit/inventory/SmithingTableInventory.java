@@ -2,14 +2,15 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Position;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 
 import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
 
-//TODO: Depends on ItemStackNetManager :(
 public class SmithingTableInventory extends FakeBlockUIComponent {
 
     public static final int INPUT_SLOT = SMITHING_TABLE_INPUT - SMITHING_TABLE_INPUT_OFFSET;
@@ -23,11 +24,20 @@ public class SmithingTableInventory extends FakeBlockUIComponent {
     }
 
     @Override
+    public RecipeTag getRecipeTag() {
+        return RecipeTag.SMITHING_TABLE;
+    }
+
+    @Override
     public void onClose(Player who) {
         who.resetRepairItemTransaction();
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
         who.recipeTag = RecipeTag.CRAFTING_TABLE;
+
+        if (who.isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
 
         for (int i = 0; i < SIZE; ++i) {
             for (Item drop : who.getInventory().addItem(getItem(i))) {
@@ -125,5 +135,42 @@ public class SmithingTableInventory extends FakeBlockUIComponent {
 
     public Item getTemplateSlot() {
         return getItem(TEMPLATE_SLOT);
+    }
+
+    public Item getOutput(SmithingTransformRecipe recipe) {
+        return getOutput(recipe, getInputSlot());
+    }
+
+    public static Item getOutput(SmithingTransformRecipe recipe, Item base) {
+        Item result = recipe.getResult();
+        result.setDamage(base.getDamage());
+        result.setCompoundTag(base.getCompoundTag());
+        result.setCanPlaceOnBlocks(base.getCanPlaceOnBlocks());
+        result.setCanDestroyBlocks(base.getCanDestroyBlocks());
+        return result;
+    }
+
+    @Nullable
+    public Item getOutput(SmithingTrimRecipe recipe) {
+        return getOutput(recipe, getInputSlot(), getMaterialSlot(), getTemplateSlot());
+    }
+
+    @Nullable
+    public static Item getOutput(SmithingTrimRecipe recipe, Item base, Item materialItem, Item templateItem) {
+        if (!(base instanceof ItemArmor)) {
+            return null;
+        }
+        String pattern = templateItem.getTrimPatternName();
+        String material = materialItem.getTrimMaterialName();
+        if (pattern == null || material == null) {
+            return null;
+        }
+        ItemArmor armor = (ItemArmor) base.clone();
+        if (pattern.equals(armor.getTrimPattern()) && material.equals(armor.getTrimMaterial())) {
+            return null;
+        }
+        armor.setCount(1);
+        armor.setTrim(pattern, material);
+        return armor;
     }
 }

@@ -2,6 +2,7 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.API;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -59,30 +60,35 @@ public final class VarInt {
 
     private static long read(BinaryStream stream, int maxSize) {
         long value = 0;
-        int size = 0;
-        int b;
-        while (((b = stream.getByte()) & 0x80) == 0x80) {
-            value |= (long) (b & 0x7F) << (size++ * 7);
-            if (size >= maxSize) {
+        for (int size = 0; size < maxSize; size++) {
+            int b = stream.getByte();
+            if (size == maxSize - 1 && (b & (maxSize == 5 ? 0xf0 : 0xfe)) != 0) {
                 throw new IllegalArgumentException("VarLong too big");
             }
+            value |= (long) (b & 0x7f) << (size * 7);
+            if ((b & 0x80) == 0) {
+                return value;
+            }
         }
-
-        return value | ((long) (b & 0x7F) << (size * 7));
+        throw new IllegalArgumentException("VarLong too big");
     }
 
     private static long read(InputStream stream, int maxSize) throws IOException {
         long value = 0;
-        int size = 0;
-        int b;
-        while (((b = stream.read()) & 0x80) == 0x80) {
-            value |= (long) (b & 0x7F) << (size++ * 7);
-            if (size >= maxSize) {
+        for (int size = 0; size < maxSize; size++) {
+            int b = stream.read();
+            if (b == -1) {
+                throw new EOFException("Incomplete VarInt");
+            }
+            if (size == maxSize - 1 && (b & (maxSize == 5 ? 0xf0 : 0xfe)) != 0) {
                 throw new IllegalArgumentException("VarLong too big");
             }
+            value |= (long) (b & 0x7f) << (size * 7);
+            if ((b & 0x80) == 0) {
+                return value;
+            }
         }
-
-        return value | ((long) (b & 0x7F) << (size * 7));
+        throw new IllegalArgumentException("VarLong too big");
     }
 
     /**

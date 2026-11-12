@@ -64,19 +64,20 @@ public class FurnaceInventory extends ContainerInventory {
     public void onOpen(Player who) {
         super.onOpen(who);
 
+        if (who.isServerAuthoritativeInventoryEnabled()) {
+            sendAuthoritativeProgress(who);
+            return;
+        }
+
         BlockEntityFurnace holder = getHolder();
-        int windowId = who.getWindowId(this);
+        who.sendContainerData(this, ContainerSetDataPacket.PROPERTY_FURNACE_SMELT_PROGRESS, holder.getCookTime());
+        who.sendContainerData(this, ContainerSetDataPacket.PROPERTY_FURNACE_REMAINING_FUEL_TIME, holder.getBurnDuration());
+    }
 
-        ContainerSetDataPacket pk0 = new ContainerSetDataPacket();
-        pk0.windowId = windowId;
-        pk0.property = ContainerSetDataPacket.PROPERTY_FURNACE_SMELT_PROGRESS;
-        pk0.value = holder.getCookTime();
-        who.dataPacket(pk0);
-
-        ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
-        pk1.windowId = windowId;
-        pk1.property = ContainerSetDataPacket.PROPERTY_FURNACE_REMAINING_FUEL_TIME;
-        pk1.value = holder.getBurnDuration();
-        who.dataPacket(pk1);
+    private void sendAuthoritativeProgress(Player player) {
+        BlockEntityFurnace holder = getHolder();
+        player.sendContainerData(this, ContainerSetDataPacket.PROPERTY_FURNACE_SMELT_PROGRESS, holder.getCookTime());
+        player.sendContainerData(this, ContainerSetDataPacket.PROPERTY_FURNACE_REMAINING_FUEL_TIME, holder.getBurnTime());
+        player.sendContainerData(this, ContainerSetDataPacket.PROPERTY_FURNACE_MAX_FUEL_TIME, holder.getMaxTime());
     }
 }

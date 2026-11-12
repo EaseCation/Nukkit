@@ -1,5 +1,7 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.inventory.recipe.RecipeIngredient;
+import cn.nukkit.inventory.recipe.UnlockingContext;
 import cn.nukkit.item.Item;
 
 import java.util.List;
@@ -32,11 +34,19 @@ public interface CraftingRecipe extends Recipe {
      * @param extraOutputList list of items put back into the crafting grid (secondary results)
      * @return bool
      */
+    @Deprecated
     default boolean matchItems(List<Item> inputList, List<Item> extraOutputList) {
         return matchItems(inputList, extraOutputList, 1);
     }
 
-    boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier);
+    @Deprecated
+    default boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier) {
+        return false;
+    }
 
-    List<Item> getIngredientsAggregate();
+    List<RecipeIngredient> getIngredientsAggregate();
+
+    UnlockingContext getUnlockingContext();
+
+    List<RecipeIngredient> getUnlockingIngredientList();
 }

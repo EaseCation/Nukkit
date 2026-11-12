@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.FakeBlockUIComponent;
+import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.inventory.SmithingTableInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
@@ -52,7 +54,14 @@ public class BlockSmithingTable extends BlockSolid {
         if (player == null) {
             return false;
         }
-        player.addWindow(new SmithingTableInventory(player.getUIInventory(), this), Player.ANVIL_WINDOW_ID);
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            if (FakeBlockUIComponent.isCurrentWindowAt(player, InventoryType.SMITHING_TABLE, this)) {
+                return true;
+            }
+            player.setCurrentWindow(new SmithingTableInventory(player.getUIInventory(), this));
+        } else {
+            player.addWindow(new SmithingTableInventory(player.getUIInventory(), this), Player.ANVIL_WINDOW_ID);
+        }
         return true;
     }
 

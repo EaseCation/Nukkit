@@ -209,7 +209,11 @@ public class BlockChest extends BlockTransparent implements Faceable {
             }
 
             chest.unpackLootTable();
-            player.addWindow(chest.getInventory());
+            if (player.isServerAuthoritativeInventoryEnabled()) {
+                player.setCurrentWindow(chest.getInventory());
+            } else {
+                player.addWindow(chest.getInventory());
+            }
         }
 
         return true;

@@ -137,7 +137,11 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
             }
 
             furnace.unpackLootTable();
-            player.addWindow(furnace.getInventory());
+            if (player.isServerAuthoritativeInventoryEnabled()) {
+                player.setCurrentWindow(furnace.getInventory());
+            } else {
+                player.addWindow(furnace.getInventory());
+            }
         }
 
         return true;

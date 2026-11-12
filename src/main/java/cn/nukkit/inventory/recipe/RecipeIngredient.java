@@ -1,5 +1,8 @@
 package cn.nukkit.inventory.recipe;
 
+import cn.nukkit.inventory.recipe.descriptor.DefaultItemDescriptor;
+import cn.nukkit.inventory.recipe.descriptor.InvalidItemDescriptor;
+import cn.nukkit.inventory.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 

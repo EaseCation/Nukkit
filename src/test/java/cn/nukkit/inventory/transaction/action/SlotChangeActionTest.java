@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
@@ -99,6 +100,7 @@ class SlotChangeActionTest {
 
     private static SlotChangeAction offhandAction(Item source, Item target) {
         PlayerOffhandInventory inventory = mock(PlayerOffhandInventory.class);
+        doCallRealMethod().when(inventory).isHolderValid();
         when(inventory.getItem(0)).thenReturn(source);
         when(inventory.getMaxStackSize()).thenReturn(64);
         return new SlotChangeAction(inventory, 0, source, target);

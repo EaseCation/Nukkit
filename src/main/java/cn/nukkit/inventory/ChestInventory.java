@@ -72,6 +72,16 @@ public class ChestInventory extends ContainerInventory {
     }
 
     @Override
+    protected void notifyAuthoritativeSlotChange(int index) {
+        if (doubleInventory != null) {
+            int slot = this == doubleInventory.getRightSide() ? doubleInventory.getLeftSide().getSize() + index : index;
+            doubleInventory.notifyAuthoritativeSlotChange(slot);
+            return;
+        }
+        super.notifyAuthoritativeSlotChange(index);
+    }
+
+    @Override
     public void sendSlot(int index, Player... players) {
         if (this.doubleInventory != null) {
             this.doubleInventory.sendSlot(this, index, players);

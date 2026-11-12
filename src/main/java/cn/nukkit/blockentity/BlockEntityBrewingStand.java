@@ -192,20 +192,8 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
 
     protected void sendFuel() {
         for (Player p : this.inventory.getViewers()) {
-            int windowId = p.getWindowId(this.inventory);
-            if (windowId > 0) {
-                ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
-                pk1.windowId = windowId;
-                pk1.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_AMOUNT;
-                pk1.value = this.fuelAmount;
-                p.dataPacket(pk1);
-
-                ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
-                pk2.windowId = windowId;
-                pk2.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_TOTAL;
-                pk2.value = this.fuelTotal;
-                p.dataPacket(pk2);
-            }
+            p.sendContainerData(inventory, ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_AMOUNT, fuelAmount);
+            p.sendContainerData(inventory, ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_TOTAL, fuelTotal);
         }
     }
 
@@ -215,14 +203,7 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
 
     protected void sendBrewTime(int brewTime) {
         for (Player p : this.inventory.getViewers()) {
-            int windowId = p.getWindowId(this.inventory);
-            if (windowId > 0) {
-                ContainerSetDataPacket pk = new ContainerSetDataPacket();
-                pk.windowId = windowId;
-                pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
-                pk.value = brewTime;
-                p.dataPacket(pk);
-            }
+            p.sendContainerData(inventory, ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME, brewTime);
         }
     }
 

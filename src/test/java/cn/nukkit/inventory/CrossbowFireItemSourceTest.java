@@ -56,8 +56,16 @@ class CrossbowFireItemSourceTest {
     @Test void cancelledFireworkSettlementCannotPublish() { check("firework-write-cancel", true, 0, true, false); }
     @Test void modifiedFireworkSettlementCannotPublish() { check("firework-write-modify", true, 0, true, false); }
     @Test void fireworkSettlementSelectionChangeKeepsOriginalSlot() { check("firework-write-slot", true, 1, false, false); }
+    @Test void authoritativeInventoryRejectsLaunchReplacementWithoutMainThreadInput() {
+        check("launch-replace", false, 0, true, false, true);
+        check("launch-slot", false, 0, true, false, true);
+    }
 
     private void check(String variant, boolean inputMode, int published, boolean charged, boolean duplicate) {
+        check(variant, inputMode, published, charged, duplicate, false);
+    }
+
+    private void check(String variant, boolean inputMode, int published, boolean charged, boolean duplicate, boolean authoritative) {
         // 核心测试没有 Synapse 的运行时物品映射；此处只保存本用例的箭，不测试协议序列化。
         try (MockedStatic<ItemSerializer> serializers = mockStatic(ItemSerializer.class);
              MockedStatic<ItemUpgrader> upgraders = mockStatic(ItemUpgrader.class)) {
@@ -70,11 +78,11 @@ class CrossbowFireItemSourceTest {
                 CompoundTag tag = call.getArgument(0);
                 return Item.get(tag.getShort("id"), tag.getShort("Damage"), tag.getByte("Count"));
             });
-            checkSerializedArrow(variant, inputMode, published, charged, duplicate);
+            checkSerializedArrow(variant, inputMode, published, charged, duplicate, authoritative);
         }
     }
 
-    private void checkSerializedArrow(String variant, boolean inputMode, int published, boolean charged, boolean duplicate) {
+    private void checkSerializedArrow(String variant, boolean inputMode, int published, boolean charged, boolean duplicate, boolean authoritative) {
         boolean firesFirework = variant.startsWith("firework-");
         String callbackVariant = firesFirework ? variant.substring("firework-".length()) : variant;
         Player player = mock(Player.class);
@@ -93,6 +101,7 @@ class CrossbowFireItemSourceTest {
         when(player.isOffhandItemInteraction()).thenAnswer(call -> offhandRoute.get());
         when(player.getViewers()).thenReturn(Map.of());
         when(player.isMainThreadInputEnabled()).thenReturn(inputMode);
+        when(player.isServerAuthoritativeInventoryEnabled()).thenReturn(authoritative);
         when(player.getEyePosition()).thenReturn(new Vector3(0, 2, 0));
         player.level = mock(Level.class);
         when(player.getLevel()).thenReturn(player.level);

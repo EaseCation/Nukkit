@@ -96,10 +96,6 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
         return 1;
     }
 
-    public int getMaxEnchantableLevel() {
-        return getMaxLevel();
-    }
-
     public int getMinEnchantAbility(int level) {
         return 1 + level * 10;
     }
@@ -121,10 +117,6 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
     }
 
     public void doAttack(Entity attacker, Entity entity) {
-
-    }
-
-    public void doPostHurt(Entity attacker, Entity entity) {
 
     }
 

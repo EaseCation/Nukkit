@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 /**
  * @author CreeperFace
  */
+@Deprecated
 public class CraftingTransferMaterialAction extends InventoryAction {
 
     private final int slot;

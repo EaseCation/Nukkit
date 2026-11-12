@@ -81,6 +81,35 @@ public class NetworkInventoryAction {
     public Item newItem;
     public int stackNetworkId;
 
+    public NetworkInventoryAction readNew(DataPacket packet, InventoryTransactionPacketInterface interfaze) {
+        this.sourceType = (int) packet.getUnsignedVarInt();
+
+        switch (this.sourceType) {
+            case SOURCE_CONTAINER:
+                this.windowId = packet.getVarInt();
+                break;
+            case SOURCE_WORLD:
+                this.sourceFlags = (int) packet.getUnsignedVarInt();
+                break;
+            case SOURCE_CREATIVE:
+                break;
+            case SOURCE_TODO:
+                this.windowId = packet.getVarInt();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown inventory action source type " + sourceType);
+        }
+
+        this.inventorySlot = (int) packet.getUnsignedVarInt();
+        this.oldItem = packet.getSlot();
+        this.newItem = packet.getSlot();
+
+        if (interfaze != null && interfaze.hasNetworkIds()) {
+            this.stackNetworkId = packet.getVarInt();
+        }
+        return this;
+    }
+
     public NetworkInventoryAction read(DataPacket packet, InventoryTransactionPacketInterface interfaze) {
         this.sourceType = (int) packet.getUnsignedVarInt();
 
@@ -124,6 +153,31 @@ public class NetworkInventoryAction {
         if (interfaze != null && interfaze.hasNetworkIds()) {
             this.stackNetworkId = packet.getVarInt();
         }
+        return this;
+    }
+
+    public NetworkInventoryAction readCerealNew(DataPacket packet) {
+        this.sourceType = (int) packet.getUnsignedVarInt();
+        switch (this.sourceType) {
+            case SOURCE_CONTAINER:
+            case SOURCE_WORLD:
+            case SOURCE_CREATIVE:
+            case SOURCE_TODO:
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown inventory action source type " + this.sourceType);
+        }
+
+        if (packet.getBoolean() && packet.getBoolean()) {
+            this.windowId = packet.getSignedByte();
+        }
+        if (packet.getBoolean() && packet.getBoolean()) {
+            this.sourceFlags = (int) packet.getUnsignedVarInt();
+        }
+
+        this.inventorySlot = (int) packet.getUnsignedVarInt();
+        this.oldItem = packet.getItemStack();
+        this.newItem = packet.getItemStack();
         return this;
     }
 

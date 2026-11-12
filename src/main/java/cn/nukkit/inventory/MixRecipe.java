@@ -29,6 +29,7 @@ public abstract class MixRecipe implements Recipe {
         return output.clone();
     }
 
+    @Override
     public Item getResultUnsafe() {
         return output;
     }
@@ -36,5 +37,14 @@ public abstract class MixRecipe implements Recipe {
     @Override
     public RecipeTag getTag() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getNetworkId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setNetworkId(int networkId) {
     }
 }

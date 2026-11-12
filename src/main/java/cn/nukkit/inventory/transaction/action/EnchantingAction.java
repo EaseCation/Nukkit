@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import lombok.Getter;
 
+@Deprecated
 public class EnchantingAction extends InventoryAction {
     @Getter
     private final int type;

@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 /**
  * @author CreeperFace
  */
+@Deprecated
 public class CraftingTakeResultAction extends InventoryAction {
 
     public CraftingTakeResultAction(Item sourceItem, Item targetItem) {

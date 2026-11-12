@@ -4,7 +4,7 @@ import cn.nukkit.item.enchantment.EnchantmentNames;
 
 public class EnchantmentSpearLunge extends EnchantmentSpear {
     public EnchantmentSpearLunge() {
-        super(LUNGE, EnchantmentNames.LUNGE, "lunge", Rarity.RARE);
+        super(LUNGE, EnchantmentNames.LUNGE, "lunge", Rarity.UNCOMMON);
     }
 
     @Override

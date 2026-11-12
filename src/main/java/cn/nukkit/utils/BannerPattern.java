@@ -74,6 +74,7 @@ public class BannerPattern {
         PATTERN_GLOBE("glb", Item.GLOBE_BANNER_PATTERN),
         PATTERN_FLOW("flw", Item.FLOW_BANNER_PATTERN),
         PATTERN_GUSTER("gus", Item.GUSTER_BANNER_PATTERN),
+        PATTERN_ILLAGER("ill"),
         ;
 
         private final static Map<String, Type> BY_NAME = new HashMap<>();

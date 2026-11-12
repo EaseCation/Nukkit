@@ -1,7 +1,11 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.types.ItemStackRequest;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 import javax.annotation.Nullable;
@@ -98,6 +102,22 @@ public interface Inventory {
 
     InventoryHolder getHolder();
 
+    /**
+     * 已卸载或死亡的真实容器不能继续接受旧窗口请求，个人库存和虚拟菜单保持原有生命周期。
+     */
+    default boolean isHolderValid() {
+        InventoryHolder holder = getHolder();
+        if (holder instanceof Entity entity && !(entity instanceof Player)) {
+            return !entity.isClosed() && entity.isAlive();
+        }
+        return !(holder instanceof BlockEntity blockEntity) || !blockEntity.isClosed();
+    }
+
+    @Nullable
+    default DataPacket createContainerOpenPacket(Player player, int windowId) {
+        return null;
+    }
+
     void onOpen(Player who);
 
     boolean open(Player who);
@@ -137,5 +157,20 @@ public interface Inventory {
 
     default boolean slotExists(int slot) {
         return slot >= 0 && slot < getSize();
+    }
+
+    /**
+     * 权威窗口发送打开包前准备客户端所需的方块表现；返回 true 时由实现调用完成回调。
+     */
+    default boolean prepareAuthoritativeOpen(Player player, Runnable ready) {
+        return false;
+    }
+
+    /**
+     * 纯表现容器可消费菜单请求；返回 true 时原物品移动不会执行，由处理方恢复客户端预测。
+     * 核心仅返回失败响应，避免处理方已同步后再次重发全部库存。
+     */
+    default boolean handleAuthoritativeItemStackRequest(Player player, ItemStackRequest request) {
+        return false;
     }
 }

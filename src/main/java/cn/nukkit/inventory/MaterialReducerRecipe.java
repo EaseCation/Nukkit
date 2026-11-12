@@ -23,6 +23,11 @@ public class MaterialReducerRecipe implements Recipe {
     }
 
     @Override
+    public Item getResultUnsafe() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void registerToCraftingManager(CraftingManager manager) {
         manager.registerMaterialReducerRecipe(this);
     }
@@ -35,6 +40,15 @@ public class MaterialReducerRecipe implements Recipe {
     @Override
     public RecipeTag getTag() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getNetworkId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setNetworkId(int networkId) {
     }
 
     public Item getInput() {

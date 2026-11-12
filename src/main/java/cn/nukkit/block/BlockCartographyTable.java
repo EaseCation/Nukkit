@@ -2,6 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.inventory.CartographyTableInventory;
+import cn.nukkit.inventory.FakeBlockUIComponent;
+import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -52,7 +54,14 @@ public class BlockCartographyTable extends BlockSolid {
         if (player == null) {
             return false;
         }
-        player.addWindow(new CartographyTableInventory(player.getUIInventory(), this), Player.WORKBENCH_WINDOW_ID);
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            if (FakeBlockUIComponent.isCurrentWindowAt(player, InventoryType.CARTOGRAPHY, this)) {
+                return true;
+            }
+            player.setCurrentWindow(new CartographyTableInventory(player.getUIInventory(), this));
+        } else {
+            player.addWindow(new CartographyTableInventory(player.getUIInventory(), this), Player.WORKBENCH_WINDOW_ID);
+        }
         return true;
     }
 

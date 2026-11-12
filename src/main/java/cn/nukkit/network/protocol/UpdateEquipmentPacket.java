@@ -1,9 +1,10 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.protocol.types.ContainerOpener;
 import lombok.ToString;
 
 @ToString(exclude = "namedtag")
-public class UpdateEquipmentPacket extends DataPacket {
+public class UpdateEquipmentPacket extends DataPacket implements ContainerOpener {
 
     public int windowId;
     public int windowType;
@@ -29,5 +30,10 @@ public class UpdateEquipmentPacket extends DataPacket {
         this.putVarInt(size);
         this.putEntityUniqueId(this.eid);
         this.put(this.namedtag);
+    }
+
+    @Override
+    public int getWindowType() {
+        return windowType;
     }
 }

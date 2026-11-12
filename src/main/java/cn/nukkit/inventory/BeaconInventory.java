@@ -24,6 +24,10 @@ public class BeaconInventory extends FakeBlockUIComponent {
         who.craftingType = Player.CRAFTING_SMALL;
         who.recipeTag = RecipeTag.CRAFTING_TABLE;
 
+        if (who.isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
+
         for (Item drop : who.getInventory().addItem(getItem(INPUT_SLOT))) {
             who.dropItem(drop);
         }

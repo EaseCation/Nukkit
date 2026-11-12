@@ -26,6 +26,7 @@ public class FurnaceRecipe implements Recipe {
     private final int priority;
 
     private final RecipeTag tag;
+    private int networkId;
 
     public FurnaceRecipe(Item result, Item ingredient, RecipeTag tag) {
         this(null, null, 0, result, ingredient, tag);
@@ -54,8 +55,14 @@ public class FurnaceRecipe implements Recipe {
     }
 
     @Override
+    public Item getResultUnsafe() {
+        return output;
+    }
+
+    @Override
     public void registerToCraftingManager(CraftingManager manager) {
         manager.registerFurnaceRecipe(this);
+        manager.registerNetworkRecipe(this);
     }
 
     @Override
@@ -91,5 +98,15 @@ public class FurnaceRecipe implements Recipe {
 
     public int getPriority() {
         return this.priority;
+    }
+
+    @Override
+    public int getNetworkId() {
+        return networkId;
+    }
+
+    @Override
+    public void setNetworkId(int networkId) {
+        this.networkId = networkId;
     }
 }

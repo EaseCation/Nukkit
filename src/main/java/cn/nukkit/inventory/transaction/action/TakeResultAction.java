@@ -5,6 +5,7 @@ import cn.nukkit.inventory.PlayerUIComponent;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 
+@Deprecated
 @ToString
 public class TakeResultAction extends InventoryAction {
 

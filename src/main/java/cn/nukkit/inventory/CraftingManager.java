@@ -1,19 +1,15 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.inventory.recipe.SpecialRecipes;
+import cn.nukkit.inventory.recipe.RecipeIngredient;
+import cn.nukkit.inventory.recipe.CraftingGridMatcher;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.network.Compressor;
-import cn.nukkit.network.protocol.BatchPacket;
-import cn.nukkit.network.protocol.BatchPacket.Track;
-import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.utils.BinaryStream;
-import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Hash;
 import cn.nukkit.utils.Utils;
-import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -21,37 +17,53 @@ import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.zip.Deflater;
+import java.util.function.Predicate;
 
 /**
- * author: MagicDroidX
+ * @author MagicDroidX
  * Nukkit Project
  */
 @Log4j2
 public class CraftingManager {
 
-    public static BatchPacket packet = null;
-    public static BatchPacket packetRaw;
+//    public static BatchPacket packet = null;
+//    public static BatchPacket packetRaw;
 
     protected static int RECIPE_COUNT = 1;
 
+    private final Int2ObjectMap<List<CraftingRecipe>> craftingGridRecipes = new Int2ObjectOpenHashMap<>();
+
     public final Collection<Recipe> recipes = new ArrayDeque<>();
 
-    protected final Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>> shapelessBasedRecipes = new Long2ObjectOpenHashMap<>();
-    protected final Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>> shapelessRecipes = new Long2ObjectOpenHashMap<>();
-    protected final Map<RecipeTag, Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>>> taggedShapelessRecipes = new EnumMap<>(RecipeTag.class);
-    protected final Long2ObjectMap<Long2ObjectMap<ShapelessUserDataRecipe>> shapelessUserDataRecipes = new Long2ObjectOpenHashMap<>();
-    protected final Long2ObjectMap<Long2ObjectMap<ShapelessChemistryRecipe>> shapelessChemistryRecipes = new Long2ObjectOpenHashMap<>();
+    protected final List<Recipe> networkRecipes = Utils.make(() -> {
+        List<Recipe> list = new ArrayList<>();
+        list.add(null);
+        return list;
+    });
 
-    protected final Long2ObjectMap<Long2ObjectMap<ShapedRecipe>> shapedBasedRecipes = new Long2ObjectOpenHashMap<>();
-    protected final Long2ObjectMap<Long2ObjectMap<ShapedRecipe>> shapedRecipes = new Long2ObjectOpenHashMap<>();
-    protected final Long2ObjectMap<Long2ObjectMap<ShapedChemistryRecipe>> shapedChemistryRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<List<ShapelessRecipe>> shapelessBasedRecipes = new Long2ObjectOpenHashMap<>();
+//    protected final Long2ObjectMap<List<ShapelessRecipe>> wildcardShapelessBasedRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<List<ShapelessRecipe>> shapelessRecipes = new Long2ObjectOpenHashMap<>();
+//    protected final Long2ObjectMap<List<ShapelessRecipe>> wildcardShapelessRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Map<RecipeTag, Long2ObjectMap<List<ShapelessRecipe>>> taggedShapelessRecipes = new EnumMap<>(RecipeTag.class);
+//    protected final Map<RecipeTag, Long2ObjectMap<List<ShapelessRecipe>>> taggedWildcardShapelessRecipes = new EnumMap<>(RecipeTag.class);
+    protected final Long2ObjectMap<List<ShapelessUserDataRecipe>> shapelessUserDataRecipes = new Long2ObjectOpenHashMap<>();
+//    protected final Long2ObjectMap<List<ShapelessUserDataRecipe>> wildcardShapelessUserDataRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<List<ShapelessChemistryRecipe>> shapelessChemistryRecipes = new Long2ObjectOpenHashMap<>();
+//    protected final Long2ObjectMap<List<ShapelessChemistryRecipe>> wildcardShapelessChemistryRecipes = new Long2ObjectOpenHashMap<>();
+
+    protected final Long2ObjectMap<List<ShapedRecipe>> shapedBasedRecipes = new Long2ObjectOpenHashMap<>();
+//    protected final Long2ObjectMap<List<ShapedRecipe>> wildcardShapedBasedRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<List<ShapedRecipe>> shapedRecipes = new Long2ObjectOpenHashMap<>();
+//    protected final Long2ObjectMap<List<ShapedRecipe>> wildcardShapedRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<List<ShapedChemistryRecipe>> shapedChemistryRecipes = new Long2ObjectOpenHashMap<>();
+//    protected final Long2ObjectMap<List<ShapedChemistryRecipe>> wildcardShapedChemistryRecipes = new Long2ObjectOpenHashMap<>();
 
     protected final Long2ObjectMap<SmithingTransformRecipe> smithingRecipes = new Long2ObjectOpenHashMap<>();
-    protected final Map<RecipeTag, Long2ObjectMap<SmithingTransformRecipe>> taggedSmithingRecipes = new EnumMap<>(RecipeTag.class);
+    protected final Map<RecipeTag, List<SmithingTransformRecipe>> taggedSmithingRecipes = new EnumMap<>(RecipeTag.class);
 
-    protected final Long2ObjectMap<SmithingTrimRecipe> smithingTrimRecipes = new Long2ObjectOpenHashMap<>();
-    protected final Map<RecipeTag, Long2ObjectMap<SmithingTrimRecipe>> taggedSmithingTrimRecipes = new EnumMap<>(RecipeTag.class);
+    protected final List<SmithingTrimRecipe> smithingTrimRecipes = new ArrayList<>();
+    protected final Map<RecipeTag, List<SmithingTrimRecipe>> taggedSmithingTrimRecipes = new EnumMap<>(RecipeTag.class);
 
     protected final Long2ObjectMap<FurnaceRecipe> furnaceRecipes = new Long2ObjectOpenHashMap<>();
     protected final Map<RecipeTag, Long2ObjectMap<FurnaceRecipe>> taggedFurnaceRecipes = new EnumMap<>(RecipeTag.class);
@@ -78,7 +90,6 @@ public class CraftingManager {
     protected final Map<String, List<Item>> tags = new HashMap<>();
 
     public CraftingManager() {
-        SpecialRecipes.registerRecipes();
         initialize();
     }
 
@@ -105,7 +116,7 @@ public class CraftingManager {
         log.info("Loaded " + this.recipes.size() + " recipes.");
 */
     }
-
+/*
     @SuppressWarnings("unchecked")
     private void loadRecipes(Config config) {
         List<Map<?, ?>> recipes = config.getMapList("recipes");
@@ -210,7 +221,7 @@ public class CraftingManager {
                         this.registerRecipe(new FurnaceRecipe(resultItem, inputItem, tag));
                         break;
                     case 4: // special hardcoded (e.g. Anvil)
-                        this.registerRecipe(new MultiRecipe(UUID.fromString((String) recipe.get("uuid"))));
+                        this.registerRecipe(MultiRecipe.create(UUID.fromString((String) recipe.get("uuid"))));
                         break;
                     default:
                         break;
@@ -241,7 +252,7 @@ public class CraftingManager {
             registerContainerRecipe(new ContainerRecipe(Item.get(fromItemId), Item.get(ingredient), Item.get(toItemId)));
         }
     }
-
+*//*
     public void rebuildPacket() {
         CraftingDataPacket pk = new CraftingDataPacket();
         pk.cleanRecipes = true;
@@ -291,7 +302,7 @@ public class CraftingManager {
         packet.tracks = tracks;
         packetRaw.tracks = tracks;
     }
-
+*/
     public Collection<Recipe> getRecipes() {
         return recipes;
     }
@@ -300,12 +311,21 @@ public class CraftingManager {
         return smithingRecipes;
     }
 
-    public Long2ObjectMap<SmithingTrimRecipe> getSmithingTrimRecipes() {
+    public List<SmithingTransformRecipe> getSmithingRecipes(RecipeTag tag) {
+        return taggedSmithingRecipes.getOrDefault(tag, Collections.emptyList());
+    }
+
+    public List<SmithingTrimRecipe> getSmithingTrimRecipes() {
         return smithingTrimRecipes;
     }
 
     public Long2ObjectMap<FurnaceRecipe> getFurnaceRecipes() {
         return furnaceRecipes;
+    }
+
+    public Long2ObjectMap<FurnaceRecipe> getFurnaceRecipes(RecipeTag tag) {
+        Long2ObjectMap<FurnaceRecipe> recipes = taggedFurnaceRecipes.get(tag);
+        return recipes == null ? Long2ObjectMaps.emptyMap() : recipes;
     }
 
     public Object2ObjectMap<UUID, MultiRecipe> getMultiRecipes() {
@@ -339,7 +359,7 @@ public class CraftingManager {
         }
 
         FurnaceRecipe recipe = recipes.get(input.asHash());
-        if (recipe == null) recipe = recipes.get(Item.toHash(input.getId(), 0));
+        if (recipe == null) recipe = recipes.get(Item.toHash(input.getId(), 0) | 1L);
         return recipe;
     }
 
@@ -368,8 +388,10 @@ public class CraftingManager {
     }
 
     public void registerFurnaceRecipe(FurnaceRecipe recipe) {
-        long hash = recipe.getInput().asHash();
-        this.furnaceRecipes.put(hash, recipe);
+        Item input = recipe.getInput();
+        this.furnaceRecipes.put(input.asHash(), recipe);
+        // 物品散列低七位原本为空，用独立标记区分通配原料与明确的 aux=0。
+        long hash = input.hasMeta() ? input.asHash() : Item.toHash(input.getId(), 0) | 1L;
 
         RecipeTag tag = recipe.getTag();
         taggedFurnaceRecipes.computeIfAbsent(tag, k -> new Long2ObjectOpenHashMap<>())
@@ -377,24 +399,29 @@ public class CraftingManager {
     }
 
     public void registerShapedRecipe(ShapedRecipe recipe) {
-        long inputHash = getMultiItemHash(recipe.getIngredientList());
+        registerGridRecipe(recipe, recipe.getIngredientsAggregate().size());
+//        long inputHash = getMultiItemHash(recipe.getIngredientList());
         long outputHash = recipe.getResult().asHash();
-        shapedBasedRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
-                .put(inputHash, recipe);
+        shapedBasedRecipes.computeIfAbsent(outputHash, k -> new ArrayList<>())
+                .add(recipe);
 
         switch (recipe.getType()) {
             case SHAPED:
-                shapedRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
-                        .put(inputHash, recipe);
+                shapedRecipes.computeIfAbsent(outputHash, k -> new ArrayList<>())
+                        .add(recipe);
                 break;
             case SHAPED_CHEMISTRY:
-                shapedChemistryRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
-                        .put(inputHash, (ShapedChemistryRecipe) recipe);
+                shapedChemistryRecipes.computeIfAbsent(outputHash, k -> new ArrayList<>())
+                        .add((ShapedChemistryRecipe) recipe);
                 break;
         }
     }
 
     public void registerRecipe(Recipe recipe) {
+        if (recipe instanceof MultiRecipe) {
+            recipe.registerToCraftingManager(this);
+            return;
+        }
         if (recipe instanceof CraftingRecipe) {
 //            UUID id = Utils.dataToUUID(String.valueOf(++RECIPE_COUNT), String.valueOf(recipe.getResult().getId()), String.valueOf(recipe.getResult().getDamage()), String.valueOf(recipe.getResult().getCount()), Arrays.toString(recipe.getResult().getCompoundTag()));
             int runtimeId = ++RECIPE_COUNT;
@@ -412,49 +439,49 @@ public class CraftingManager {
     }
 
     public void registerShapelessRecipe(ShapelessRecipe recipe) {
-        List<Item> list = recipe.getIngredientList();
-        list.sort(recipeComparator);
+        registerGridRecipe(recipe, recipe.getIngredientCount());
+//        List<Item> list = recipe.getIngredientList();
+//        list.sort(recipeComparator);
 
-        long inputHash = getMultiItemHash(list);
+//        long inputHash = getMultiItemHash(list);
         long outputHash = recipe.getResult().asHash();
-        shapelessBasedRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
-                .put(inputHash, recipe);
+        shapelessBasedRecipes.computeIfAbsent(outputHash, k -> new ArrayList<>())
+                .add(recipe);
 
         switch (recipe.getType()) {
             case SHAPELESS:
-                shapelessRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
-                        .put(inputHash, recipe);
+                shapelessRecipes.computeIfAbsent(outputHash, k -> new ArrayList<>())
+                        .add(recipe);
                 break;
             case SHAPELESS_USER_DATA:
-                shapelessUserDataRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
-                        .put(inputHash, (ShapelessUserDataRecipe) recipe);
+                shapelessUserDataRecipes.computeIfAbsent(outputHash, k -> new ArrayList<>())
+                        .add((ShapelessUserDataRecipe) recipe);
                 break;
             case SHAPELESS_CHEMISTRY:
-                shapelessChemistryRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
-                        .put(inputHash, (ShapelessChemistryRecipe) recipe);
+                shapelessChemistryRecipes.computeIfAbsent(outputHash, k -> new ArrayList<>())
+                        .add((ShapelessChemistryRecipe) recipe);
                 break;
         }
 
         RecipeTag tag = recipe.getTag();
         taggedShapelessRecipes.computeIfAbsent(tag, k -> new Long2ObjectOpenHashMap<>())
-                .computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
-                .put(inputHash, recipe);
+                .computeIfAbsent(outputHash, k -> new ArrayList<>())
+                .add(recipe);
     }
 
     public void registerSmithingTransformRecipe(SmithingTransformRecipe recipe) {
-        long hash = getMultiItemHashWithoutCount(recipe.getTemplate(), recipe.getInput(), recipe.getAddition());
+        long hash = recipe.getResult().asHash();
         this.smithingRecipes.put(hash, recipe);
 
         RecipeTag tag = recipe.getTag();
-        taggedSmithingRecipes.computeIfAbsent(tag, k -> new Long2ObjectOpenHashMap<>())
-                .put(hash, recipe);
+        taggedSmithingRecipes.computeIfAbsent(tag, k -> new ArrayList<>())
+                .add(recipe);
     }
 
     public void registerSmithingTrimRecipe(SmithingTrimRecipe recipe) {
-        long hash = getMultiItemHashWithoutCount(recipe.getTemplate(), recipe.getInput(), recipe.getAddition());
-        smithingTrimRecipes.put(hash, recipe);
-        taggedSmithingTrimRecipes.computeIfAbsent(recipe.getTag(), k -> new Long2ObjectOpenHashMap<>())
-                .put(hash, recipe);
+        smithingTrimRecipes.add(recipe);
+        taggedSmithingTrimRecipes.computeIfAbsent(recipe.getTag(), k -> new ArrayList<>())
+                .add(recipe);
     }
 
     protected static long getContainerHash(int ingredientId, int containerId) {
@@ -495,58 +522,94 @@ public class CraftingManager {
         return matchRecipe(inputList, primaryOutput, extraOutputList, RecipeTag.CRAFTING_TABLE);
     }
 
+    @Deprecated
     public CraftingRecipe matchRecipe(List<Item> inputList, Item primaryOutput, List<Item> extraOutputList, RecipeTag tag) {
         long outputHash = primaryOutput.asHash();
-        long inputHash = -1;
-        boolean tried = false;
+//        long inputHash = -1;
+//        boolean tried = false;
 
         if (tag == RecipeTag.CRAFTING_TABLE) {
-            Long2ObjectMap<ShapedRecipe> recipeMap = shapedBasedRecipes.get(outputHash);
+            List<ShapedRecipe> recipeMap = shapedBasedRecipes.get(outputHash);
             if (recipeMap != null) {
-                inputList.sort(recipeComparator);
-                inputHash = getMultiItemHash(inputList);
-                tried = true;
+//                inputList.sort(recipeComparator);
+//                inputHash = getMultiItemHash(inputList);
+//                tried = true;
 
-                ShapedRecipe recipe = recipeMap.get(inputHash);
-                if (recipe != null && (recipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(recipe, inputList, primaryOutput, extraOutputList))) {
-                    return recipe;
-                }
+//                ShapedRecipe recipe = recipeMap.get(inputHash);
+//                if (recipe != null && (recipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(recipe, inputList, primaryOutput, extraOutputList))) {
+//                    return recipe;
+//                }
 
-                for (ShapedRecipe shapedRecipe : recipeMap.values()) {
-                    if (shapedRecipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(shapedRecipe, inputList, primaryOutput, extraOutputList)) {
+                for (ShapedRecipe shapedRecipe : recipeMap) {
+                    if (shapedRecipe.getTag() == tag && (shapedRecipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(shapedRecipe, inputList, primaryOutput, extraOutputList))) {
                         return shapedRecipe;
                     }
                 }
             }
         }
 
-        Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>> shapelessRecipes = taggedShapelessRecipes.get(tag);
-        if (shapelessRecipes == null) {
-            return null;
-        }
+        Long2ObjectMap<List<ShapelessRecipe>> shapelessRecipes = taggedShapelessRecipes.get(tag);
+        if (shapelessRecipes != null) {
+            List<ShapelessRecipe> recipes = shapelessRecipes.get(outputHash);
+            if (recipes != null) {
+//                if (!tried) {
+//                    inputList.sort(recipeComparator);
+//                    inputHash = getMultiItemHash(inputList);
+//                }
 
-        Long2ObjectMap<ShapelessRecipe> recipes = shapelessRecipes.get(outputHash);
-        if (recipes != null) {
-            if (!tried) {
-                inputList.sort(recipeComparator);
-                inputHash = getMultiItemHash(inputList);
-            }
+//                ShapelessRecipe recipe = recipes.get(inputHash);
+//                if (recipe != null && (recipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(recipe, inputList, primaryOutput, extraOutputList))
+//                        && (!(recipe instanceof ShapelessUserDataRecipe userDataRecipe) || userDataRecipe.matchUserData(primaryOutput, inputList))) {
+//                    return recipe;
+//                }
 
-            ShapelessRecipe recipe = recipes.get(inputHash);
-            if (recipe != null && (recipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(recipe, inputList, primaryOutput, extraOutputList))
-                    && (!(recipe instanceof ShapelessUserDataRecipe userDataRecipe) || userDataRecipe.matchUserData(primaryOutput, inputList))) {
-                return recipe;
-            }
-
-            for (ShapelessRecipe shapelessRecipe : recipes.values()) {
-                if ((shapelessRecipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(shapelessRecipe, inputList, primaryOutput, extraOutputList))
-                        && (!(shapelessRecipe instanceof ShapelessUserDataRecipe userDataRecipe) || userDataRecipe.matchUserData(primaryOutput, inputList))) {
-                    return shapelessRecipe;
+                for (ShapelessRecipe shapelessRecipe : recipes) {
+                    if ((shapelessRecipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(shapelessRecipe, inputList, primaryOutput, extraOutputList))
+                            && (!(shapelessRecipe instanceof ShapelessUserDataRecipe userDataRecipe) || userDataRecipe.matchUserData(primaryOutput, inputList))) {
+                        return shapelessRecipe;
+                    }
                 }
             }
         }
 
-        return SpecialRecipes.match(outputHash, inputList, primaryOutput, extraOutputList, tag);
+        for (MultiRecipe recipe : multiRecipes.values()) {
+            if (recipe.supportsLegacyMatching() && recipe.getTag() == tag
+                    && recipe.getResultUnsafe().asHash() == outputHash
+                    && recipe.match(inputList, primaryOutput, extraOutputList, 1)) {
+                return recipe;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public CraftingRecipe matchRecipeByOutputs(Item primaryOutput, Predicate<CraftingRecipe> predicate) {
+        long outputHash = primaryOutput.asHash();
+
+        List<ShapedRecipe> shapedRecipes = shapedBasedRecipes.get(outputHash);
+        if (shapedRecipes != null) {
+            for (ShapedRecipe recipe : shapedRecipes) {
+                if (predicate.test(recipe)) {
+                    return recipe;
+                }
+            }
+        }
+
+        List<ShapelessRecipe> shapelessRecipes = shapelessBasedRecipes.get(outputHash);
+        if (shapelessRecipes != null) {
+            for (ShapelessRecipe recipe : shapelessRecipes) {
+                if (predicate.test(recipe)) {
+                    return recipe;
+                }
+            }
+        }
+
+        for (MultiRecipe recipe : multiRecipes.values()) {
+            if (recipe.isSupported() && recipe.getResultUnsafe().asHash() == outputHash && predicate.test(recipe)) {
+                return recipe;
+            }
+        }
+        return null;
     }
 
     private boolean matchItemsAccumulation(CraftingRecipe recipe, List<Item> inputList, Item primaryOutput, List<Item> extraOutputList) {
@@ -558,8 +621,68 @@ public class CraftingManager {
         return false;
     }
 
+    @Nullable
+    public CraftingGridMatch matchCraftingGrid(Item[] grid, int disabledSlots) {
+        if (grid.length != 9) {
+            return null;
+        }
+        int occupied = 0;
+        for (Item item : grid) {
+            if (item == null) {
+                return null;
+            }
+            if (!item.isNull()) {
+                occupied++;
+            }
+        }
+        List<CraftingRecipe> candidates = craftingGridRecipes.get(occupied);
+        if (candidates != null) {
+            for (CraftingRecipe recipe : candidates) {
+                CraftingGridMatch match = CraftingGridMatcher.match(recipe, grid, disabledSlots);
+                if (match != null) {
+                    return match;
+                }
+            }
+        }
+        List<CraftingRecipe> variableCandidates = craftingGridRecipes.get(0);
+        if (occupied > 0 && variableCandidates != null) {
+            for (CraftingRecipe recipe : variableCandidates) {
+                CraftingGridMatch match = CraftingGridMatcher.match(recipe, grid, disabledSlots);
+                if (match != null) {
+                    return match;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void registerGridRecipe(CraftingRecipe recipe, int slots) {
+        if (recipe.getTag() == RecipeTag.CRAFTING_TABLE && slots >= 0 && slots <= 9
+                && recipe.getType() != RecipeType.SHAPED_CHEMISTRY && recipe.getType() != RecipeType.SHAPELESS_CHEMISTRY) {
+            craftingGridRecipes.computeIfAbsent(slots, ignored -> new ArrayList<>()).add(recipe);
+        }
+    }
+
     public void registerMultiRecipe(MultiRecipe recipe) {
-        this.multiRecipes.put(recipe.getId(), recipe);
+        MultiRecipe previous = this.multiRecipes.put(recipe.getId(), recipe);
+        if (previous != null) {
+            for (List<CraftingRecipe> candidates : craftingGridRecipes.values()) {
+                candidates.removeIf(candidate -> candidate instanceof MultiRecipe multi && multi.getId().equals(recipe.getId()));
+            }
+            for (int index = 1; index < networkRecipes.size(); index++) {
+                if (networkRecipes.get(index) instanceof MultiRecipe multi && multi.getId().equals(recipe.getId())) {
+                    networkRecipes.set(index, null);
+                }
+            }
+        }
+        if (recipe.isSupported()) {
+            registerGridRecipe(recipe, recipe.getGridIngredientCount());
+        }
+    }
+
+    @Nullable
+    public MultiRecipe getMultiRecipe(UUID id) {
+        return multiRecipes.get(id);
     }
 
     public void registerMaterialReducerRecipe(MaterialReducerRecipe recipe) {
@@ -568,19 +691,59 @@ public class CraftingManager {
 
     @Nullable
     public SmithingTransformRecipe matchSmithingRecipe(Item template, Item input, Item addition, RecipeTag tag) {
-        Long2ObjectMap<SmithingTransformRecipe> recipes = taggedSmithingRecipes.get(tag);
-        if (recipes == null) {
-            return null;
+        List<SmithingTransformRecipe> recipes = taggedSmithingRecipes.get(tag);
+        if (recipes != null) {
+            for (SmithingTransformRecipe recipe : recipes) {
+                if (matchesSmithingIngredients(recipe, template, input, addition)) {
+                    return recipe;
+                }
+            }
         }
-        return recipes.get(getMultiItemHashWithoutCount(template, input, addition));
+        return null;
     }
 
     @Nullable
     public SmithingTrimRecipe matchSmithingTrimRecipe(Item template, Item input, Item addition, RecipeTag tag) {
-        Long2ObjectMap<SmithingTrimRecipe> recipes = taggedSmithingTrimRecipes.get(tag);
-        if (recipes == null) {
+        List<SmithingTrimRecipe> recipes = taggedSmithingTrimRecipes.get(tag);
+        if (recipes != null) {
+            for (SmithingTrimRecipe recipe : recipes) {
+                if (matchesSmithingIngredients(recipe, template, input, addition)) {
+                    return recipe;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean matchesSmithingIngredients(SmithingRecipe recipe, Item template, Item input, Item addition) {
+        return matchesSmithingIngredient(recipe.getTemplate(), template)
+                && matchesSmithingIngredient(recipe.getBase(), input)
+                && matchesSmithingIngredient(recipe.getIngredient(), addition);
+    }
+
+    private static boolean matchesSmithingIngredient(RecipeIngredient ingredient, Item item) {
+        if (ingredient.getCount() == 0) {
+            return item.isNull();
+        }
+        return ingredient.getCount() > 0 && item.getCount() >= ingredient.getCount() && ingredient.accepts(item);
+    }
+
+    public int registerNetworkRecipe(Recipe recipe) {
+        int networkId = networkRecipes.size();
+        recipe.setNetworkId(networkId);
+        networkRecipes.add(recipe);
+        return networkId;
+    }
+
+    public int getNetworkRecipeCount() {
+        return networkRecipes.size();
+    }
+
+    @Nullable
+    public Recipe getRecipe(int networkId) {
+        if (networkId < 0 || networkId >= networkRecipes.size()) {
             return null;
         }
-        return recipes.get(getMultiItemHashWithoutCount(template, input, addition));
+        return networkRecipes.get(networkId);
     }
 }

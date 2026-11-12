@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.FakeBlockUIComponent;
+import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.inventory.StonecutterInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -104,7 +106,14 @@ public class BlockStonecutter extends BlockTransparent implements Faceable {
         if (player == null) {
             return false;
         }
-        player.addWindow(new StonecutterInventory(player.getUIInventory(), this), Player.WORKBENCH_WINDOW_ID);
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            if (FakeBlockUIComponent.isCurrentWindowAt(player, InventoryType.STONECUTTER, this)) {
+                return true;
+            }
+            player.setCurrentWindow(new StonecutterInventory(player.getUIInventory(), this));
+        } else {
+            player.addWindow(new StonecutterInventory(player.getUIInventory(), this), Player.WORKBENCH_WINDOW_ID);
+        }
         return true;
     }
 

@@ -33,10 +33,7 @@ public class ModalFormResponsePacket extends DataPacket {
 
     @Nullable
     private Object getJson() {
-        int length = (int) this.getUnsignedVarInt();
-        if (length < 0 || length > MAX_MODAL_FORM_RESPONSE_DATA_LENGTH) {
-            throw new IllegalArgumentException("Form response exceeds maximum length");
-        }
+        int length = this.getUnsignedVarInt(MAX_MODAL_FORM_RESPONSE_DATA_LENGTH);
         if (!this.isReadable(length)) {
             throw new IllegalArgumentException("Form response length exceeds packet data");
         }

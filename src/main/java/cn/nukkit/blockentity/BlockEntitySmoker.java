@@ -39,7 +39,7 @@ public class BlockEntitySmoker extends BlockEntityFurnace {
     }
 
     @Override
-    protected RecipeTag getRecipeTag() {
+    public RecipeTag getRecipeTag() {
         return RecipeTag.SMOKER;
     }
 

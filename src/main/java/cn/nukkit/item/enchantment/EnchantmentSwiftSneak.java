@@ -12,6 +12,11 @@ public class EnchantmentSwiftSneak extends Enchantment {
     }
 
     @Override
+    public int getMaxEnchantAbility(int level) {
+        return this.getMinEnchantAbility(level) + 15;
+    }
+
+    @Override
     public int getMaxLevel() {
         return 3;
     }

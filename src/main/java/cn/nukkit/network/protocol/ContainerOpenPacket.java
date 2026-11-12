@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.protocol.types.ContainerOpener;
 import lombok.ToString;
 
 /**
@@ -7,7 +8,7 @@ import lombok.ToString;
  * Nukkit Project
  */
 @ToString
-public class ContainerOpenPacket extends DataPacket {
+public class ContainerOpenPacket extends DataPacket implements ContainerOpener {
     public static final int NETWORK_ID = ProtocolInfo.CONTAINER_OPEN_PACKET;
 
     @Override
@@ -33,5 +34,10 @@ public class ContainerOpenPacket extends DataPacket {
         this.putByte((byte) this.type);
         this.putBlockVector3(this.x, this.y, this.z);
         this.putEntityUniqueId(this.entityId);
+    }
+
+    @Override
+    public int getWindowType() {
+        return type;
     }
 }

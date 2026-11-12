@@ -9,8 +9,18 @@ public class EnchantmentTridentRiptide extends EnchantmentTrident {
     }
 
     @Override
+    public boolean checkCompatibility(Enchantment enchantment) {
+        return super.checkCompatibility(enchantment) && enchantment.id != LOYALTY && enchantment.id != CHANNELING;
+    }
+
+    @Override
     public int getMinEnchantAbility(int level) {
         return 7 * level + 10;
+    }
+
+    @Override
+    public int getMaxEnchantAbility(int level) {
+        return 50;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.recipe.RecipeIngredient;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentEntry;
@@ -9,6 +10,7 @@ import cn.nukkit.utils.BinaryStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,13 +52,18 @@ public class CraftingDataPacket extends DataPacket {
 
     private static int writeShapelessRecipe(ShapelessRecipe recipe, BinaryStream stream) {
         stream.putUnsignedVarInt(recipe.getIngredientCount());
-
-        for (Item item : recipe.getIngredientList()) {
-            stream.putSlot(item);
+        for (RecipeIngredient item : recipe.getIngredientList()) {
+            stream.putRecipeIngredient(item);
         }
 
-        stream.putUnsignedVarInt(1);
-        stream.putSlot(recipe.getResult());
+        List<Item> outputs = new ArrayList<>();
+        outputs.add(recipe.getResult());
+        outputs.addAll(recipe.getExtraResults());
+        stream.putUnsignedVarInt(outputs.size());
+        for (Item output : outputs) {
+            stream.putSlot(output);
+        }
+
         stream.putUUID(recipe.getId());
 
         return recipe.getType().ordinal();
@@ -65,15 +72,19 @@ public class CraftingDataPacket extends DataPacket {
     private static int writeShapedRecipe(ShapedRecipe recipe, BinaryStream stream) {
         stream.putVarInt(recipe.getWidth());
         stream.putVarInt(recipe.getHeight());
-
         for (int z = 0; z < recipe.getHeight(); ++z) {
             for (int x = 0; x < recipe.getWidth(); ++x) {
-                stream.putSlot(recipe.getIngredient(x, z));
+                stream.putRecipeIngredient(recipe.getIngredient(x, z));
             }
         }
 
-        stream.putUnsignedVarInt(1);
-        stream.putSlot(recipe.getResult());
+        List<Item> outputs = new ArrayList<>();
+        outputs.add(recipe.getResult());
+        outputs.addAll(recipe.getExtraResults());
+        stream.putUnsignedVarInt(outputs.size());
+        for (Item output : outputs) {
+            stream.putSlot(output);
+        }
 
         stream.putUUID(recipe.getId());
 

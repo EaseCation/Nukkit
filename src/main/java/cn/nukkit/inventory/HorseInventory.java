@@ -10,9 +10,7 @@ import cn.nukkit.item.Items;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
-import cn.nukkit.network.protocol.UpdateEquipmentPacket;
+import cn.nukkit.network.protocol.*;
 import cn.nukkit.utils.Utils;
 
 import java.io.IOException;
@@ -54,18 +52,38 @@ public class HorseInventory extends ContainerInventory {
                     entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_ARMOR, entity.getIdentifier());
                 }
                 sendArmorContents(getViewers().toArray(new Player[0]));
+                sendAuthoritativeArmorContents();
             }
         } else if (index == 1 && entity instanceof EntityAbstractHorse && !Objects.equals(before, after)) {
             if (after != null && after.isHorseArmor()) {
                 entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_ARMOR, EntityFullNames.HORSE);
             }
             sendArmorContents(getViewers().toArray(new Player[0]));
+            sendAuthoritativeArmorContents();
         }
+    }
+
+    @Override
+    public DataPacket createContainerOpenPacket(Player player, int windowId) {
+        UpdateEquipmentPacket packet = new UpdateEquipmentPacket();
+        packet.windowId = windowId;
+        packet.windowType = getType().getNetworkType();
+        packet.size = 0;
+        packet.eid = entity.getId();
+        packet.namedtag = switch (entity.getNetworkId()) {
+            case EntityID.LLAMA, EntityID.TRADER_LLAMA -> LLAMA_EQUIPMENT;
+            case EntityID.HORSE -> HORSE_EQUIPMENT;
+            default -> GENERAL_EQUIPMENT;
+        };
+        return packet;
     }
 
     @Override
     public void onOpen(Player who) {
         this.viewers.add(who);
+        if (who.isServerAuthoritativeInventoryEnabled()) {
+            return;
+        }
 
         byte[] data;
         switch (entity.getNetworkId()) {
@@ -108,6 +126,14 @@ public class HorseInventory extends ContainerInventory {
         super.sendContents(players);
 
         sendArmorContents(players);
+    }
+
+    private void sendAuthoritativeArmorContents() {
+        for (Player player : entity.getViewers().values()) {
+            if (player.isServerAuthoritativeInventoryEnabled() && !getViewers().contains(player)) {
+                sendArmorContents(player);
+            }
+        }
     }
 
     public void sendArmorContents(Player... players) {

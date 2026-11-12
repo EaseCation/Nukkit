@@ -137,7 +137,11 @@ public class EntityBoatChest extends EntityBoat implements InventoryHolder, Loot
         unpackLootTable();
 
         if (this.isFull() || player.isSneaking()) {
-            player.addWindow(this.inventory);
+            if (player.isServerAuthoritativeInventoryEnabled()) {
+                player.setCurrentWindow(inventory);
+            } else {
+                player.addWindow(this.inventory);
+            }
             return false;
         }
 

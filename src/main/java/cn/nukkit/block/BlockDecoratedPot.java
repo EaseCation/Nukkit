@@ -13,6 +13,8 @@ import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -71,7 +73,17 @@ public class BlockDecoratedPot extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId());
+        Item item = Item.get(getItemId());
+        String[] sherds;
+        BlockEntityDecoratedPot blockEntity = getBlockEntity();
+        if (blockEntity != null && (sherds = blockEntity.getSherds()) != null) {
+            ListTag<StringTag> list = new ListTag<>("sherds");
+            for (String sherd : sherds) {
+                list.addString(sherd);
+            }
+            item.setNamedTag(new CompoundTag().putList(list));
+        }
+        return item;
     }
 
     @Override
@@ -181,9 +193,18 @@ public class BlockDecoratedPot extends BlockTransparent {
     protected BlockEntityDecoratedPot createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.DECORATED_POT);
 
-        if (item != null && item.hasCustomBlockData()) {
-            for (Tag tag : item.getCustomBlockData().getAllTags()) {
-                nbt.put(tag.getName(), tag);
+        if (item != null) {
+            if (item.hasCompoundTag()) {
+                Tag sherds = item.getNamedTag().get("sherds");
+                if (sherds instanceof ListTag<?> list && list.type == Tag.TAG_String) {
+                    nbt.put("sherds", list.copy());
+                }
+            }
+
+            if (item.hasCustomBlockData()) {
+                for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                    nbt.put(tag.getName(), tag);
+                }
             }
         }
 

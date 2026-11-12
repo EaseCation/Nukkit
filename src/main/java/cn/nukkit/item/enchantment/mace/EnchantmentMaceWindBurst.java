@@ -14,6 +14,16 @@ public class EnchantmentMaceWindBurst extends EnchantmentMace {
     }
 
     @Override
+    public int getMinEnchantAbility(int level) {
+        return 9 * level + 6;
+    }
+
+    @Override
+    public int getMaxEnchantAbility(int level) {
+        return this.getMinEnchantAbility(level) + 50;
+    }
+
+    @Override
     public void doAttack(Entity attacker, Entity entity) {
         if (level <= 0) {
             return;
@@ -26,6 +36,11 @@ public class EnchantmentMaceWindBurst extends EnchantmentMace {
 
         float knockbackScaling = (getLevel() + 1) * 0.25f;
         //TODO: WindBurstUtility::burst
+    }
+
+    @Override
+    public boolean isTreasureOnly() {
+        return true;
     }
 
     @Override

@@ -267,6 +267,10 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
     @Override
     public boolean updateCompoundTag(CompoundTag nbt, Player player) {
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            return false;
+        }
+
         if (!nbt.getString("id").equals(BlockEntity.BEACON)) {
             return false;
         }

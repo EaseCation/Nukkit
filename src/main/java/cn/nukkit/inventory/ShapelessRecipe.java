@@ -1,5 +1,8 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.inventory.recipe.RecipeIngredient;
+import cn.nukkit.inventory.recipe.RecipeMatcher;
+import cn.nukkit.inventory.recipe.UnlockingContext;
 import cn.nukkit.item.Item;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
@@ -19,21 +22,28 @@ public class ShapelessRecipe implements CraftingRecipe {
     private String recipeId;
 
     private final Item output;
+    private final List<Item> extraResults;
 
     private UUID uuid;
 
-    private final List<Item> ingredients;
-    private final List<Item> ingredientsAggregate;
+    private final List<RecipeIngredient> ingredients;
+//    @Deprecated
+//    private final List<RecipeIngredient> ingredientsAggregate;
 
     private final int priority;
 
     private final RecipeTag tag;
+    private int networkId;
 
-    public ShapelessRecipe(Item result, Collection<Item> ingredients, RecipeTag tag) {
+    //TODO: recipe unlocking
+    private final UnlockingContext unlockingContext = UnlockingContext.ALWAYS_UNLOCKED;
+    private final List<RecipeIngredient> unlockingIngredients = new ObjectArrayList<>();
+
+    public ShapelessRecipe(Item result, Collection<RecipeIngredient> ingredients, RecipeTag tag) {
         this(null, null, 10, result, ingredients, tag);
     }
 
-    public ShapelessRecipe(@Nullable String vanillaRecipeId, String recipeId, int priority, Item result, Collection<Item> ingredients, RecipeTag tag) {
+    public ShapelessRecipe(@Nullable String vanillaRecipeId, String recipeId, int priority, Item result, Collection<RecipeIngredient> ingredients, RecipeTag tag) {
         this.vanillaRecipeId = vanillaRecipeId;
         this.recipeId = recipeId;
         this.priority = priority;
@@ -42,8 +52,8 @@ public class ShapelessRecipe implements CraftingRecipe {
             throw new IllegalArgumentException("Shapeless recipes cannot have more than 9 ingredients");
         }
 
-        this.ingredients = new ObjectArrayList<>();
-        this.ingredientsAggregate = new ObjectArrayList<>();
+        this.ingredients = new ObjectArrayList<>(ingredients);
+        /*this.ingredientsAggregate = new ObjectArrayList<>();
 
         for (Item item : ingredients) {
             if (item.getCount() < 1) {
@@ -62,7 +72,8 @@ public class ShapelessRecipe implements CraftingRecipe {
             this.ingredients.add(item.clone());
         }
 
-        this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
+        this.ingredientsAggregate.sort(CraftingManager.recipeComparator);*/
+        this.extraResults = new ObjectArrayList<>(); //TODO
 
         this.tag = tag;
     }
@@ -75,6 +86,11 @@ public class ShapelessRecipe implements CraftingRecipe {
     @Override
     public Item getResult() {
         return this.output.clone();
+    }
+
+    @Override
+    public Item getResultUnsafe() {
+        return output;
     }
 
     @Override
@@ -96,12 +112,9 @@ public class ShapelessRecipe implements CraftingRecipe {
         }
     }
 
-    public List<Item> getIngredientList() {
-        List<Item> ingredients = new ObjectArrayList<>();
-        for (Item ingredient : this.ingredients) {
-            ingredients.add(ingredient.clone());
-        }
-
+    public List<RecipeIngredient> getIngredientList() {
+        List<RecipeIngredient> ingredients = new ObjectArrayList<>();
+        ingredients.addAll(this.ingredients);
         return ingredients;
     }
 
@@ -112,6 +125,7 @@ public class ShapelessRecipe implements CraftingRecipe {
     @Override
     public void registerToCraftingManager(CraftingManager manager) {
         manager.registerShapelessRecipe(this);
+        manager.registerNetworkRecipe(this);
     }
 
     @Override
@@ -125,18 +139,31 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     @Override
+    public int getNetworkId() {
+        return networkId;
+    }
+
+    @Override
+    public void setNetworkId(int networkId) {
+        this.networkId = networkId;
+    }
+
+    @Override
     public boolean requiresCraftingTable() {
         return this.ingredients.size() > 4;
     }
 
     @Override
     public List<Item> getExtraResults() {
-        return new ObjectArrayList<>();
+        return extraResults;
     }
 
     @Override
     public List<Item> getAllResults() {
-        return null;
+        List<Item> list = new ObjectArrayList<>(1 + extraResults.size());
+        list.add(output);
+        list.addAll(extraResults);
+        return list;
     }
 
     @Override
@@ -144,31 +171,9 @@ public class ShapelessRecipe implements CraftingRecipe {
         return this.priority;
     }
 
+    @Override
     public boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier) {
-        List<Item> haveInputs = new ObjectArrayList<>();
-        for (Item item : inputList) {
-            if (item.isNull())
-                continue;
-            haveInputs.add(item.clone());
-        }
-        List<Item> needInputs = new ObjectArrayList<>();
-        if (multiplier != 1) {
-            for (Item item : ingredientsAggregate) {
-                if (item.isNull())
-                    continue;
-                Item itemClone = item.clone();
-                itemClone.setCount(itemClone.getCount() * multiplier);
-                needInputs.add(itemClone);
-            }
-        } else {
-            for (Item item : ingredientsAggregate) {
-                if (item.isNull())
-                    continue;
-                needInputs.add(item.clone());
-            }
-        }
-
-        if (!matchItemList(haveInputs, needInputs)) {
+        if (!RecipeMatcher.matchIngredients(inputList, getIngredientsAggregate(), multiplier)) {
             return false;
         }
 
@@ -221,7 +226,17 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     @Override
-    public List<Item> getIngredientsAggregate() {
-        return ingredientsAggregate;
+    public List<RecipeIngredient> getIngredientsAggregate() {
+        return ingredients;
+    }
+
+    @Override
+    public UnlockingContext getUnlockingContext() {
+        return unlockingContext;
+    }
+
+    @Override
+    public List<RecipeIngredient> getUnlockingIngredientList() {
+        return unlockingIngredients;
     }
 }

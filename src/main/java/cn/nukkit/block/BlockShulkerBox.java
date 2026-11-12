@@ -182,7 +182,11 @@ public class BlockShulkerBox extends BlockTransparent {
             }
 
             box.unpackLootTable();
-            player.addWindow(box.getInventory());
+            if (player.isServerAuthoritativeInventoryEnabled()) {
+                player.setCurrentWindow(box.getInventory());
+            } else {
+                player.addWindow(box.getInventory());
+            }
         }
 
         return true;

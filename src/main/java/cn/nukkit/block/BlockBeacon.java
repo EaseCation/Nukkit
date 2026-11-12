@@ -6,6 +6,8 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBeacon;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.BeaconInventory;
+import cn.nukkit.inventory.FakeBlockUIComponent;
+import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -62,8 +64,8 @@ public class BlockBeacon extends BlockTransparent {
         if (player != null) {
             BlockEntity t = this.getLevel().getBlockEntity(this);
             BlockEntityBeacon beacon;
-            if (t instanceof BlockEntityBeacon) {
-                beacon = (BlockEntityBeacon) t;
+            if (t instanceof BlockEntityBeacon be) {
+                beacon = be;
             } else {
                 CompoundTag nbt = new CompoundTag("")
                         .putString("id", BlockEntity.BEACON)
@@ -76,7 +78,14 @@ public class BlockBeacon extends BlockTransparent {
                 }
             }
 
-            player.addWindow(new BeaconInventory(player.getUIInventory(), this), Player.BEACON_WINDOW_ID);
+            if (player.isServerAuthoritativeInventoryEnabled()) {
+                if (FakeBlockUIComponent.isCurrentWindowAt(player, InventoryType.BEACON, this)) {
+                    return true;
+                }
+                player.setCurrentWindow(new BeaconInventory(player.getUIInventory(), this));
+            } else {
+                player.addWindow(new BeaconInventory(player.getUIInventory(), this), Player.BEACON_WINDOW_ID);
+            }
         }
         return true;
     }

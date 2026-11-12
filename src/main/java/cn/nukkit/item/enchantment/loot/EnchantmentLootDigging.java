@@ -12,4 +12,9 @@ public class EnchantmentLootDigging extends EnchantmentLoot {
     public EnchantmentLootDigging() {
         super(Enchantment.FORTUNE, EnchantmentNames.FORTUNE, "lootBonusDigger", Rarity.RARE, EnchantmentType.DIGGER);
     }
+
+    @Override
+    public boolean checkCompatibility(Enchantment enchantment) {
+        return super.checkCompatibility(enchantment) && enchantment.id != SILK_TOUCH;
+    }
 }

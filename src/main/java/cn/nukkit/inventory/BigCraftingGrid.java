@@ -12,4 +12,9 @@ public class BigCraftingGrid extends CraftingGrid {
     BigCraftingGrid(PlayerUIInventory playerUI) {
         super(playerUI, CRAFTING_TABLE_INPUT_OFFSET, SIZE);
     }
+
+    @Override
+    public RecipeTag getRecipeTag() {
+        return RecipeTag.CRAFTING_TABLE;
+    }
 }

@@ -23,6 +23,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author CreeperFace
  */
 public class ItemFirework extends Item {
+    private static final int DEFAULT_FLIGHT = 1;
+    private static final int TICKS_PER_FLIGHT = 10;
 
     public ItemFirework() {
         this(0);
@@ -123,12 +125,17 @@ public class ItemFirework extends Item {
 
     public int getLifeTime() {
         initNamedTag();
-        if (!this.getNamedTag().getCompound("Fireworks").exist("LifeTime")) {
-            Random rand = ThreadLocalRandom.current();
-            this.getNamedTag().getCompound("Fireworks").putInt("LifeTime", 20 + rand.nextInt(12));
+        CompoundTag tag = getNamedTag();
+        CompoundTag fireworks = tag.getCompound("Fireworks");
+        if (!fireworks.exist("LifeTime")) {
+            int flight = fireworks.getByte("Flight", DEFAULT_FLIGHT) & 0xff;
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            int lifetime = TICKS_PER_FLIGHT * (flight + 1) + random.nextInt(6) + random.nextInt(7);
+            fireworks.putInt("LifeTime", lifetime);
+            tag.putCompound("Fireworks", fireworks);
+            setNamedTag(tag);
         }
-
-        return this.getNamedTag().getCompound("Fireworks").getInt("LifeTime");
+        return fireworks.getInt("LifeTime");
     }
 
     public void addExplosion(FireworkExplosion explosion) {

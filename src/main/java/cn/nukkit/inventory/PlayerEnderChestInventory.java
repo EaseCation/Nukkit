@@ -6,10 +6,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.BlockEventPacket;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.*;
 
 public class PlayerEnderChestInventory extends BaseInventory {
 
@@ -23,18 +20,11 @@ public class PlayerEnderChestInventory extends BaseInventory {
     }
 
     @Override
-    public void onOpen(Player who) {
-        if (who != this.getHolder()) {
-            return;
-        }
-
-        super.onOpen(who);
-
+    public DataPacket createContainerOpenPacket(Player player, int windowId) {
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
-        containerOpenPacket.windowId = who.getWindowId(this);
-        who.setLastOpenedWindowId(containerOpenPacket.windowId);
+        containerOpenPacket.windowId = windowId;
         containerOpenPacket.type = this.getType().getNetworkType();
-        Vector3 chest = who.getViewingEnderChest();
+        Vector3 chest = player.getViewingEnderChest();
         if (chest != null) {
             containerOpenPacket.x = (int) chest.getX();
             containerOpenPacket.y = (int) chest.getY();
@@ -42,10 +32,26 @@ public class PlayerEnderChestInventory extends BaseInventory {
         } else {
             containerOpenPacket.x = containerOpenPacket.y = containerOpenPacket.z = 0;
         }
-        who.dataPacket(containerOpenPacket);
+        return containerOpenPacket;
+    }
 
-        this.sendContents(who);
+    @Override
+    public void onOpen(Player who) {
+        if (who != this.getHolder()) {
+            return;
+        }
 
+        super.onOpen(who);
+
+        if (!who.isServerAuthoritativeInventoryEnabled()) {
+            int windowId = who.getWindowId(this);
+            who.setLastOpenedWindowId(windowId);
+            who.dataPacket(createContainerOpenPacket(who, windowId));
+
+            this.sendContents(who);
+        }
+
+        Vector3 chest = who.getViewingEnderChest();
         if (chest instanceof BlockEntityEnderChest enderChest && enderChest.getViewers().size() == 1) {
             BlockEventPacket blockEventPacket = new BlockEventPacket();
             blockEventPacket.x = (int) chest.getX();
@@ -64,7 +70,7 @@ public class PlayerEnderChestInventory extends BaseInventory {
 
     @Override
     public void onClose(Player who) {
-        if (who.getClosingWindowId() != Integer.MAX_VALUE) {
+        if (!who.isServerAuthoritativeInventoryEnabled() && who.getClosingWindowId() != Integer.MAX_VALUE) {
             ContainerClosePacket containerClosePacket = new ContainerClosePacket();
             containerClosePacket.windowId = who.getWindowId(this);
             containerClosePacket.wasServerInitiated = who.getClosingWindowId() != containerClosePacket.windowId;
@@ -93,7 +99,5 @@ public class PlayerEnderChestInventory extends BaseInventory {
             }
         }
         who.setViewingEnderChest(null);
-
-        super.onClose(who);
     }
 }

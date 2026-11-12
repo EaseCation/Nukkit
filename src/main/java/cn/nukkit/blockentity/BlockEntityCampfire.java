@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCampfire;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.FurnaceSmeltEvent;
 import cn.nukkit.inventory.FurnaceRecipe;
 import cn.nukkit.inventory.RecipeTag;
@@ -97,6 +98,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable {
             return false;
         }
 
+        RecipeTag recipeTag = getBlock().getId() == BlockID.SOUL_CAMPFIRE ? RecipeTag.SOUL_CAMPFIRE : RecipeTag.CAMPFIRE;
         boolean itemChanged = false;
         for (int i = 0; i < SLOT_COUNT; i++) {
             Item item = getItem(i);
@@ -114,7 +116,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable {
                 continue;
             }
 
-            FurnaceRecipe recipe = server.getCraftingManager().matchFurnaceRecipe(item, RecipeTag.CAMPFIRE);
+            FurnaceRecipe recipe = server.getCraftingManager().matchFurnaceRecipe(item, recipeTag);
             if (recipe != null) {
                 FurnaceSmeltEvent event = new FurnaceSmeltEvent(this, item, recipe.getResult());
                 this.server.getPluginManager().callEvent(event);

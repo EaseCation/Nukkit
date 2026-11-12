@@ -168,10 +168,7 @@ public class InventoryTransactionPacket extends DataPacket implements InventoryT
     public void decode() {
         this.transactionType = (int) this.getUnsignedVarInt();
 
-        int count = (int) this.getUnsignedVarInt();
-        if (count > 100) {
-            throw new IndexOutOfBoundsException("Too many actions in inventory transaction");
-        }
+        int count = this.getUnsignedVarInt(100);
         this.actions = new NetworkInventoryAction[count];
         for (int i = 0; i < this.actions.length; i++) {
             this.actions[i] = new NetworkInventoryAction().read(this, this);

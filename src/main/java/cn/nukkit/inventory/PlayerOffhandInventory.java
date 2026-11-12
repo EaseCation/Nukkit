@@ -22,13 +22,15 @@ public class PlayerOffhandInventory extends BaseInventory {
 
     @Override
     public void onSlotChange(int index, Item before, Item after, boolean send) {
+        notifyAuthoritativeSlotChange(index);
+
         EntityHuman holder = this.getHolder();
         if (holder instanceof Player && !((Player) holder).spawned) {
             return;
         }
 
-        this.sendContents(this.getViewers());
-        this.sendContents(holder.getViewers().values());
+        sendContents(false, getViewers().toArray(Player[]::new));
+        sendContents(false, holder.getViewers().values().toArray(Player[]::new));
 
         int sound;
         if (after != null && (sound = after.getEquippingSound()) != -1 && !after.equals(before, false, false)) {
@@ -38,11 +40,21 @@ public class PlayerOffhandInventory extends BaseInventory {
 
     @Override
     public void sendContents(Player... players) {
+        sendContents(true, players);
+    }
+
+    private void sendContents(boolean syncOwner, Player... players) {
         Item item = this.getItem(0);
         long entityId = this.getHolder().getId();
 
         for (Player player : players) {
             if (player == this.getHolder()) {
+                if (player.isServerAuthoritativeInventoryEnabled()) {
+                    if (syncOwner) {
+                        sendAuthoritativeContents(player);
+                    }
+                    continue;
+                }
                 InventoryContentPacket pk2 = new InventoryContentPacket();
                 pk2.inventoryId = ContainerIds.OFFHAND;
                 pk2.slots = new Item[]{item};
@@ -65,6 +77,10 @@ public class PlayerOffhandInventory extends BaseInventory {
 
         for (Player player : players) {
             if (player == this.getHolder()) {
+                if (player.isServerAuthoritativeInventoryEnabled()) {
+                    sendAuthoritativeSlot(0, player);
+                    continue;
+                }
                 InventorySlotPacket pk2 = new InventorySlotPacket();
                 pk2.inventoryId = ContainerIds.OFFHAND;
                 pk2.item = item;

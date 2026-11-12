@@ -154,7 +154,11 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
             }
 
             player.setViewingEnderChest(chest);
-            player.addWindow(player.getEnderChestInventory());
+            if (player.isServerAuthoritativeInventoryEnabled()) {
+                player.setCurrentWindow(player.getEnderChestInventory());
+            } else {
+                player.addWindow(player.getEnderChestInventory());
+            }
         }
 
         return true;

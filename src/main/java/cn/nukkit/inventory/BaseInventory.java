@@ -44,6 +44,9 @@ public abstract class BaseInventory implements Inventory {
     protected final Set<Player> viewers = new HashSet<>();
 
     protected InventoryHolder holder;
+    private int authoritativePublishingSlot = -1;
+    @Nullable
+    private Item authoritativePublishingItem;
 
     public BaseInventory(InventoryHolder holder, InventoryType type) {
         this(holder, type, new Int2ObjectOpenHashMap<>());
@@ -149,6 +152,53 @@ public abstract class BaseInventory implements Inventory {
         return this.setItem(index, item, send, null);
     }
 
+    @Nullable
+    public PreparedInventorySlotChange captureAuthoritativeSlotChange(int index, Item source, Item target) {
+        if (!slotExists(index) || source.getCount() < 0 || target.getCount() < 0 || !getItem(index).equalsExact(source)) {
+            return null;
+        }
+        return new PreparedInventorySlotChange(this, index, target);
+    }
+
+    /**
+     * 在事务写入任何槽之前触发事件；改写结果必须重新形成独立事务。
+     */
+    protected boolean prepareAuthoritativeSlotChange(int index, Item before, Item target, PreparedInventorySlotChange change) {
+        Entity entity = getInventoryChangeEntity();
+        if (entity != null) {
+            EntityInventoryChangeEvent event = new EntityInventoryChangeEvent(entity, before.clone(), target.clone(), getInventoryChangeSlot(index), change);
+            event.call();
+            return !event.isCancelled() && event.getNewItem() != null && event.getNewItem().equalsExact(target);
+        }
+        return true;
+    }
+
+    @Nullable
+    protected Entity getInventoryChangeEntity() {
+        return getHolder() instanceof Entity entity ? entity : null;
+    }
+
+    protected int getInventoryChangeSlot(int index) {
+        return index;
+    }
+
+    void publishAuthoritativeSlotChange(int index, Item before, @Nullable Item committedItem) {
+        int previousSlot = authoritativePublishingSlot;
+        Item previousItem = authoritativePublishingItem;
+        authoritativePublishingSlot = index;
+        authoritativePublishingItem = committedItem;
+        try {
+            onSlotChange(index, before, committedItem, false);
+        } finally {
+            authoritativePublishingSlot = previousSlot;
+            authoritativePublishingItem = previousItem;
+        }
+    }
+
+    public boolean isPublishingAuthoritativeSlotChange(int index) {
+        return authoritativePublishingSlot == index && slots.get(index) == authoritativePublishingItem;
+    }
+
     boolean setItem(int index, Item item, boolean send, @Nullable InventorySlotReference source) {
         return this.setItem(index, item, send, source, null);
     }
@@ -168,9 +218,9 @@ public abstract class BaseInventory implements Inventory {
 
         Item original = predictedConsumer == null ? null : this.slots.get(index);
         Item originalSnapshot = original == null ? null : original.clone();
-        InventoryHolder holder = this.getHolder();
-        if (holder instanceof Entity) {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, this.getItem(index), item.clone(), index);
+        Entity entity = this.getInventoryChangeEntity();
+        if (entity != null) {
+            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(entity, this.getItem(index), item.clone(), getInventoryChangeSlot(index));
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
@@ -410,9 +460,9 @@ public abstract class BaseInventory implements Inventory {
         if (old != null) {
             Item originalSnapshot = predictedConsumer == null ? null : old.clone();
             Item item = Items.air();
-            InventoryHolder holder = this.getHolder();
-            if (holder instanceof Entity) {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, old, item, index);
+            Entity entity = this.getInventoryChangeEntity();
+            if (entity != null) {
+                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(entity, old, item, getInventoryChangeSlot(index));
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     this.sendSlot(index, this.getViewers());
@@ -487,15 +537,59 @@ public abstract class BaseInventory implements Inventory {
         this.viewers.remove(who);
     }
 
+    protected void notifyAuthoritativeSlotChange(int index) {
+        for (Player player : getViewers()) {
+            if (!player.isServerAuthoritativeInventoryEnabled()) {
+                continue;
+            }
+            InventoryListener listener = player.getInventoryListener();
+            if (listener != null) {
+                listener.onSlotChange(this, index);
+            }
+        }
+    }
+
     @Override
     public void onSlotChange(int index, Item before, Item after, boolean send) {
+        notifyAuthoritativeSlotChange(index);
+
         if (send) {
-            this.sendSlot(index, this.getViewers());
+            sendSlotToLegacyViewers(index);
         }
 
         if (holder instanceof BlockEntity) {
             ((BlockEntity) holder).setDirty();
         }
+    }
+
+    protected final void sendSlotToLegacyViewers(int index) {
+        for (Player player : new ObjectArrayList<>(getViewers())) {
+            if (!player.isServerAuthoritativeInventoryEnabled()) {
+                sendSlot(index, player);
+            }
+        }
+    }
+
+    protected final boolean sendAuthoritativeContents(Player player) {
+        if (!player.isServerAuthoritativeInventoryEnabled()) {
+            return false;
+        }
+        InventoryListener listener = player.getInventoryListener();
+        if (listener != null) {
+            listener.syncContents(this);
+        }
+        return true;
+    }
+
+    protected final boolean sendAuthoritativeSlot(int index, Player player) {
+        if (!player.isServerAuthoritativeInventoryEnabled()) {
+            return false;
+        }
+        InventoryListener listener = player.getInventoryListener();
+        if (listener != null) {
+            listener.syncSlot(this, index);
+        }
+        return true;
     }
 
     /**
@@ -520,7 +614,9 @@ public abstract class BaseInventory implements Inventory {
         this.onSlotChange(index, before, after, send && predictedConsumer == null);
         if (send && predictedConsumer != null) {
             for (Player viewer : new ObjectArrayList<>(this.getViewers())) {
-                if (viewer != predictedConsumer) this.sendSlot(index, viewer);
+                if (viewer != predictedConsumer && !viewer.isServerAuthoritativeInventoryEnabled()) {
+                    this.sendSlot(index, viewer);
+                }
             }
         }
     }
@@ -538,6 +634,9 @@ public abstract class BaseInventory implements Inventory {
         }
 
         for (Player player : players) {
+            if (sendAuthoritativeContents(player)) {
+                continue;
+            }
             int id = player.getWindowId(this);
             if (id == ContainerIds.NONE || !player.spawned) {
                 this.close(player);
@@ -614,6 +713,9 @@ public abstract class BaseInventory implements Inventory {
         Item item = this.getItem(index);
 
         for (Player player : players) {
+            if (sendAuthoritativeSlot(index, player)) {
+                continue;
+            }
             int id = player.getWindowId(this);
             if (id == ContainerIds.NONE) {
                 this.close(player);
@@ -656,7 +758,9 @@ public abstract class BaseInventory implements Inventory {
         return Items.air();
     }
 
-    /** 与 peek 保持相同槽位顺序及匹配规则，但持有本次动作的具体来源。 */
+    /**
+     * 与 peek 保持相同槽位顺序及匹配规则，但持有本次动作的具体来源。
+     */
     @Nullable
     public InventorySlotReference captureFirstItem(Item target) {
         boolean checkAux = target.hasMeta() && target.getDamage() >= 0;

@@ -2938,7 +2938,14 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        EntityItem itemEntity = new EntityItem(chunk, Entity.getDefaultNBT(source, motion, random.nextFloat() * 360, 0)
+        return dropItem(chunk, source, item, motion, delay);
+    }
+
+    /**
+     * 使用预先取得的区块创建掉落，供提交后不能重新解析玩家位置的库存事务使用。
+     */
+    public EntityItem dropItem(FullChunk chunk, Vector3 source, Item item, Vector3 motion, int delay) {
+        EntityItem itemEntity = new EntityItem(chunk, Entity.getDefaultNBT(source, motion, ThreadLocalRandom.current().nextFloat() * 360, 0)
                 .putShort("Health", 5)
                 .putCompound("Item", NBTIO.putItemHelper(item))
                 .putShort("PickupDelay", delay));

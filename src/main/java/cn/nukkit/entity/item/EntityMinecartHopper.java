@@ -94,7 +94,11 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         unpackLootTable();
 
-        player.addWindow(this.inventory);
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            player.setCurrentWindow(inventory);
+        } else {
+            player.addWindow(this.inventory);
+        }
         return false; // If true, the count of items player has in hand decreases
     }
 

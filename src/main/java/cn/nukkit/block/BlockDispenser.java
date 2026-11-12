@@ -128,7 +128,11 @@ public class BlockDispenser extends BlockSolid implements Faceable {
         }
 
         blockEntity.unpackLootTable();
-        player.addWindow(blockEntity.getInventory());
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            player.setCurrentWindow(blockEntity.getInventory());
+        } else {
+            player.addWindow(blockEntity.getInventory());
+        }
         return true;
     }
 

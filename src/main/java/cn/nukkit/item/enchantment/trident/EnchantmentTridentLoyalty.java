@@ -5,12 +5,22 @@ import cn.nukkit.item.enchantment.EnchantmentNames;
 
 public class EnchantmentTridentLoyalty extends EnchantmentTrident {
     public EnchantmentTridentLoyalty() {
-        super(Enchantment.LOYALTY, EnchantmentNames.LOYALTY, "tridentLoyalty", Rarity.UNCOMMON);
+        super(Enchantment.LOYALTY, EnchantmentNames.LOYALTY, "tridentLoyalty", Rarity.COMMON);
+    }
+
+    @Override
+    public boolean checkCompatibility(Enchantment enchantment) {
+        return super.checkCompatibility(enchantment) && enchantment.id != RIPTIDE;
     }
 
     @Override
     public int getMinEnchantAbility(int level) {
         return 7 * level + 5;
+    }
+
+    @Override
+    public int getMaxEnchantAbility(int level) {
+        return 50;
     }
 
     @Override

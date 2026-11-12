@@ -7,6 +7,7 @@ import cn.nukkit.math.RandomSource;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public final class EnchantmentHelper {
@@ -24,39 +25,45 @@ public final class EnchantmentHelper {
     }
 
     public static List<Enchantment> selectEnchantments(RandomSource random, Item item, int cost, boolean treasure) {
-        int enchantAbility = item.getEnchantAbility();
-        int enchantingPower = cost + random.nextRange(0, enchantAbility >> 2) + random.nextRange(0, enchantAbility >> 2) + 1;
-        // Random bonus for enchanting power between 0.85 and 1.15
-        float bonus = 1 + (random.nextFloat() + random.nextFloat() - 1) * 0.15f;
-        enchantingPower = Math.round(enchantingPower * bonus);
-
         List<Enchantment> resultEnchantments = new ArrayList<>();
+        int enchantAbility = item.getEnchantAbility();
+        if (enchantAbility <= 0) {
+            return resultEnchantments;
+        }
+        int randomBound = (enchantAbility >> 2) + 1;
+        int enchantingPower = cost + random.nextInt(randomBound) + random.nextInt(randomBound) + 1;
+        // Random bonus for enchanting power between 0.85 and 1.15
+        float bonus = 1 + random.nextFloat(-0.15f, 0.15f);
+        enchantingPower = Math.max(1, Math.round(enchantingPower * bonus));
+
         List<Enchantment> availableEnchantments = getAvailableEnchantmentResults(item, enchantingPower, treasure);
+        int candidateCount = availableEnchantments.size();
+        Enchantment firstEnchantment = drawAndRemoveWeightedEnchantment(random, availableEnchantments);
+        if (firstEnchantment == null) {
+            return resultEnchantments;
+        }
+        resultEnchantments.add(firstEnchantment);
 
-        Enchantment lastEnchantment = getRandomWeightedEnchantment(random, availableEnchantments);
-        if (lastEnchantment != null) {
-            resultEnchantments.add(lastEnchantment);
-
-            // With probability (power + 1) / 50, continue adding enchantments
-            while (random.nextFloat() <= (enchantingPower + 1) / 50f) {
-                // Remove from the list of available enchantments anything that conflicts with previously-chosen enchantments
-                List<Enchantment> nextAvailableEnchantments = new ArrayList<>();
-                for (Enchantment enchantment : availableEnchantments) {
-                    if (lastEnchantment.getId() == enchantment.getId() || !lastEnchantment.isCompatibleWith(enchantment)) {
-                        continue;
-                    }
-                    nextAvailableEnchantments.add(enchantment);
-                }
-                availableEnchantments = nextAvailableEnchantments;
-
-                lastEnchantment = getRandomWeightedEnchantment(random, availableEnchantments);
-                if (lastEnchantment == null) {
+        int attempts = 1;
+        // With probability min(1, (power + 1) / 50), continue trying enchantments while attempts remain.
+        while (random.nextInt(50) <= enchantingPower && attempts < candidateCount) {
+            Enchantment selected = drawAndRemoveWeightedEnchantment(random, availableEnchantments);
+            if (selected == null) {
+                break;
+            }
+            // Skip the selected enchantment if it conflicts with previously-chosen enchantments.
+            boolean compatible = true;
+            for (Enchantment existing : resultEnchantments) {
+                if (selected.getId() == existing.getId() || !selected.isCompatibleWith(existing)) {
+                    compatible = false;
                     break;
                 }
-
-                resultEnchantments.add(lastEnchantment);
-                enchantingPower >>= 1;
             }
+            if (compatible) {
+                resultEnchantments.add(selected);
+            }
+            enchantingPower = (int) ((long) enchantingPower * 4 / 5 + 1);
+            attempts++;
         }
 
         return resultEnchantments;
@@ -77,14 +84,34 @@ public final class EnchantmentHelper {
                 continue;
             }
 
-            for (int lvl = enchantment.getMaxLevel(); lvl > 0; lvl--) {
-                if (enchantingPower >= enchantment.getMinEnchantAbility(lvl) && enchantingPower <= enchantment.getMaxEnchantAbility(lvl)) {
+            for (int lvl = enchantment.getMaxLevel(); lvl >= enchantment.getMinLevel(); lvl--) {
+                if (enchantingPower >= enchantment.getMinEnchantAbility(lvl)) {
                     enchantments.add(enchantment.clone().setLevel(lvl));
                     break;
                 }
             }
         }
+        enchantments.sort(Comparator.comparingInt(Enchantment::getId));
         return enchantments;
+    }
+
+    @Nullable
+    private static Enchantment drawAndRemoveWeightedEnchantment(RandomSource random, List<Enchantment> enchantments) {
+        if (enchantments.isEmpty()) {
+            return null;
+        }
+        int totalWeight = 0;
+        for (Enchantment enchantment : enchantments) {
+            totalWeight += enchantment.getRarity().getWeight();
+        }
+        int randomWeight = random.nextInt(totalWeight);
+        for (int i = 0; i < enchantments.size(); i++) {
+            randomWeight -= enchantments.get(i).getRarity().getWeight();
+            if (randomWeight < 0) {
+                return enchantments.remove(i);
+            }
+        }
+        return null;
     }
 
     @Nullable

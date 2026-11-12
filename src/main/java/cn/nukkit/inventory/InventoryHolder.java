@@ -15,7 +15,11 @@ public interface InventoryHolder {
     }
 
     default void openInventory(Player player) {
-        player.addWindow(getInventory());
+        if (player.isServerAuthoritativeInventoryEnabled()) {
+            player.setCurrentWindow(getInventory());
+        } else {
+            player.addWindow(getInventory());
+        }
     }
 
     default void unpackLootTable() {

@@ -6,6 +6,16 @@ public class EnchantmentVanishingCurse extends Enchantment {
     }
 
     @Override
+    public int getMinEnchantAbility(int level) {
+        return 25;
+    }
+
+    @Override
+    public int getMaxEnchantAbility(int level) {
+        return 50;
+    }
+
+    @Override
     public boolean isCurse() {
         return true;
     }

@@ -3,6 +3,8 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -19,6 +21,11 @@ public class InventorySlotPacket extends DataPacket {
     public int inventoryId;
     public int slot;
     public Item item;
+    public int containerSlotType;
+    @Nullable
+    public Integer dynamicContainerId;
+    @Nullable
+    public Item storageItem;
 
     @Override
     public void decode() {

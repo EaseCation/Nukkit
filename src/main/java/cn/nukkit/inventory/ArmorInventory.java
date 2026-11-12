@@ -44,12 +44,14 @@ public class ArmorInventory extends BaseInventory {
 
     @Override
     public void onSlotChange(int index, Item before, Item after, boolean send) {
+        notifyAuthoritativeSlotChange(index);
+
         if (entity instanceof Player player && !player.spawned) {
             return;
         }
 
-        sendContents(viewers);
-        sendContents(entity.getViewers().values());
+        sendContents(false, viewers.toArray(Player[]::new));
+        sendContents(false, entity.getViewers().values().toArray(Player[]::new));
 
         int sound;
         if (after != null && (sound = after.getEquippingSound()) != -1 && !after.equals(before, false)) {
@@ -59,6 +61,10 @@ public class ArmorInventory extends BaseInventory {
 
     @Override
     public void sendContents(Player... players) {
+        sendContents(true, players);
+    }
+
+    private void sendContents(boolean syncOwner, Player... players) {
         Item[] items = new Item[4];
         for (int i = 0; i < 4; i++) {
             items[i] = getItem(i);
@@ -66,6 +72,12 @@ public class ArmorInventory extends BaseInventory {
 
         for (Player player : players) {
             if (player == holder) {
+                if (player.isServerAuthoritativeInventoryEnabled()) {
+                    if (syncOwner) {
+                        sendAuthoritativeContents(player);
+                    }
+                    continue;
+                }
                 InventoryContentPacket packet = new InventoryContentPacket();
                 packet.inventoryId = ContainerIds.ARMOR;
                 packet.slots = items;
@@ -88,6 +100,14 @@ public class ArmorInventory extends BaseInventory {
 
         for (Player player : players) {
             if (player == holder) {
+                if (player.isServerAuthoritativeInventoryEnabled()) {
+                    if (index < 0 || index >= size) {
+                        sendAuthoritativeContents(player);
+                    } else {
+                        sendAuthoritativeSlot(index, player);
+                    }
+                    continue;
+                }
                 if (index < 0 || index >= size) {
                     InventoryContentPacket packet = new InventoryContentPacket();
                     packet.inventoryId = ContainerIds.ARMOR;
@@ -112,6 +132,13 @@ public class ArmorInventory extends BaseInventory {
     @Override
     public boolean setItem(int index, Item item, boolean send) {
         return setItem(index, item, send, false);
+    }
+
+    @Override
+    protected boolean prepareAuthoritativeSlotChange(int index, Item before, Item target, PreparedInventorySlotChange change) {
+        EntityArmorChangeEvent event = new EntityArmorChangeEvent(entity, before.clone(), target.clone(), index, change);
+        event.call();
+        return !event.isCancelled() && event.getNewItem() != null && event.getNewItem().equalsExact(target);
     }
 
     public boolean setItem(int index, Item item, boolean send, boolean ignoreEvent) {
