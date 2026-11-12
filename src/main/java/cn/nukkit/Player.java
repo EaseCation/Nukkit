@@ -1194,6 +1194,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         indexes.unstableSort(this.chunkComparator);
 
         for (long index : indexes) {
+            // 异步投递完成后，跨区块排序留下的旧队列项无需再次发送。
+            if (this.usedChunks.get(index)) {
+                this.loadQueue.remove(index);
+                continue;
+            }
             if (count >= this.chunksPerTick) {
                 // You should count the active transactions for each client, and only send new LevelChunkPackets if there aren't too many active transactions.
                 // In Vanilla, depending on the connection quality, we only allow between 1 and 8 concurrent transactions.
