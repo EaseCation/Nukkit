@@ -260,6 +260,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Vector3 newPosition = null;
     private volatile long movementEpoch;
     private long pendingMovementEpoch;
+    private long pendingMovementClientTick = -1;
+    private long committedMovementClientTick = -1;
+    private double clientTickMovementX;
+    private double clientTickMovementY;
+    private double clientTickMovementZ;
     private double pendingMovementYaw;
     private double pendingMovementPitch;
     @Nullable
@@ -2151,15 +2156,31 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         double distanceSquared = newPos.distanceSquared(this);
         double tickDistanceSquared = distanceSquared;
-        if (guardedInput && this.inputMovementStatistics != null) {
-            // 逐帧提交仍受原周期位移边界约束，不能通过拆包获得多份移动额度。
+        boolean clientTimedInput = guardedInput && this.pendingMovementClientTick >= 0;
+        double clientTickDx = newPos.x - this.x;
+        double clientTickDy = newPos.y - this.y;
+        double clientTickDz = newPos.z - this.z;
+        if (clientTimedInput) {
+            // FIFO 补帧可在同一服务端 tick 提交多个客户端 tick；每个客户端 tick
+            // 仍只有原来的 15 格额度，同 tick 拆包不能重复领取，跳 tick 不增加额度。
+            if (this.pendingMovementClientTick == this.committedMovementClientTick) {
+                clientTickDx += this.clientTickMovementX;
+                clientTickDy += this.clientTickMovementY;
+                clientTickDz += this.clientTickMovementZ;
+            }
+            tickDistanceSquared = clientTickDx * clientTickDx + clientTickDy * clientTickDy
+                    + clientTickDz * clientTickDz;
+        } else if (guardedInput && this.inputMovementStatistics != null) {
+            // 无客户端时钟的移动仍按服务端周期累计。
             double tickDx = newPos.x - this.x + this.inputMovementStatistics.deltaX();
             double tickDy = newPos.y - this.y + this.inputMovementStatistics.deltaY();
             double tickDz = newPos.z - this.z + this.inputMovementStatistics.deltaZ();
             tickDistanceSquared = tickDx * tickDx + tickDy * tickDy + tickDz * tickDz;
         }
         boolean revert = false;
-        if ((tickDistanceSquared / ((double) (tickDiff * tickDiff))) > 225) {
+        double movementTicks = clientTimedInput ? 1 : tickDiff;
+        if (clientTimedInput && this.pendingMovementClientTick < this.committedMovementClientTick
+                || tickDistanceSquared / (movementTicks * movementTicks) > 225) {
             revert = true;
         } else {
             if (this.chunk == null || !this.chunk.isGenerated()) {
@@ -2346,6 +2367,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.inputMovementStatistics = new MovementTickAccumulator();
             }
             if (!revert) {
+                if (clientTimedInput) {
+                    this.committedMovementClientTick = this.pendingMovementClientTick;
+                    this.clientTickMovementX = clientTickDx;
+                    this.clientTickMovementY = clientTickDy;
+                    this.clientTickMovementZ = clientTickDz;
+                }
                 this.inputMovementStatistics.record(this.x - canonicalFrom.x, this.y - canonicalFrom.y,
                         this.z - canonicalFrom.z,
                         (this.isFoodEnabled() || this.level.getDifficulty() == 0) && this.isSurvivalLike() && this.riding == null,
@@ -2410,6 +2437,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private void advanceMovementEpoch() {
         this.movementEpoch++;
+        this.committedMovementClientTick = -1;
+        this.clientTickMovementX = 0;
+        this.clientTickMovementY = 0;
+        this.clientTickMovementZ = 0;
         if (this.inputMovementStatistics != null) {
             this.inputMovementStatistics.resetDisplacement();
             this.updateInputMovementSpeed();
@@ -2443,7 +2474,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    protected final void setPendingMovement(Vector3 position, float yaw, float pitch, long clientTick) {
+        this.setPendingMovement(position, yaw, pitch);
+        this.pendingMovementClientTick = clientTick;
+    }
+
     protected final void setPendingMovement(Vector3 position, float yaw, float pitch) {
+        this.pendingMovementClientTick = -1;
         if (this.server.getInputDispatcher() != null) {
             if (this.newPosition == null || this.pendingMovementEpoch != this.movementEpoch) {
                 this.pendingMovementYaw = this.yaw;
@@ -2457,6 +2494,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected final void clearPendingMovement() {
         this.newPosition = null;
+        this.pendingMovementClientTick = -1;
     }
 
     /** 移动提交的周期副作用；保留原调用顺序，不能按输入帧重复执行。 */
