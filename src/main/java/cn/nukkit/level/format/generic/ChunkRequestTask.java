@@ -1,9 +1,9 @@
 package cn.nukkit.level.format.generic;
 
 import cn.nukkit.Server;
-import cn.nukkit.block.Blocks;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
+import cn.nukkit.level.BlockView;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.HeightRange;
@@ -28,6 +28,7 @@ import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -56,6 +57,11 @@ public class ChunkRequestTask extends AsyncTask<Void> {
     private final BlockEntity[] blockEntities;
     private final Level level;
     private final Set<StaticVersion> requestedVersions;
+    /**
+     * 本次序列化使用的观察者方块视图，为空时生成原始区块数据
+     */
+    @Nullable
+    private final BlockView view;
 
     private final Map<StaticVersion, byte[]> fullChunkPayloads = new EnumMap<>(StaticVersion.class);
 
@@ -66,7 +72,12 @@ public class ChunkRequestTask extends AsyncTask<Void> {
     private ChunkCachedData chunkCachedData;
 
     public ChunkRequestTask(Chunk chunk) {
+        this(chunk, null);
+    }
+
+    public ChunkRequestTask(Chunk chunk, @Nullable BlockView view) {
         this.chunk = chunk;
+        this.view = view;
         chunkX = chunk.getX();
         chunkZ = chunk.getZ();
         heightRange = chunk.getHeightRange();
@@ -76,7 +87,8 @@ public class ChunkRequestTask extends AsyncTask<Void> {
         LevelProvider provider = chunk.getProvider();
         level = provider.getLevel();
         this.requestedVersions = EnumSet.copyOf(PRELOAD_VERSIONS);
-        this.requestedVersions.addAll(level.getRequestChunkVersions().keySet());
+        // 只生成本视图的玩家实际用到的版本
+        this.requestedVersions.addAll(level.getRequestChunkVersions(view).keySet());
         networkRevision = chunk.getNetworkRevision();
     }
 
@@ -215,7 +227,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
             for (int chunkY = minChunkY; chunkY <= topChunkY; chunkY++) {
                 stream.reuse();
                 emptySection[Level.yToIndex(chunkY, chunkYIndexOffset)] = sections[Level.subChunkYtoIndex(chunkY)]
-                        .writeToCache(stream, Blocks::getBlockFullNameById);
+                        .writeToCache(stream, view);
                 byte[] subChunk = stream.getBuffer();
 
                 long hash = Hash.xxh64(subChunk);
@@ -255,7 +267,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 for (int chunkY = minChunkY; chunkY <= topChunkY; chunkY++) {
                     int mark = stream.getCount();
                     if (available) {
-                        sections[Level.subChunkYtoIndex(chunkY)].writeTo(stream, version);
+                        sections[Level.subChunkYtoIndex(chunkY)].writeTo(stream, version, view);
                     } else {
                         stream.putByte(8); // version
                         stream.putByte(0); // empty
@@ -358,17 +370,17 @@ public class ChunkRequestTask extends AsyncTask<Void> {
 
             chunkCachedData = new ChunkCachedData(count, heightmapType, heightmapData, emptySection, new ChunkBlobCache(blobIds.toLongArray(), blobs, blobIdsLegacy.toLongArray(), blobsLegacy, cacheModeFullChunkPayload, borderBlocks, subChunkBlockEntities), packetCache, networkRevision);
         } catch (Exception e) {
-            log.warn("Chunk network serialization failed: [{},{}] {}", chunkX, chunkZ, level.getFolderName(), e);
+            log.warn("Chunk network serialization failed: [{},{}] {} view {}", chunkX, chunkZ, level.getFolderName(), view, e);
         }
     }
 
     @Override
     public void onCompletion(Server server) {
         if (chunkCachedData == null) {
-            level.chunkRequestFailureCallback(chunkX, chunkZ);
+            level.chunkRequestFailureCallback(chunkX, chunkZ, view);
             return;
         }
-        level.chunkRequestCallback(networkRevision, chunkX, chunkZ, chunkCachedData, fullChunkPayloads, subRequestModeFullChunkPayload, subRequestModeFullChunkPayloadLegacy, subChunkPayloads);
+        level.chunkRequestCallback(networkRevision, chunkX, chunkZ, view, chunkCachedData, fullChunkPayloads, subRequestModeFullChunkPayload, subRequestModeFullChunkPayloadLegacy, subChunkPayloads);
     }
 
     public static boolean addPreloadVersion(StaticVersion version) {

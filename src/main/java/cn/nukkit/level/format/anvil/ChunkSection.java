@@ -3,6 +3,7 @@ package cn.nukkit.level.format.anvil;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.Blocks;
+import cn.nukkit.level.BlockView;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.format.anvil.util.BlockStorage;
@@ -15,6 +16,7 @@ import cn.nukkit.utils.*;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.function.IntFunction;
 
@@ -331,6 +333,11 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Override
     public void writeTo(BinaryStream stream, StaticVersion version) {
+        writeTo(stream, version, null);
+    }
+
+    @Override
+    public void writeTo(BinaryStream stream, StaticVersion version, @Nullable BlockView view) {
         if (version.getProtocol() >= StaticVersion.V1_18.getProtocol()) {
             stream.putByte((byte) 9);
             stream.putByte((byte) 2);
@@ -340,7 +347,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
             stream.putByte((byte) 2);
         }
         synchronized (storage) {
-            this.storage.writeTo(stream, version);
+            this.storage.writeTo(stream, version, view);
         }
         PalettedSubChunkStorage.ofBlock(BitArrayVersion.V1, GlobalBlockPalette.getStaticBlockPalette(version).getOrCreateRuntimeId0(Block.AIR, 0))
                 .writeTo(stream);
@@ -363,11 +370,16 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Override
     public boolean writeToCache(BinaryStream stream, IntFunction<String> blockIdToName) {
+        return writeToCache(stream, (BlockView) null);
+    }
+
+    @Override
+    public boolean writeToCache(BinaryStream stream, @Nullable BlockView view) {
         stream.putByte((byte) 8);
         stream.putByte((byte) 2);
         boolean allAir;
         synchronized (storage) {
-            allAir = this.storage.writeToCache(stream, blockIdToName);
+            allAir = this.storage.writeToCache(stream, view);
         }
         EmptyChunkSection.EMPTY_STORAGE.writeToCache(stream);
         return allAir;

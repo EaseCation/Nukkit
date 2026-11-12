@@ -11,6 +11,7 @@ import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.level.BlockView;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
@@ -30,6 +31,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
@@ -94,6 +97,13 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     protected transient ChunkCachedData cachedData;
 
     /**
+     * 按观察者方块视图生成的区块网络数据，与 {@link #cachedData} 一起随区块变化失效。
+     * 只在主线程读写；失效时整体置空。
+     */
+    @Nullable
+    protected transient Reference2ObjectMap<BlockView, ChunkCachedData> viewCachedData;
+
+    /**
      * 网络数据版本号的全局来源。
      * 每个区块对象创建时、每次失效时都取一个全局唯一的新值，
      * 这样同一坐标的区块对象被替换（卸载后重新加载等）之后，旧对象上生成的网络数据也不会被误认为是最新的。
@@ -149,6 +159,34 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     public ChunkCachedData getCachedData() {
         return cachedData;
+    }
+
+    /**
+     * @param view 观察者方块视图，为空时返回原始区块数据
+     */
+    @Nullable
+    public ChunkCachedData getCachedData(@Nullable BlockView view) {
+        if (view == null) {
+            return cachedData;
+        }
+        Reference2ObjectMap<BlockView, ChunkCachedData> views = viewCachedData;
+        return views == null ? null : views.get(view);
+    }
+
+    /**
+     * @param view 观察者方块视图，为空时设置原始区块数据
+     */
+    public void setCachedData(@Nullable BlockView view, ChunkCachedData cachedData) {
+        if (view == null) {
+            this.cachedData = cachedData;
+            return;
+        }
+        Reference2ObjectMap<BlockView, ChunkCachedData> views = viewCachedData;
+        if (views == null) {
+            views = new Reference2ObjectArrayMap<>(2);
+            viewCachedData = views;
+        }
+        views.put(view, cachedData);
     }
 
     @Override
@@ -530,6 +568,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     public void invalidateNetworkCache() {
         this.networkRevision = NETWORK_REVISIONS.incrementAndGet();
         this.cachedData = null;
+        this.viewCachedData = null;
     }
 
     @Override

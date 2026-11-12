@@ -313,6 +313,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Nullable
     protected StaticVersion blockVersion;
 
+    /**
+     * 观察者方块视图：区块与方块更新下发给该玩家前按视图替换方块，为空时看到原始方块。
+     */
+    @Nullable
+    protected BlockView blockView;
+    /**
+     * 视图变更后待重发已发送区块，在下一次玩家更新时处理
+     */
+    protected boolean blockViewResendPending;
+
     protected int formWindowCount = 0;
     protected Int2ObjectMap<FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Int2ObjectMap<FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
@@ -3118,6 +3128,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
             this.orderChunks();
+        }
+
+        if (this.blockViewResendPending) {
+            this.resendChunksForBlockView();
         }
 
         if (!this.loadQueue.isEmpty() || !this.spawned) {
@@ -7858,6 +7872,48 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Nullable
     public StaticVersion getBlockVersion() {
         return blockVersion;
+    }
+
+    @Nullable
+    public BlockView getBlockView() {
+        return blockView;
+    }
+
+    /**
+     * 设置观察者方块视图，可在任意时刻调用。
+     * <p>
+     * 排队中的区块请求在投递时会改投到新视图；已发送的区块在下一次玩家更新时按新视图重发。
+     * 在切换世界前调用时，旧世界的区块会随世界切换卸载，不会被重发。
+     * 视图的约定见 {@link BlockView}。
+     */
+    public void setBlockView(@Nullable BlockView blockView) {
+        BlockView oldView = this.blockView;
+        if (oldView == blockView) {
+            return;
+        }
+        this.blockView = blockView;
+        if (this.level != null) {
+            this.level.onPlayerBlockViewChange(this, oldView, blockView);
+        }
+        this.blockViewResendPending = true;
+    }
+
+    /**
+     * 按当前视图重发已发送的区块。客户端收到同一位置的区块数据会整体替换。
+     */
+    protected void resendChunksForBlockView() {
+        this.blockViewResendPending = false;
+        if (!this.connected || this.level == null || this.getLoaderId() <= 0) {
+            return;
+        }
+        for (Long2BooleanMap.Entry entry : this.usedChunks.long2BooleanEntrySet()) {
+            if (!entry.getBooleanValue()) {
+                // 尚未发送的请求在投递时会按当前视图改投
+                continue;
+            }
+            long index = entry.getLongKey();
+            this.level.requestChunk(Level.getHashX(index), Level.getHashZ(index), this, getDummyDimension());
+        }
     }
 
     @Beta
