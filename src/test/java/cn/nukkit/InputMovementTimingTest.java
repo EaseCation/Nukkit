@@ -1,7 +1,10 @@
 package cn.nukkit;
 
 import cn.nukkit.block.BlockAir;
-import cn.nukkit.entity.data.EntityMetadata;
+import cn.nukkit.block.Block;
+import cn.nukkit.data.ServerConfiguration;
+import cn.nukkit.entity.attribute.Attribute;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -12,6 +15,8 @@ import cn.nukkit.network.input.PlayerInputProcessor;
 import cn.nukkit.network.input.ServerInputDispatcher;
 import cn.nukkit.plugin.PluginManager;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.mockito.MockedStatic;
 
 import java.net.InetSocketAddress;
 
@@ -19,6 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class InputMovementTimingTest {
+    @BeforeAll
+    static void initializeItems() {
+        Block.init();
+        Item.init();
+        Attribute.init();
+    }
+
     @Test
     void nativeHighSpeedCatchupCommitsEachClientTickInTheSameServerTick() {
         ProbePlayer player = player();
@@ -83,9 +95,15 @@ class InputMovementTimingTest {
     }
 
     private static ProbePlayer player() {
-        ProbePlayer player = mock(ProbePlayer.class, CALLS_REAL_METHODS);
         Server server = mock(Server.class);
         Level level = mock(Level.class);
+        when(server.getConfiguration()).thenReturn(mock(ServerConfiguration.class));
+        when(server.getDefaultLevel()).thenReturn(level);
+        ProbePlayer player;
+        try (MockedStatic<Server> global = mockStatic(Server.class)) {
+            global.when(Server::getInstance).thenReturn(server);
+            player = mock(ProbePlayer.class, withSettings().useConstructor().defaultAnswer(CALLS_REAL_METHODS));
+        }
         BaseFullChunk chunk = mock(BaseFullChunk.class);
         when(server.getPluginManager()).thenReturn(mock(PluginManager.class));
         when(server.getPlayerInputProcessor()).thenReturn(mock(PlayerInputProcessor.class));
@@ -101,13 +119,6 @@ class InputMovementTimingTest {
         doReturn(false).when(player).isInsideOfWater();
         doReturn(false).when(player).isSprinting();
         doReturn(false).when(player).isSwimming();
-        try {
-            var metadata = cn.nukkit.entity.Entity.class.getDeclaredField("dataProperties");
-            metadata.setAccessible(true);
-            metadata.set(player, new EntityMetadata());
-        } catch (ReflectiveOperationException failure) {
-            throw new AssertionError(failure);
-        }
         player.configure(server, level, chunk);
         return player;
     }
