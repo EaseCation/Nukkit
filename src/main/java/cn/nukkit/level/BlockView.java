@@ -16,6 +16,9 @@ import java.util.NoSuchElementException;
  * <li>实例不可变且线程安全：区块序列化在异步线程中调用 {@link #remap(int)}。</li>
  * <li>返回的方块应在所有可用协议版本中都有网络 ID，可用 {@link #isSupportedTarget(int)} 检查。
  * 个别版本不支持时，该版本的玩家会看到原方块。</li>
+ * <li>不替换带方块实体的方块，也不替换成带方块实体的方块，可用 {@link #isSupportedSource(int)} 与
+ * {@link #isSupportedTarget(int)} 检查。方块实体数据不经过视图，始终按服务端原样下发，
+ * 只有两端都不涉及方块实体，客户端才不会收到与其方块不匹配的方块实体数据。</li>
  * <li>区块缓存按视图实例区分：同一种视图应由所有玩家共享同一个实例，
  * 为每名玩家单独创建实例会让每名玩家都单独序列化一份区块。</li>
  * </ul>
@@ -39,7 +42,21 @@ public interface BlockView {
     }
 
     /**
-     * 检查方块能否作为替换目标：方块已注册、数据值合法，且在所有可用协议版本的方块调色板中都有网络 ID。
+     * 检查方块能否被替换：方块已注册且不带方块实体。
+     * 只应在构建视图时调用，不要在序列化等热点路径中使用。
+     *
+     * @param blockId 方块 ID（不含数据值）
+     */
+    static boolean isSupportedSource(int blockId) {
+        if (blockId < 0 || blockId >= Block.BLOCK_ID_COUNT || Blocks.getBlockNameById(blockId) == null) {
+            return false;
+        }
+        return Block.get(blockId).getBlockEntityType() == 0;
+    }
+
+    /**
+     * 检查方块能否作为替换目标：方块已注册、数据值合法、不带方块实体，
+     * 且在所有可用协议版本的方块调色板中都有网络 ID。
      * 只应在构建视图时调用，不要在序列化等热点路径中使用。
      */
     static boolean isSupportedTarget(int fullId) {
@@ -48,7 +65,11 @@ public interface BlockView {
         if (id < 0 || id >= Block.BLOCK_ID_COUNT || Blocks.getBlockNameById(id) == null) {
             return false;
         }
-        if (!Block.get(id).isValidMeta(meta)) {
+        Block block = Block.get(id);
+        if (!block.isValidMeta(meta)) {
+            return false;
+        }
+        if (Block.get(id, meta).getBlockEntityType() != 0) {
             return false;
         }
         for (StaticVersion version : StaticVersion.getAvailableVersions()) {

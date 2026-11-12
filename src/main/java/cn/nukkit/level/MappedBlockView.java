@@ -69,9 +69,11 @@ public final class MappedBlockView implements BlockView {
         /**
          * 替换方块的所有状态
          *
-         * @throws IllegalArgumentException 目标方块不满足 {@link BlockView#isSupportedTarget(int)}
+         * @throws IllegalArgumentException 源方块不满足 {@link BlockView#isSupportedSource(int)}，
+         *                                  或目标方块不满足 {@link BlockView#isSupportedTarget(int)}
          */
         public Builder remapBlock(int blockId, int targetFullId) {
+            checkSource(blockId);
             checkTarget(targetFullId);
             blockIdRemap.put(blockId, targetFullId);
             return this;
@@ -80,9 +82,11 @@ public final class MappedBlockView implements BlockView {
         /**
          * 只替换方块的某一个状态，优先于 {@link #remapBlock(int, int)}
          *
-         * @throws IllegalArgumentException 目标方块不满足 {@link BlockView#isSupportedTarget(int)}
+         * @throws IllegalArgumentException 源方块不满足 {@link BlockView#isSupportedSource(int)}，
+         *                                  或目标方块不满足 {@link BlockView#isSupportedTarget(int)}
          */
         public Builder remapState(int fullId, int targetFullId) {
+            checkSource(fullId >> Block.BLOCK_META_BITS);
             checkTarget(targetFullId);
             fullIdRemap.put(fullId, targetFullId);
             return this;
@@ -94,6 +98,12 @@ public final class MappedBlockView implements BlockView {
             Int2IntMap blockIds = new Int2IntOpenHashMap(blockIdRemap);
             blockIds.defaultReturnValue(UNMAPPED);
             return new MappedBlockView(name, fullIds, blockIds);
+        }
+
+        private void checkSource(int blockId) {
+            if (!BlockView.isSupportedSource(blockId)) {
+                throw new IllegalArgumentException("Unsupported block view source " + blockId + " in view " + name);
+            }
         }
 
         private void checkTarget(int targetFullId) {
