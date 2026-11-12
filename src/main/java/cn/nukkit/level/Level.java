@@ -5886,6 +5886,43 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     /**
+     * 区块序列化任务要生成的方块调色板版本：该视图下统计到的版本，加上正在排队请求该区块的玩家的版本。
+     * 后者保证排队玩家的版本一定会生成，即使统计因世界切换等时序暂时缺失，也不会因缺版本反复重新序列化。
+     */
+    public Set<StaticVersion> getChunkTaskVersions(@Nullable BlockView view, long chunkIndex) {
+        Set<StaticVersion> versions = EnumSet.noneOf(StaticVersion.class);
+        versions.addAll(this.getRequestChunkVersions(view).keySet());
+        ChunkSendQueues queues = view == null ? this.chunkSendQueues : this.viewChunkSendQueues.get(view);
+        if (queues != null) {
+            addQueuedVersions(versions, queues.chunkSendQueue.get(chunkIndex));
+            addQueuedVersions(versions, queues.subChunkSendQueue.get(chunkIndex));
+        }
+        return versions;
+    }
+
+    private static void addQueuedVersions(Set<StaticVersion> versions, @Nullable Int2ObjectMap<Pair<Player, IntSet>> loaders) {
+        if (loaders == null) {
+            return;
+        }
+        for (Pair<Player, IntSet> pair : loaders.values()) {
+            StaticVersion blockVersion = pair.left().getBlockVersion();
+            if (blockVersion != null) {
+                versions.add(blockVersion);
+            }
+        }
+    }
+
+    /**
+     * 清除本世界已加载区块上某个观察者方块视图的缓存。不再使用的视图实例应调用此方法释放内存，
+     * 否则其缓存会保留到区块内容变化或卸载。
+     */
+    public void clearBlockViewCache(BlockView view) {
+        for (BaseFullChunk chunk : this.getChunks().values()) {
+            chunk.clearCachedData(view);
+        }
+    }
+
+    /**
      * 玩家切换观察者方块视图时由 {@link Player#setBlockView} 调用，把玩家的协议版本移到新视图下统计。
      * 玩家不在本世界的统计中时不做处理。
      */

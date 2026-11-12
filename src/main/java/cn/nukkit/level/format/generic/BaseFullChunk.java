@@ -174,6 +174,16 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     /**
+     * 清除某个观察者方块视图的缓存
+     */
+    public void clearCachedData(BlockView view) {
+        Reference2ObjectMap<BlockView, ChunkCachedData> views = viewCachedData;
+        if (views != null) {
+            views.remove(view);
+        }
+    }
+
+    /**
      * @param view 观察者方块视图，为空时设置原始区块数据
      */
     public void setCachedData(@Nullable BlockView view, ChunkCachedData cachedData) {

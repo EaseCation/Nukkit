@@ -86,9 +86,9 @@ public class ChunkRequestTask extends AsyncTask<Void> {
         borders = chunk.getBorders().clone();
         LevelProvider provider = chunk.getProvider();
         level = provider.getLevel();
-        this.requestedVersions = EnumSet.copyOf(PRELOAD_VERSIONS);
-        // 只生成本视图的玩家实际用到的版本
-        this.requestedVersions.addAll(level.getRequestChunkVersions(view).keySet());
+        // 预加载版本只用于原始数据；视图数据只生成该视图的玩家与排队玩家实际用到的版本
+        this.requestedVersions = view == null ? EnumSet.copyOf(PRELOAD_VERSIONS) : EnumSet.noneOf(StaticVersion.class);
+        this.requestedVersions.addAll(level.getChunkTaskVersions(view, Level.chunkHash(chunkX, chunkZ)));
         networkRevision = chunk.getNetworkRevision();
     }
 

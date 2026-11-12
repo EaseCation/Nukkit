@@ -319,9 +319,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Nullable
     protected BlockView blockView;
     /**
-     * 视图变更后待重发已发送区块，在下一次玩家更新时处理
+     * 视图变更后待按新视图重发的区块，按距离由近到远排列，每 tick 最多重发 chunksPerTick 个
      */
-    protected boolean blockViewResendPending;
+    protected final LongList blockViewResendChunks = new LongArrayList();
+    protected int blockViewResendCursor;
+    /**
+     * 待重发区块所属的世界；玩家切换世界后剩余的重发作废
+     */
+    @Nullable
+    protected Level blockViewResendLevel;
 
     protected int formWindowCount = 0;
     protected Int2ObjectMap<FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
@@ -3130,8 +3136,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.orderChunks();
         }
 
-        if (this.blockViewResendPending) {
-            this.resendChunksForBlockView();
+        if (!this.blockViewResendChunks.isEmpty()) {
+            this.resendBlockViewChunks();
         }
 
         if (!this.loadQueue.isEmpty() || !this.spawned) {
@@ -7880,10 +7886,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * 设置观察者方块视图，可在任意时刻调用。
+     * 设置观察者方块视图，只能在主线程调用，可在玩家生命周期的任意时刻调用。
      * <p>
-     * 排队中的区块请求在投递时会改投到新视图；已发送的区块在下一次玩家更新时按新视图重发。
-     * 在切换世界前调用时，旧世界的区块会随世界切换卸载，不会被重发。
+     * 排队中的区块请求在投递时会改投到新视图；已发送的区块从下一次玩家更新开始按新视图重发，
+     * 由近到远、每 tick 最多 chunksPerTick 个，与正常加载区块的节奏一致。
+     * 在切换世界前调用时，旧世界的区块会随世界切换卸载，剩余的重发作废。
      * 视图的约定见 {@link BlockView}。
      */
     public void setBlockView(@Nullable BlockView blockView) {
@@ -7895,25 +7902,57 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.level != null) {
             this.level.onPlayerBlockViewChange(this, oldView, blockView);
         }
-        this.blockViewResendPending = true;
+        this.scheduleBlockViewResend();
     }
 
     /**
-     * 按当前视图重发已发送的区块。客户端收到同一位置的区块数据会整体替换。
+     * 记录当前已发送的区块，之后按新视图逐步重发。客户端收到同一位置的区块数据会整体替换。
      */
-    protected void resendChunksForBlockView() {
-        this.blockViewResendPending = false;
-        if (!this.connected || this.level == null || this.getLoaderId() <= 0) {
+    protected void scheduleBlockViewResend() {
+        this.clearBlockViewResend();
+        if (this.level == null) {
             return;
         }
         for (Long2BooleanMap.Entry entry : this.usedChunks.long2BooleanEntrySet()) {
-            if (!entry.getBooleanValue()) {
-                // 尚未发送的请求在投递时会按当前视图改投
+            // 尚未发送的请求在投递时会按当前视图改投，无需重发
+            if (entry.getBooleanValue()) {
+                this.blockViewResendChunks.add(entry.getLongKey());
+            }
+        }
+        if (this.blockViewResendChunks.isEmpty()) {
+            return;
+        }
+        this.blockViewResendChunks.unstableSort(this.chunkComparator);
+        this.blockViewResendLevel = this.level;
+    }
+
+    protected void resendBlockViewChunks() {
+        Level level = this.level;
+        if (!this.connected || level == null || level != this.blockViewResendLevel || this.getLoaderId() <= 0) {
+            this.clearBlockViewResend();
+            return;
+        }
+        int limit = Math.max(1, this.chunksPerTick);
+        int sent = 0;
+        int size = this.blockViewResendChunks.size();
+        while (this.blockViewResendCursor < size && sent < limit) {
+            long index = this.blockViewResendChunks.getLong(this.blockViewResendCursor++);
+            // 已卸载的区块无需重发；重新进入加载队列的区块会按当前视图正常发送
+            if (!this.usedChunks.get(index)) {
                 continue;
             }
-            long index = entry.getLongKey();
-            this.level.requestChunk(Level.getHashX(index), Level.getHashZ(index), this, getDummyDimension());
+            level.requestChunk(Level.getHashX(index), Level.getHashZ(index), this, getDummyDimension());
+            sent++;
         }
+        if (this.blockViewResendCursor >= size) {
+            this.clearBlockViewResend();
+        }
+    }
+
+    protected void clearBlockViewResend() {
+        this.blockViewResendChunks.clear();
+        this.blockViewResendCursor = 0;
+        this.blockViewResendLevel = null;
     }
 
     @Beta
