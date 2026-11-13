@@ -36,10 +36,12 @@ import cn.nukkit.event.player.PlayerSpawnChangeEvent.Cause;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
+import cn.nukkit.network.input.InboundContext;
 import cn.nukkit.network.input.InputValidationResult;
 import cn.nukkit.network.input.MovementCommit;
 import cn.nukkit.network.input.MovementCommitResult;
 import cn.nukkit.network.input.MovementTickAccumulator;
+import cn.nukkit.network.input.ServerInputDispatcher;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.inventory.*;
@@ -241,6 +243,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected String displayName;
 
     protected int startAction = -1;
+    /**
+     * 与 startAction 同时记录的输入 tick：两个世界 tick 之间执行的输入计入下一 tick，世界阶段即当前 tick。
+     * 只用于挖掘前结算持续使用，使开始与结算两端按同一口径计数，不改变原 startAction 的含义。
+     */
+    private int startActionInputTick = -1;
     protected long startActionTimestamp = -1;
     private long actionSequence;
     private final ItemUseHandState itemUseHandState = new ItemUseHandState();
@@ -388,12 +395,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void startAction() {
         this.actionSequence++;
         this.startAction = this.server.getTick();
+        this.startActionInputTick = this.getInputTick();
         this.startActionTimestamp = System.currentTimeMillis();
     }
 
     public void stopAction() {
         this.actionSequence++;
         this.startAction = -1;
+        this.startActionInputTick = -1;
         this.startActionTimestamp = -1;
     }
 
@@ -907,6 +916,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setUsingItem(boolean value) {
         this.actionSequence++;
         this.startAction = value ? this.server.getTick() : -1;
+        this.startActionInputTick = value ? this.getInputTick() : -1;
         this.startActionTimestamp = value ? System.currentTimeMillis() : -1;
         this.itemUseHandState.setUsing(value);
         this.usingItemSnapshot = value && this.itemUseHandState.isUsingOffhand()
@@ -2660,6 +2670,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 当前输入所属的 tick。低延迟输入在两个世界 tick 之间执行时，getTick() 仍是刚结束的 tick；
+     * 原先这类输入在下一 tick 开头、世界更新之前处理，因此计为 getTick()+1。世界阶段与关闭模式即 getTick()。
+     */
+    protected final int getInputTick() {
+        ServerInputDispatcher dispatcher = this.server.getInputDispatcher();
+        InboundContext context = dispatcher != null && this.server.isPrimaryThread() ? dispatcher.getCurrentContext() : null;
+        return this.server.getTick() + (context != null && context.betweenTicks() ? 1 : 0);
+    }
+
+    /**
      * 挖掘请求可能早于同 tick 的世界更新到达，先结算到期的持续使用，未到期则保留原计时。
      */
     protected final boolean finishItemUseBeforeBlockBreaking() {
@@ -2671,7 +2691,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!item.canRelease() || duration <= 0) {
             return true;
         }
-        if (this.server.getTick() - this.startAction < duration) {
+        if (this.getInputTick() - this.startActionInputTick < duration) {
             return false;
         }
         Level origin = this.level;
@@ -2702,7 +2722,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (!item.canRelease()) {
                 return false;
             }
-            int ticksUsed = this.server.getTick() - this.startAction;
+            // 挖掘前结算与开始使用可能分属补充阶段和世界阶段，两端都按输入 tick 计数。
+            int ticksUsed = finishBeforeBreaking ? this.getInputTick() - this.startActionInputTick : this.server.getTick() - this.startAction;
             int timeUsedTicks = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
             if (!this.isSpectator()) {
                 item.onUsing(this, timeUsedTicks);
