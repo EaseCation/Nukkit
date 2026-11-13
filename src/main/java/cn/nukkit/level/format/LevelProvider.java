@@ -1,5 +1,6 @@
 package cn.nukkit.level.format;
 
+import cn.nukkit.level.BlockView;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
@@ -12,6 +13,7 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.scheduler.AsyncTask;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
@@ -27,6 +29,14 @@ public interface LevelProvider {
     LevelProviderHandle getHandle();
 
     AsyncTask requestChunkTask(int X, int Z);
+
+    /**
+     * 按观察者方块视图生成区块网络数据；视图为空时与 {@link #requestChunkTask(int, int)} 相同。
+     * 不支持视图的格式返回原始区块数据。
+     */
+    default AsyncTask requestChunkTask(int x, int z, @Nullable BlockView view) {
+        return requestChunkTask(x, z);
+    }
 
     String getPath();
 

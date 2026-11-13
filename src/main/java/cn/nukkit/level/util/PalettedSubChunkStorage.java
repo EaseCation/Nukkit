@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSerializer;
 import cn.nukkit.block.BlockUpgrader;
 import cn.nukkit.block.Blocks;
+import cn.nukkit.level.BlockView;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.NBTIO;
@@ -256,9 +257,38 @@ public class PalettedSubChunkStorage {
             stream.putVarInt(palette.size());
         }
 
+        writeCachePalette(stream, null);
+    }
+
+    /**
+     * 写出客户端缓存格式，调色板条目按观察者方块视图替换；视图为空时不替换。
+     * 替换后调色板可能出现重复条目，客户端按索引取值，不受影响。
+     */
+    public void writeToCache(BinaryStream stream, @Nullable BlockView view) {
+        BitArrayVersion version = bitArray.getVersion();
+        stream.putByte((byte) getPaletteHeader(version, false));
+        if (version == BitArrayVersion.EMPTY) {
+            return;
+        }
+
+        if (version != BitArrayVersion.V0) {
+            for (int word : bitArray.getWords()) {
+                stream.putLInt(word);
+            }
+
+            stream.putVarInt(palette.size());
+        }
+
+        writeCachePalette(stream, view);
+    }
+
+    private void writeCachePalette(BinaryStream stream, @Nullable BlockView view) {
         List<CompoundTag> tagList = new ObjectArrayList<>();
         for (int i = 0; i < this.palette.size(); i++) {
             int fullId = this.palette.getInt(i);
+            if (view != null) {
+                fullId = view.remap(fullId);
+            }
             tagList.add(BlockSerializer.serializeRuntime(fullId));
         }
         try {

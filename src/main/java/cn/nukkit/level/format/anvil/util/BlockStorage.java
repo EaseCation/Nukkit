@@ -2,6 +2,7 @@ package cn.nukkit.level.format.anvil.util;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.Blocks;
+import cn.nukkit.level.BlockView;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
@@ -10,6 +11,7 @@ import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.function.IntFunction;
 
@@ -102,12 +104,24 @@ public class BlockStorage {
     }
 
     public void writeTo(BinaryStream stream, StaticVersion version) {
+        writeTo(stream, version, null);
+    }
+
+    /**
+     * 写出前按观察者方块视图替换方块；视图为空时不替换。
+     */
+    public void writeTo(BinaryStream stream, StaticVersion version, @Nullable BlockView view) {
         GlobalBlockPaletteInterface palette = GlobalBlockPalette.getStaticBlockPalette(version);
         int airBlockRuntimeId = palette.getOrCreateRuntimeId0(Block.AIR, 0);
         PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock(airBlockRuntimeId);
         for (int i = 0; i < SECTION_SIZE; i++) {
             int id = blockIds[i] & 0xff;
             int meta = blockData.get(i);
+            if (view != null) {
+                int fullId = view.remap(id << Block.BLOCK_META_BITS | meta);
+                id = fullId >> Block.BLOCK_META_BITS;
+                meta = fullId & Block.BLOCK_META_MASK;
+            }
 
             int runtimeId;
             try {
@@ -150,6 +164,14 @@ public class BlockStorage {
      * @return all air
      */
     public boolean writeToCache(BinaryStream stream, IntFunction<String> blockIdToName) {
+        return writeToCache(stream, (BlockView) null);
+    }
+
+    /**
+     * 写出客户端缓存格式，按观察者方块视图替换方块；视图为空时不替换。
+     * @return all air（按原方块判断）
+     */
+    public boolean writeToCache(BinaryStream stream, @Nullable BlockView view) {
         PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock(Block.AIR);
         int airCount = 0;
         for (int i = 0; i < SECTION_SIZE; i++) {
@@ -159,7 +181,7 @@ public class BlockStorage {
             }
             storage.set(i, blockId << 4 | blockData.get(i));
         }
-        storage.writeToCache(stream, blockIdToName);
+        storage.writeToCache(stream, view);
         return airCount == SECTION_SIZE;
     }
 
