@@ -10,6 +10,8 @@ import cn.nukkit.item.ItemBow;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.input.InboundContext;
+import cn.nukkit.network.input.ServerInputDispatcher;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.plugin.PluginManager;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +20,7 @@ import org.mockito.MockedStatic;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -104,6 +107,44 @@ class ItemUseCompletionTest {
         }
     }
 
+    /*
+     * 挖掘前结算持续使用（使用时长 25）：开始与结算两端都按输入 tick 计数，补充阶段计为下一 tick。
+     * 原实现只看 getTick()，世界阶段开始、补充阶段结算时少算 1，补充阶段开始、世界阶段结算时多算 1。
+     */
+    @Test void breakingBetweenTicksAfterWorldStartedUseCountsTheNextTick() { breaking(Phase.WORLD, 10, Phase.BETWEEN, 34, true); }
+    @Test void breakingInWorldPhaseAfterBetweenTickStartWaitsTheFullDuration() { breaking(Phase.BETWEEN, 10, Phase.WORLD, 35, false); }
+    @Test void breakingInWorldPhaseAfterBetweenTickStartCompletesAtTheFullDuration() { breaking(Phase.BETWEEN, 10, Phase.WORLD, 36, true); }
+    @Test void breakingBetweenTicksAfterBetweenTickStartKeepsTheSameDistance() { breaking(Phase.BETWEEN, 10, Phase.BETWEEN, 34, false); }
+    @Test void breakingBetweenTicksAfterBetweenTickStartCompletesAtTheFullDuration() { breaking(Phase.BETWEEN, 10, Phase.BETWEEN, 35, true); }
+    @Test void breakingOutsideInputDispatchUsesTheWorldTick() { breaking(Phase.NONE, 10, Phase.NONE, 34, false); }
+    @Test void breakingOutsideInputDispatchCompletesAtTheFullDuration() { breaking(Phase.NONE, 10, Phase.NONE, 35, true); }
+
+    private enum Phase {
+        NONE,
+        WORLD,
+        BETWEEN
+    }
+
+    private void breaking(Phase startPhase, int startTick, Phase checkPhase, int checkTick, boolean completes) {
+        try (Fixture fixture = new Fixture(true, false)) {
+            ServerInputDispatcher dispatcher = mock(ServerInputDispatcher.class);
+            when(fixture.server.getInputDispatcher()).thenReturn(dispatcher);
+            when(fixture.server.isPrimaryThread()).thenReturn(true);
+            doReturn(true).when(fixture.player).isAcceptingInputPackets();
+            when(fixture.server.getTick()).thenReturn(startTick);
+            when(dispatcher.getCurrentContext()).thenReturn(context(startPhase, startTick));
+            fixture.player.startAction();
+            when(fixture.server.getTick()).thenReturn(checkTick);
+            when(dispatcher.getCurrentContext()).thenReturn(context(checkPhase, checkTick));
+            assertEquals(completes, fixture.player.finishItemUseBeforeBlockBreaking());
+            assertEquals(completes ? 1 : 0, fixture.uses.get());
+        }
+    }
+
+    private static InboundContext context(Phase phase, int tick) {
+        return phase == Phase.NONE ? null : new InboundContext(UUID.randomUUID(), 1, 1, 0, tick, phase == Phase.BETWEEN);
+    }
+
     private void periodic(String variant, boolean enabled, int clicks, int uses, boolean using) {
         try (Fixture fixture = new Fixture(enabled, false)) {
             fixture.usingAction = () -> {
@@ -142,6 +183,7 @@ class ItemUseCompletionTest {
         final AtomicInteger uses = new AtomicInteger();
         final AtomicInteger clicks = new AtomicInteger();
         final MockedStatic<Server> servers;
+        final Server server = mock(Server.class);
         Runnable stopAction = () -> { };
         Runnable usingAction = () -> { };
         Runnable airAction = () -> { };
@@ -150,7 +192,6 @@ class ItemUseCompletionTest {
         boolean continuation = true;
 
         Fixture(boolean enabled, boolean usesOffhand) {
-            Server server = mock(Server.class);
             when(server.getTick()).thenReturn(30);
             when(server.getPluginManager()).thenReturn(plugins);
             servers = mockStatic(Server.class);
