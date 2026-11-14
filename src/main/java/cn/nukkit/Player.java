@@ -1977,7 +1977,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (!this.onGround || dy != 0) {
                 AxisAlignedBB bb = this.boundingBox.clone();
-                bb.setMinY(bb.getMinY() - 0.75);
+                // 脚部实际接触碰撞面后才结算落地，避免在浅水上方提前触发摔落伤害。
+                bb.setMinY(bb.getMinY() - 0.0001);
 
                 boolean onGroundPrev = this.onGround;
                 Block[] blocks = this.level.getCollisionBlocks(bb, true);
