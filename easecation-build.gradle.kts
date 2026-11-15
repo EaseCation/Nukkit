@@ -50,6 +50,9 @@ dependencies {
     api(libs.jwt)
     api(libs.leveldb.mcpe.jni)
     api(libs.leveldb.natives)
+    constraints {
+        api(libs.iq80.snappy)
+    }
     api(libs.lmax.disruptor)
     api(libs.lmbda)
     api(libs.log4j.core)
@@ -62,6 +65,7 @@ dependencies {
     api(libs.netty.all)
     api(libs.org.cloudburstmc.upnp)
     api(libs.slf4j.api)
+    api(libs.slf4j.jcl)
     api(libs.snakeyaml)
     api(libs.snakeyaml.engine)
     api(libs.snappy)
