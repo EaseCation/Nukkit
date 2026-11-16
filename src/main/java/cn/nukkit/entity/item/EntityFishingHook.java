@@ -251,7 +251,7 @@ public class EntityFishingHook extends EntityProjectile {
 
             Entity[] entities = this.getLevel().getCollidingEntities(this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1), this);
             for (Entity entity : entities) {
-                if (!this.canCollideWith(entity) || entity == this.shootingEntity) {
+                if (!entity.canCollide() || !this.canCollideWith(entity) || entity == this.shootingEntity) {
                     continue;
                 }
 
