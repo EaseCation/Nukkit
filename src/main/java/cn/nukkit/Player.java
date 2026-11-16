@@ -1976,8 +1976,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             boolean swimming = isSwimming();
 
             if (!this.onGround || dy != 0) {
-                AxisAlignedBB bb = this.boundingBox.clone();
-                // 脚部实际接触碰撞面后才结算落地，避免在浅水上方提前触发摔落伤害。
+                // 仅探测脚底支撑，并排除贴墙时的浮点交叠。
+                AxisAlignedBB bb = this.boundingBox.shrink(0.0001, 0, 0.0001);
+                bb.setMaxY(bb.getMinY());
                 bb.setMinY(bb.getMinY() - 0.0001);
 
                 boolean onGroundPrev = this.onGround;
