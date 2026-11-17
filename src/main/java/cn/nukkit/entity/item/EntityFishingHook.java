@@ -6,6 +6,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.ClipFlag;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.*;
@@ -251,7 +252,7 @@ public class EntityFishingHook extends EntityProjectile {
 
             Entity[] entities = this.getLevel().getCollidingEntities(this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1), this);
             for (Entity entity : entities) {
-                if (!entity.canCollide() || !this.canCollideWith(entity) || entity == this.shootingEntity) {
+                if ((entity instanceof EntityHuman && !entity.canCollide()) || !this.canCollideWith(entity) || entity == this.shootingEntity) {
                     continue;
                 }
 
