@@ -53,7 +53,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final int BLOCK_ID_MASK = BLOCK_ID_COUNT - 1;
     public static final int BLOCK_META_COUNT = Mth.smallestEncompassingPowerOfTwo(5469); // wtf cobblestone_wall
     public static final int BLOCK_META_MASK = BLOCK_META_COUNT - 1;
-    public static final int BLOCK_META_BITS = Mth.log2PowerOfTwo(BLOCK_META_COUNT);
+    public static final int BLOCK_META_BITS = Mth.bitLength(BLOCK_META_COUNT);
     public static final int FULL_BLOCK_COUNT = BLOCK_ID_COUNT << BLOCK_META_BITS;
     public static final int FULL_BLOCK_MASK = FULL_BLOCK_COUNT - 1;
     public static final int FULL_BLOCK_ID_MASK = BLOCK_ID_MASK << BLOCK_META_BITS;
@@ -92,7 +92,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
         initialized = true;
 
-        log.trace("Block ID capacity: {} - mask: 0b{} ({} bits)", BLOCK_ID_COUNT, Integer.toBinaryString(BLOCK_ID_MASK), Mth.log2PowerOfTwo(BLOCK_ID_COUNT));
+        log.trace("Block ID capacity: {} - mask: 0b{} ({} bits)", BLOCK_ID_COUNT, Integer.toBinaryString(BLOCK_ID_MASK), Mth.bitLength(BLOCK_ID_COUNT));
         log.trace("Block meta capacity: {} - mask: 0b{} ({} bits)", BLOCK_META_COUNT, Integer.toBinaryString(BLOCK_META_MASK), BLOCK_META_BITS);
         log.debug("Custom block capacity: {}", CUSTOM_BLOCK_CAPACITY);
 

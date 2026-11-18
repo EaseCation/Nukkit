@@ -1,5 +1,7 @@
 package cn.nukkit.math;
 
+import cn.nukkit.utils.Utils;
+
 import java.util.function.IntPredicate;
 
 public final class Mth {
@@ -16,7 +18,13 @@ public final class Mth {
     public static final float SQRT_OF_THREE = (float) Math.sqrt(3);
     private static final double LOG_OF_TWO = Math.log(2);
 
-    private static final float[] SIN = new float[65536];
+    private static final float SIN_SCALE = 10430.378f;
+    private static final float[] SIN = Utils.make(new float[65536], sin -> {
+        for (int i = 0; i < sin.length; i++) {
+//            sin[i] = (float) Math.sin(i / SIN_SCALE);
+            sin[i] = (float) Math.sin(i * Math.PI * 2 / 65536);
+        }
+    });
     private static final int[] MULTIPLY_DE_BRUIJN_BIT_POSITION = new int[]{
             0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
             31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9,
@@ -27,9 +35,6 @@ public final class Mth {
     private static final double[] COS_TAB = new double[LUT_SIZE];
 
     static {
-        for (int i = 0; i < SIN.length; i++) {
-            SIN[i] = (float) Math.sin(i * Math.PI * 2 / 65536);
-        }
         for (int i = 0; i < LUT_SIZE; i++) {
             double asin = Math.asin(i / 256.0);
             COS_TAB[i] = Math.cos(asin);
@@ -38,79 +43,91 @@ public final class Mth {
     }
 
     public static float sin(float v) {
-        return SIN[(int) (v * 10430.378f) & Character.MAX_VALUE];
+        return SIN[(int) (v * SIN_SCALE) & 65535];
     }
 
     public static double sin(double v) {
-        return SIN[(int) (v * 10430.378) & Character.MAX_VALUE];
+        return SIN[(int) ((long) (v * SIN_SCALE) & 65535L)];
     }
 
     public static float cos(float v) {
-        return SIN[(int) (v * 10430.378f + 16384) & Character.MAX_VALUE];
+        return SIN[(int) (v * SIN_SCALE + 16384) & 65535];
     }
 
     public static double cos(double v) {
-        return SIN[(int) (v * 10430.378 + 16384) & Character.MAX_VALUE];
+        return SIN[(int) ((long) (v * SIN_SCALE + 16384) & 65535L)];
     }
 
     public static int floor(float v) {
         int i = (int) v;
         return v < i ? i - 1 : i;
+//        return (int) Math.floor(v);
     }
 
     public static int floor(double v) {
         int i = (int) v;
         return v < i ? i - 1 : i;
+//        return (int) Math.floor(v);
     }
 
     public static long lfloor(double v) {
         long l = (long) v;
         return v < l ? l - 1 : l;
+//        return (long) Math.floor(v);
     }
 
     public static int ceil(float v) {
         int i = (int) v;
         return v > i ? i + 1 : i;
+//        return (int) Math.ceil(v);
     }
 
     public static int ceil(double v) {
         int i = (int) v;
         return v > i ? i + 1 : i;
+//        return (int) Math.ceil(v);
     }
 
     public static byte clamp(byte v, byte min, byte max) {
         return v < min ? min :
                 v > max ? max : v;
+//        return (byte) Math.min(Math.max(v, min), max);
     }
 
     public static short clamp(short v, short min, short max) {
         return v < min ? min :
                 v > max ? max : v;
+//        return (short) Math.min(Math.max(v, min), max);
     }
 
     public static char clamp(char v, char min, char max) {
         return v < min ? min :
                 v > max ? max : v;
+//        return (char) Math.min(Math.max(v, min), max);
     }
 
     public static int clamp(int v, int min, int max) {
         return v < min ? min :
                 v > max ? max : v;
+//        return Math.min(Math.max(v, min), max);
     }
 
     public static long clamp(long v, long min, long max) {
         return v < min ? min :
                 v > max ? max : v;
+//        return Math.min(Math.max(v, min), max);
     }
 
     public static float clamp(float v, float min, float max) {
         return v < min ? min :
                 v > max ? max : v;
+//        return Math.min(Math.max(v, min), max);
     }
 
     public static double clamp(double v, double min, double max) {
         return v < min ? min :
                 v > max ? max : v;
+//        return Math.min(Math.max(v, min), max);
     }
 
     public static double clampedLerp(double min, double max, double v) {
@@ -123,33 +140,60 @@ public final class Mth {
                 v > 1 ? max : lerp(v, min, max);
     }
 
+    public static int absMax(int a, int b) {
+        return Math.max(Math.abs(a), Math.abs(b));
+    }
+
+    public static float absMax(float a, float b) {
+        return Math.max(Math.abs(a), Math.abs(b));
+    }
+
     public static double absMax(double a, double b) {
-        if (a < 0) {
-            a = -a;
-        }
-        if (b < 0) {
-            b = -b;
-        }
-        return a > b ? a : b;
+        return Math.max(Math.abs(a), Math.abs(b));
+    }
+
+    public static int chessboardDistance(int x0, int z0, int x1, int z1) {
+        return absMax(x1 - x0, z1 - z0);
     }
 
     public static boolean equal(float a, float b) {
-        return Math.abs(b - a) < EPSILON;
+        return Math.abs(b - a) < EPSILON; // 1.19e-7
     }
 
     public static boolean equal(double a, double b) {
-        return Math.abs(b - a) < 9.999999747378752E-6;
+        return Math.abs(b - a) < EPSILON; // 2.22e-16
+    }
+
+    public static int positiveModulo(int x, int y) {
+        return Math.floorMod(x, y);
+    }
+
+    public static long positiveModulo(long x, long y) {
+        return Math.floorMod(x, y);
     }
 
     public static float positiveModulo(float x, float y) {
-        return (x % y + y) % y;
+        float remainder = x % y;
+        return remainder >= 0 ? remainder : remainder + y;
     }
 
     public static double positiveModulo(double x, double y) {
-        return (x % y + y) % y;
+        double remainder = x % y;
+        return remainder >= 0 ? remainder : remainder + y;
     }
 
     public static int wrapDegrees(int v) {
+        v %= 360;
+        if (v >= 180) {
+            v -= 360;
+        }
+        if (v < -180) {
+            v += 360;
+        }
+        return v;
+    }
+
+    public static long wrapDegrees(long v) {
         v %= 360;
         if (v >= 180) {
             v -= 360;
@@ -232,19 +276,23 @@ public final class Mth {
         return v != 0 && (v & v - 1) == 0;
     }
 
+    public static boolean isPowerOfTwo(long v) {
+        return v != 0 && (v & v - 1) == 0;
+    }
+
     public static int ceillog2(int v) {
         v = isPowerOfTwo(v) ? v : smallestEncompassingPowerOfTwo(v);
         return MULTIPLY_DE_BRUIJN_BIT_POSITION[(int) (v * 125613361L >> 27) & 0x1f];
     }
 
     public static int log2(int v) {
-//        int i = ceillog2(v);
-//        return isPowerOfTwo(v) ? i : i - 1;
-        return (int) (Math.log(v) / LOG_OF_TWO);
+        int i = ceillog2(v);
+        return isPowerOfTwo(v) ? i : i - 1;
+//        return (int) (Math.log(v) / LOG_OF_TWO);
     }
 
-    public static int log2PowerOfTwo(int powerOfTwo) {
-        return Integer.SIZE - Integer.numberOfLeadingZeros(powerOfTwo);
+    public static int bitLength(int n) {
+        return n == 0 ? 1 : Integer.SIZE - Integer.numberOfLeadingZeros(n);
     }
 
     public static float frac(float v) {
@@ -320,7 +368,7 @@ public final class Mth {
     static float fastInvSqrt(float v) {
         float h = 0.5f * v;
         int i = Float.floatToIntBits(v);
-        i = 0x5f375a86 - (i >> 1);
+        i = 0x5f375a86 - (i >> 1); // 0x5f3759df
         v = Float.intBitsToFloat(i);
         v *= 1.5f - h * v * v;
         return v;
@@ -333,6 +381,14 @@ public final class Mth {
         v = Double.longBitsToDouble(l);
         v *= 1.5 - h * v * v;
         return v;
+    }
+
+    public static int murmurHash3Mixer(int hash) {
+        hash ^= hash >>> 16;
+        hash *= -2048144789;
+        hash ^= hash >>> 13;
+        hash *= -1028477387;
+        return hash ^ hash >>> 16;
     }
 
     public static int binarySearch(int f, int t, IntPredicate p) {
@@ -374,6 +430,10 @@ public final class Mth {
         return lerp(t, lerp2(t0, t1, a0, b0, a1, b1), lerp2(t0, t1, a2, b2, a3, b3));
     }
 
+    public static float catmullrom(float alpha, float p0, float p1, float p2, float p3) {
+        return 0.5f * (2 * p1 + (p2 - p0) * alpha + (2 * p0 - 5 * p1 + 4 * p2 - p3) * alpha * alpha + (3 * p1 - p0 - 3 * p2 + p3) * alpha * alpha * alpha);
+    }
+
     public static float smoothstep(float v) {
         return v * v * v * (v * (v * 6 - 15) + 10);
     }
@@ -400,22 +460,13 @@ public final class Mth {
                 v > 0 ? 1 : -1;
     }
 
-    public static float rotLerp(float t, float a, float b) {
-        return a + t * wrapDegrees(b - a);
+    public static float rotLerp(float a, float from, float to) {
+        return from + a * wrapDegrees(to - from);
     }
 
-    /*@Deprecated
-    public static float rotlerp(float a, float b, float t) {
-//        b -= a;
-//        while (b < 180) {
-//            b += 360;
-//        }
-//        while (b >= 180) {
-//            b -= 360;
-//        }
-//        return a + t * b;
-        return rotLerp(t, a, b);
-    }*/
+    public static double rotLerp(double a, double from, double to) {
+        return from + a * wrapDegrees(to - from);
+    }
 
     public static float square(float v) {
         return v * v;
@@ -465,7 +516,19 @@ public final class Mth {
         return lerp(inverseLerp(t, n, m), a, b);
     }
 
+    public static int roundToward(int input, int multiple) {
+        return positiveCeilDiv(input, multiple) * multiple;
+    }
+
+    public static long roundToward(long input, long multiple) {
+        return positiveCeilDiv(input, multiple) * multiple;
+    }
+
     public static int positiveCeilDiv(int x, int y) {
+        return -Math.floorDiv(-x, y);
+    }
+
+    public static long positiveCeilDiv(long x, long y) {
         return -Math.floorDiv(-x, y);
     }
 
