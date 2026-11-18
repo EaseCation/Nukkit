@@ -2170,7 +2170,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             jumpBoost = 0;
         }
 
-        float damage = Mth.ceil((fallDistance - 3 - jumpBoost) * multiplier);
+        // 接触及传送的微小坐标偏移不应把整数下落距离进位为额外伤害。
+        float damage = Mth.ceil((fallDistance - 3 - jumpBoost - 0.0001f) * multiplier);
         if (damage <= 0) {
             return;
         }

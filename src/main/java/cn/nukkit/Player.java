@@ -1956,7 +1956,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return true;
         }
 
-        AxisAlignedBB newBB = this.boundingBox.getOffsetBoundingBox(dx, dy, dz);
+        AxisAlignedBB previousBB = this.boundingBox;
+        AxisAlignedBB newBB = previousBB.getOffsetBoundingBox(dx, dy, dz);
 
         if (this.isSpectator() || server.getAllowFlight() || !this.level.hasCollision(this, newBB, false)) {
             this.boundingBox = newBB;
@@ -1976,11 +1977,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             boolean swimming = isSwimming();
 
             if (!this.onGround || dy != 0) {
-                AxisAlignedBB bb = this.boundingBox.clone();
-                bb.setMinY(bb.getMinY() - 0.75);
+                // 仅探测脚底支撑，并排除贴墙时的浮点交叠。
+                AxisAlignedBB bb = this.boundingBox.shrink(0.0001, 0, 0.0001);
+                bb.setMaxY(bb.getMinY());
+                bb.setMinY(bb.getMinY() - 0.0001);
 
                 boolean onGroundPrev = this.onGround;
                 Block[] blocks = this.level.getCollisionBlocks(bb, true);
+                if (blocks.length == 0 && this.boundingBox.getMinY() < previousBB.getMinY()) {
+                    // 客户端先处理纵向碰撞，再横移；落地后移出阶边仍算本帧接地。
+                    AxisAlignedBB verticalBB = previousBB.shrink(0.0001, 0, 0.0001);
+                    verticalBB.setMinY(bb.getMinY());
+                    verticalBB.setMaxY(bb.getMaxY());
+                    blocks = this.level.getCollisionBlocks(verticalBB, true);
+                }
                 this.onGround = blocks.length > 0;
 
                 if (!this.isRiding() && !swimming && !onGroundPrev && onGround && !isInsideOfWater(false)) {
