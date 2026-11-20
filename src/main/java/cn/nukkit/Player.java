@@ -6392,8 +6392,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (!damager.onGround && damager instanceof Player player && !damager.hasEffect(Effect.BLINDNESS) && !damager.isRiding() && !damager.isInsideOfWater(false)) {
                 if (player.speed != null && player.speed.y > 0) {
                     if (player.attackCriticalThisJump <= 0) {
-                        critical = true;
-                        source.setDamage(source.getDamage() * 1.3f);
+                        // 暴击保留原有的近地排除范围，不与实际落地、摔落结算共用接地判定。
+                        AxisAlignedBB support = player.boundingBox.shrink(0.0001, 0, 0.0001);
+                        support.setMaxY(support.getMinY());
+                        support.setMinY(support.getMinY() - 0.75);
+                        if (player.level.getCollisionBlocks(support, true).length == 0) {
+                            critical = true;
+                            source.setDamage(source.getDamage() * 1.3f);
+                        }
                     }
                 }
             }
