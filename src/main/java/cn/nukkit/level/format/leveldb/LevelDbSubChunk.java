@@ -3,7 +3,9 @@ package cn.nukkit.level.format.leveldb;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.Blocks;
+import cn.nukkit.level.BlockView;
 import cn.nukkit.level.GlobalBlockPalette;
+import cn.nukkit.level.GlobalBlockPaletteInterface;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.anvil.util.NibbleArray;
@@ -14,6 +16,7 @@ import cn.nukkit.utils.BinaryStream;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -398,6 +401,12 @@ public class LevelDbSubChunk implements ChunkSection {
 
     @Override
     public void writeTo(BinaryStream stream, StaticVersion version) {
+        writeTo(stream, version, null);
+    }
+
+    @Override
+    public void writeTo(BinaryStream stream, StaticVersion version, @Nullable BlockView view) {
+        GlobalBlockPaletteInterface palette = getStaticBlockPalette(version);
         try {
             this.readLock.lock();
 
@@ -416,13 +425,27 @@ public class LevelDbSubChunk implements ChunkSection {
                 if (!this.hasLayerUnsafe(i)) {
 //                    EMPTY_STORAGE.writeTo(stream, (id) -> getStaticBlockPalette(version)
 //                            .getOrCreateRuntimeId0(id >> Block.BLOCK_META_BITS, id & Block.BLOCK_META_MASK));
-                    PalettedSubChunkStorage.ofBlock(BitArrayVersion.V1, GlobalBlockPalette.getStaticBlockPalette(version).getOrCreateRuntimeId0(Block.AIR, 0))
+                    PalettedSubChunkStorage.ofBlock(BitArrayVersion.V1, palette.getOrCreateRuntimeId0(Block.AIR, 0))
                             .writeTo(stream);
                     continue;
                 }
 
-                this.storages[i].writeTo(stream, (id) -> getStaticBlockPalette(version)
-                        .getOrCreateRuntimeId0(id >> Block.BLOCK_META_BITS, id & Block.BLOCK_META_MASK));
+                if (view == null) {
+                    this.storages[i].writeTo(stream, (id) -> palette
+                            .getOrCreateRuntimeId0(id >> Block.BLOCK_META_BITS, id & Block.BLOCK_META_MASK));
+                } else {
+                    this.storages[i].writeTo(stream, (id) -> {
+                        int fullId = view.remap(id);
+                        if (fullId != id) {
+                            try {
+                                return palette.getOrCreateRuntimeId0(fullId >> Block.BLOCK_META_BITS, fullId & Block.BLOCK_META_MASK);
+                            } catch (NoSuchElementException e) {
+                                // 视图目标在该协议版本中不存在，退回原方块，避免整个区块序列化失败
+                            }
+                        }
+                        return palette.getOrCreateRuntimeId0(id >> Block.BLOCK_META_BITS, id & Block.BLOCK_META_MASK);
+                    });
+                }
             }
         } finally {
             this.readLock.unlock();
@@ -458,6 +481,11 @@ public class LevelDbSubChunk implements ChunkSection {
 
     @Override
     public boolean writeToCache(BinaryStream stream, IntFunction<String> blockIdToName) {
+        return writeToCache(stream, (BlockView) null);
+    }
+
+    @Override
+    public boolean writeToCache(BinaryStream stream, @Nullable BlockView view) {
         boolean hasBlock = false;
         stream.putByte((byte) 8);
 
@@ -474,7 +502,7 @@ public class LevelDbSubChunk implements ChunkSection {
                 }
 
                 PalettedSubChunkStorage storage = this.storages[i];
-                storage.writeToCache(stream, blockIdToName);
+                storage.writeToCache(stream, view);
 
                 if (!hasBlock) {
                     hasBlock = !storage.isEmpty(true);

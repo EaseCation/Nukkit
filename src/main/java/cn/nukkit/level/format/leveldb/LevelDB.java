@@ -502,13 +502,18 @@ public class LevelDB implements LevelProvider {
 
     @Override
     public AsyncTask requestChunkTask(int chunkX, int chunkZ) {
+        return requestChunkTask(chunkX, chunkZ, null);
+    }
+
+    @Override
+    public AsyncTask requestChunkTask(int chunkX, int chunkZ, @Nullable BlockView view) {
         LevelDbChunk chunk = this.getChunk(chunkX, chunkZ, false);
         if (chunk == null) {
 //            throw new ChunkException("Invalid Chunk sent: " + chunkX + "," + chunkZ + " in " + path);
             return null;
         }
 
-        return new ChunkRequestTask(chunk);
+        return new ChunkRequestTask(chunk, view);
     }
 
     @Override

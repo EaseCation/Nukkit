@@ -70,6 +70,9 @@ import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 
@@ -306,12 +309,23 @@ public class Level implements ChunkManager, Metadatable {
 //    private final List<BlockUpdateEntry> nextTickUpdates = Lists.newArrayList();
     //private final Map<BlockVector3, Integer> updateQueueIndex = new HashMap<>();
 
+    /**
+     * 看原始方块的玩家用到的方块调色板版本，决定原始区块数据要生成哪些版本
+     */
     private final Map<StaticVersion, LongSet> requestChunkVersions = new EnumMap<>(StaticVersion.class);
+    /**
+     * 每个观察者方块视图的玩家用到的方块调色板版本，视图区块数据只生成这些版本
+     */
+    private final Reference2ObjectMap<BlockView, Map<StaticVersion, LongSet>> viewRequestChunkVersions = new Reference2ObjectOpenHashMap<>();
 
-    private final Long2ObjectMap<Int2ObjectMap<Pair<Player, IntSet>>> subChunkSendQueue = new Long2ObjectOpenHashMap<>();
-
-    private final Long2ObjectMap<Int2ObjectMap<Pair<Player, IntSet>>> chunkSendQueue = new Long2ObjectOpenHashMap<>();
-    private final LongSet chunkSendTasks = new LongOpenHashSet();
+    /**
+     * 原始方块的区块下发队列
+     */
+    private final ChunkSendQueues chunkSendQueues = new ChunkSendQueues();
+    /**
+     * 每个观察者方块视图各一套区块下发队列，序列化任务与缓存互不共享；队列清空后移除
+     */
+    private final Reference2ObjectMap<BlockView, ChunkSendQueues> viewChunkSendQueues = new Reference2ObjectOpenHashMap<>();
 
     private final Long2BooleanMap chunkPopulationQueue = new Long2BooleanOpenHashMap();
     private final Long2BooleanMap chunkPopulationLock = new Long2BooleanOpenHashMap();
@@ -1541,9 +1555,18 @@ public class Level implements ChunkManager, Metadatable {
                     packet.subChunkBlockZ = chunkBlockZ;
                     packet.layer0 = layer0;
                     packet.layer1 = layer1;
+                    Reference2ObjectMap<BlockView, UpdateSubChunkBlocksPacket> viewPackets = null;
                     for (Player player : players) {
 //                        player.updateSubChunkBlocks(chunkBlockX, chunkBlockY, chunkBlockZ, layer0, layer1);
-                        player.dataPacket(packet);
+                        BlockView view = player.getBlockView();
+                        if (view == null) {
+                            player.dataPacket(packet);
+                            continue;
+                        }
+                        if (viewPackets == null) {
+                            viewPackets = new Reference2ObjectArrayMap<>(2);
+                        }
+                        player.dataPacket(viewPackets.computeIfAbsent(view, key -> remapSubChunkBlocks(packet, (BlockView) key)));
                     }
                 }
 
@@ -1552,6 +1575,41 @@ public class Level implements ChunkManager, Metadatable {
         } finally {
             changeBlockLock.unlock();
         }
+    }
+
+    /**
+     * 按观察者方块视图改写子区块方块更新包；没有方块需要替换时返回原包。
+     */
+    private static UpdateSubChunkBlocksPacket remapSubChunkBlocks(UpdateSubChunkBlocksPacket packet, BlockView view) {
+        BlockChangeEntry[] layer0 = remapBlockChanges(packet.layer0, view);
+        BlockChangeEntry[] layer1 = remapBlockChanges(packet.layer1, view);
+        if (layer0 == packet.layer0 && layer1 == packet.layer1) {
+            return packet;
+        }
+        UpdateSubChunkBlocksPacket remapped = new UpdateSubChunkBlocksPacket();
+        remapped.subChunkBlockX = packet.subChunkBlockX;
+        remapped.subChunkBlockY = packet.subChunkBlockY;
+        remapped.subChunkBlockZ = packet.subChunkBlockZ;
+        remapped.layer0 = layer0;
+        remapped.layer1 = layer1;
+        return remapped;
+    }
+
+    private static BlockChangeEntry[] remapBlockChanges(BlockChangeEntry[] entries, BlockView view) {
+        BlockChangeEntry[] remapped = entries;
+        for (int i = 0; i < entries.length; i++) {
+            BlockChangeEntry entry = entries[i];
+            int block = view.remap(entry.block());
+            if (block == entry.block()) {
+                continue;
+            }
+            if (remapped == entries) {
+                remapped = entries.clone();
+            }
+            remapped[i] = new BlockChangeEntry(entry.x(), entry.y(), entry.z(), block, entry.flags(),
+                    entry.syncedUpdateEntityUniqueId(), entry.syncedUpdateType());
+        }
+        return remapped;
     }
 
     private void performThunder(long index, FullChunk chunk) {
@@ -1709,8 +1767,24 @@ public class Level implements ChunkManager, Metadatable {
             updateBlockPacket.blockId = id;
             updateBlockPacket.blockData = data;
             updateBlockPacket.dataLayer = layer;
+            int fullId = id << Block.BLOCK_META_BITS | data;
             for (Player player : target) {
-                player.dataPacket(updateBlockPacket);
+                BlockView view = player.getBlockView();
+                int viewFullId;
+                if (view == null || (viewFullId = view.remap(fullId)) == fullId) {
+                    player.dataPacket(updateBlockPacket);
+                    continue;
+                }
+                // 视图替换的方块按玩家单独发包，不修改共享的原包
+                UpdateBlockPacket viewPacket = new UpdateBlockPacket();
+                viewPacket.x = x;
+                viewPacket.y = y;
+                viewPacket.z = z;
+                viewPacket.flags = flags;
+                viewPacket.blockId = viewFullId >> Block.BLOCK_META_BITS;
+                viewPacket.blockData = viewFullId & Block.BLOCK_META_MASK;
+                viewPacket.dataLayer = layer;
+                player.dataPacket(viewPacket);
             }
         }
     }
@@ -3930,11 +4004,12 @@ public class Level implements ChunkManager, Metadatable {
             return false;
         }
         long index = Level.chunkHash(x, z);
-        this.subChunkSendQueue.computeIfAbsent(index, key -> new Int2ObjectOpenHashMap<>())
+        ChunkSendQueues queues = this.getChunkSendQueues(player.getBlockView());
+        queues.subChunkSendQueue.computeIfAbsent(index, key -> new Int2ObjectOpenHashMap<>())
                 .computeIfAbsent(loaderId, key -> Pair.of(player, new IntOpenHashSet()))
                 .right()
                 .add(dimension);
-        this.chunkSendQueue.computeIfAbsent(index, key -> new Int2ObjectOpenHashMap<>());
+        queues.chunkSendQueue.computeIfAbsent(index, key -> new Int2ObjectOpenHashMap<>());
         return true;
     }
 
@@ -3946,10 +4021,30 @@ public class Level implements ChunkManager, Metadatable {
         int loaderId = player.getLoaderId();
         Preconditions.checkState(loaderId > 0, player.getName() + " has no chunk loader");
         long index = Level.chunkHash(x, z);
-        this.chunkSendQueue.computeIfAbsent(index, key -> new Int2ObjectOpenHashMap<>())
+        this.getChunkSendQueues(player.getBlockView()).chunkSendQueue.computeIfAbsent(index, key -> new Int2ObjectOpenHashMap<>())
                 .computeIfAbsent(loaderId, key -> Pair.of(player, new IntOpenHashSet()))
                 .right()
                 .add(dimension);
+    }
+
+    private ChunkSendQueues getChunkSendQueues(@Nullable BlockView view) {
+        if (view == null) {
+            return this.chunkSendQueues;
+        }
+        return this.viewChunkSendQueues.computeIfAbsent(view, key -> new ChunkSendQueues());
+    }
+
+    /**
+     * 一套区块下发队列。原始方块与每个观察者方块视图各持有一套，避免不同视图的请求共用一份序列化结果。
+     */
+    private static final class ChunkSendQueues {
+        private final Long2ObjectMap<Int2ObjectMap<Pair<Player, IntSet>>> subChunkSendQueue = new Long2ObjectOpenHashMap<>();
+        private final Long2ObjectMap<Int2ObjectMap<Pair<Player, IntSet>>> chunkSendQueue = new Long2ObjectOpenHashMap<>();
+        private final LongSet chunkSendTasks = new LongOpenHashSet();
+
+        private boolean isEmpty() {
+            return chunkSendQueue.isEmpty() && subChunkSendQueue.isEmpty() && chunkSendTasks.isEmpty();
+        }
     }
 
     /** 区块构建结果可复用，但投递必须仍属于请求者当前的世界与接入状态。 */
@@ -3969,11 +4064,53 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     private void processChunkRequest() {
-        Iterator<Long2ObjectMap.Entry<Int2ObjectMap<Pair<Player, IntSet>>>> it = this.chunkSendQueue.long2ObjectEntrySet().iterator();
+        this.processChunkRequest(null, this.chunkSendQueues);
+        if (this.viewChunkSendQueues.isEmpty()) {
+            return;
+        }
+        // 改投请求时可能新建其他视图的队列，所以遍历快照
+        for (BlockView view : new ObjectArrayList<>(this.viewChunkSendQueues.keySet())) {
+            ChunkSendQueues queues = this.viewChunkSendQueues.get(view);
+            if (queues == null) {
+                continue;
+            }
+            this.processChunkRequest(view, queues);
+            if (queues.isEmpty()) {
+                this.viewChunkSendQueues.remove(view);
+            }
+        }
+    }
+
+    /**
+     * 玩家在请求排队期间切换了观察者方块视图时，把请求改投到当前视图的队列，避免下发旧视图的数据。
+     *
+     * @return 请求是否已不属于本队列，调用方应把它从本队列移除
+     */
+    private boolean rerouteChunkRequest(@Nullable BlockView view, Player player, IntSet dimensions, int x, int z, boolean subChunks) {
+        if (player.getBlockView() == view) {
+            return false;
+        }
+        if (player.getLoaderId() <= 0) {
+            return true;
+        }
+        IntIterator iterator = dimensions.iterator();
+        while (iterator.hasNext()) {
+            int dimension = iterator.nextInt();
+            if (subChunks) {
+                this.requestSubChunks(x, z, player, dimension);
+            } else {
+                this.requestChunk(x, z, player, dimension);
+            }
+        }
+        return true;
+    }
+
+    private void processChunkRequest(@Nullable BlockView view, ChunkSendQueues queues) {
+        Iterator<Long2ObjectMap.Entry<Int2ObjectMap<Pair<Player, IntSet>>>> it = queues.chunkSendQueue.long2ObjectEntrySet().iterator();
         while (it.hasNext()) {
             Long2ObjectMap.Entry<Int2ObjectMap<Pair<Player, IntSet>>> entry = it.next();
             long index = entry.getLongKey();
-            if (!this.chunkSendTasks.add(index)) {
+            if (!queues.chunkSendTasks.add(index)) {
                 continue;
             }
             boolean requestFullChunk = false;
@@ -3982,7 +4119,7 @@ public class Level implements ChunkManager, Metadatable {
             int z = getHashZ(index);
             BaseFullChunk chunk = getChunk(x, z);
             if (chunk != null) {
-                ChunkCachedData cachedData = chunk.getCachedData();
+                ChunkCachedData cachedData = chunk.getCachedData(view);
                 ChunkPacketCache packetCache;
                 if (cachedData != null && (packetCache = cachedData.getPacketCache()) != null) {
                     int subChunkCount = cachedData.getSubChunkCount();
@@ -3993,6 +4130,11 @@ public class Level implements ChunkManager, Metadatable {
                         Player player = pair.left();
 
                         if (!player.isConnected() || !player.usedChunks.containsKey(index)) {
+                            iter.remove();
+                            continue;
+                        }
+
+                        if (this.rerouteChunkRequest(view, player, pair.right(), x, z, false)) {
                             iter.remove();
                             continue;
                         }
@@ -4029,7 +4171,7 @@ public class Level implements ChunkManager, Metadatable {
                         iter.remove();
                     }
 
-                    Int2ObjectMap<Pair<Player, IntSet>> loaders = this.subChunkSendQueue.get(index);
+                    Int2ObjectMap<Pair<Player, IntSet>> loaders = queues.subChunkSendQueue.get(index);
                     if (loaders != null) {
                         Iterator<Pair<Player, IntSet>> iterator = loaders.values().iterator();
                         while (iterator.hasNext()) {
@@ -4037,6 +4179,11 @@ public class Level implements ChunkManager, Metadatable {
                             Player player = pair.left();
 
                             if (!player.isConnected()) {
+                                iterator.remove();
+                                continue;
+                            }
+
+                            if (this.rerouteChunkRequest(view, player, pair.right(), x, z, true)) {
                                 iterator.remove();
                                 continue;
                             }
@@ -4057,13 +4204,13 @@ public class Level implements ChunkManager, Metadatable {
                         }
 
                         if (!requestSubChunks) {
-                            this.subChunkSendQueue.remove(index);
+                            queues.subChunkSendQueue.remove(index);
                         }
                     }
 
                     if (!requestFullChunk && !requestSubChunks) {
                         it.remove();
-                        this.chunkSendTasks.remove(index);
+                        queues.chunkSendTasks.remove(index);
                         continue;
                     }
                 }
@@ -4071,34 +4218,34 @@ public class Level implements ChunkManager, Metadatable {
 
             AsyncTask<?> task;
             try {
-                task = provider != null ? this.provider.requestChunkTask(x, z) : null;
+                task = provider != null ? this.provider.requestChunkTask(x, z, view) : null;
                 if (task != null) {
                     this.server.getScheduler().scheduleAsyncTask(null, task);
                     continue;
                 }
             } catch (RuntimeException e) {
                 it.remove();
-                this.failChunkRequest(index, x, z);
-                log.error("Failed to start chunk network serialization: [{},{}] {}", x, z, this.getFolderName(), e);
+                this.failChunkRequest(queues, index, x, z);
+                log.error("Failed to start chunk network serialization: [{},{}] {} view {}", x, z, this.getFolderName(), view, e);
                 continue;
             }
 
             // no such chunk
             it.remove();
-            this.failChunkRequest(index, x, z);
+            this.failChunkRequest(queues, index, x, z);
         }
     }
 
-    private void failChunkRequest(long index, int x, int z) {
-        if (!this.chunkSendTasks.remove(index)) {
+    private void failChunkRequest(ChunkSendQueues queues, long index, int x, int z) {
+        if (!queues.chunkSendTasks.remove(index)) {
             return;
         }
-        this.chunkSendQueue.remove(index);
-        this.failSubChunkRequests(index, x, z);
+        queues.chunkSendQueue.remove(index);
+        this.failSubChunkRequests(queues, index, x, z);
     }
 
-    private void failSubChunkRequests(long index, int x, int z) {
-        Int2ObjectMap<Pair<Player, IntSet>> loaders = this.subChunkSendQueue.remove(index);
+    private void failSubChunkRequests(ChunkSendQueues queues, long index, int x, int z) {
+        Int2ObjectMap<Pair<Player, IntSet>> loaders = queues.subChunkSendQueue.remove(index);
         if (loaders == null) {
             return;
         }
@@ -4116,8 +4263,20 @@ public class Level implements ChunkManager, Metadatable {
      * 在主线程结算失败的异步区块网络序列化任务。
      */
     public void chunkRequestFailureCallback(int x, int z) {
+        this.chunkRequestFailureCallback(x, z, null);
+    }
+
+    /**
+     * 在主线程结算失败的异步区块网络序列化任务。
+     * @param view 任务使用的观察者方块视图，为空时为原始方块
+     */
+    public void chunkRequestFailureCallback(int x, int z, @Nullable BlockView view) {
+        ChunkSendQueues queues = view == null ? this.chunkSendQueues : this.viewChunkSendQueues.get(view);
+        if (queues == null) {
+            return;
+        }
         long index = Level.chunkHash(x, z);
-        this.failChunkRequest(index, x, z);
+        this.failChunkRequest(queues, index, x, z);
     }
 
     /**
@@ -4125,6 +4284,16 @@ public class Level implements ChunkManager, Metadatable {
      * If this.cacheChunks == false, the ChunkPacketCache can be null;
      */
     public void chunkRequestCallback(long networkRevision, int x, int z, ChunkCachedData cachedData, Map<StaticVersion, byte[]> fullChunkPayloads, byte[] subRequestModeFullChunkPayload, byte[] subRequestModeFullChunkPayloadLegacy, Map<StaticVersion, byte[][]> subChunkPayloads) {
+        this.chunkRequestCallback(networkRevision, x, z, null, cachedData, fullChunkPayloads, subRequestModeFullChunkPayload, subRequestModeFullChunkPayloadLegacy, subChunkPayloads);
+    }
+
+    /**
+     * Chunk request callback on main thread
+     * If this.cacheChunks == false, the ChunkPacketCache can be null;
+     * @param view 任务使用的观察者方块视图，为空时为原始方块
+     */
+    public void chunkRequestCallback(long networkRevision, int x, int z, @Nullable BlockView view, ChunkCachedData cachedData, Map<StaticVersion, byte[]> fullChunkPayloads, byte[] subRequestModeFullChunkPayload, byte[] subRequestModeFullChunkPayloadLegacy, Map<StaticVersion, byte[][]> subChunkPayloads) {
+        ChunkSendQueues queues = view == null ? this.chunkSendQueues : this.viewChunkSendQueues.get(view);
         long index = Level.chunkHash(x, z);
         int subChunkCount = cachedData.getSubChunkCount();
         byte[] heightMapType = cachedData.getHeightMapType();
@@ -4134,14 +4303,19 @@ public class Level implements ChunkManager, Metadatable {
             BaseFullChunk chunk = getChunk(x, z, false);
             // 序列化期间区块内容或方块实体数据发生过变化时，这份数据不能进缓存
             if (chunk != null && chunk.getNetworkRevision() == networkRevision) {
-                chunk.setCachedData(cachedData);
+                chunk.setCachedData(view, cachedData);
             }
+        }
+
+        if (queues == null) {
+            // 该视图的玩家都已离开，结果只留作缓存
+            return;
         }
 
         ChunkPacketCache packetCache = cachedData.getPacketCache();
         if (packetCache != null) {
-            if (this.chunkSendTasks.remove(index)) {
-                Int2ObjectMap<Pair<Player, IntSet>> loaders = this.chunkSendQueue.remove(index);
+            if (queues.chunkSendTasks.remove(index)) {
+                Int2ObjectMap<Pair<Player, IntSet>> loaders = queues.chunkSendQueue.remove(index);
                 if (loaders != null) {
                     for (Pair<Player, IntSet> pair : loaders.values()) {
                         Player player = pair.left();
@@ -4150,6 +4324,10 @@ public class Level implements ChunkManager, Metadatable {
                         }
 
                         if (!player.usedChunks.containsKey(index)) {
+                            continue;
+                        }
+
+                        if (this.rerouteChunkRequest(view, player, pair.right(), x, z, false)) {
                             continue;
                         }
 
@@ -4187,11 +4365,15 @@ public class Level implements ChunkManager, Metadatable {
                 }
             }
 
-            Int2ObjectMap<Pair<Player, IntSet>> loaders = this.subChunkSendQueue.remove(index);
+            Int2ObjectMap<Pair<Player, IntSet>> loaders = queues.subChunkSendQueue.remove(index);
             if (loaders != null) {
                 for (Pair<Player, IntSet> pair : loaders.values()) {
                     Player player = pair.left();
                     if (!player.isConnected()) {
+                        continue;
+                    }
+
+                    if (this.rerouteChunkRequest(view, player, pair.right(), x, z, true)) {
                         continue;
                     }
 
@@ -4213,10 +4395,13 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         Int2ObjectMap<Pair<Player, IntSet>> chunkLoaders;
-        if (this.chunkSendTasks.remove(index) && (chunkLoaders = this.chunkSendQueue.remove(index)) != null) {
+        if (queues.chunkSendTasks.remove(index) && (chunkLoaders = queues.chunkSendQueue.remove(index)) != null) {
             for (Pair<Player, IntSet> pair : chunkLoaders.values()) {
                 Player player = pair.left();
                 if (player.isConnected() && player.usedChunks.containsKey(index)) {
+                    if (this.rerouteChunkRequest(view, player, pair.right(), x, z, false)) {
+                        continue;
+                    }
                     StaticVersion blockVersion = player.getBlockVersion();
                     byte[] data;
                     if (blockVersion != null) {
@@ -4234,11 +4419,15 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        Int2ObjectMap<Pair<Player, IntSet>> loaders = this.subChunkSendQueue.remove(index);
+        Int2ObjectMap<Pair<Player, IntSet>> loaders = queues.subChunkSendQueue.remove(index);
         if (loaders != null) {
             for (Pair<Player, IntSet> pair : loaders.values()) {
                 Player player = pair.left();
                 if (!player.isConnected()) {
+                    continue;
+                }
+
+                if (this.rerouteChunkRequest(view, player, pair.right(), x, z, true)) {
                     continue;
                 }
 
@@ -5673,23 +5862,11 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void onPlayerAdd(Player player) {
-        StaticVersion blockVersion = player.getBlockVersion();
-        if (blockVersion != null) {
-            requestChunkVersions.computeIfAbsent(blockVersion, key -> new LongOpenHashSet()).add(player.getId());
-        }
+        this.addRequestChunkVersion(player, player.getBlockView());
     }
 
     public void onPlayerRemove(Player player) {
-        StaticVersion blockVersion = player.getBlockVersion();
-        if (blockVersion != null) {
-            LongSet players = requestChunkVersions.get(blockVersion);
-            if (players != null) {
-                players.remove(player.getId());
-                if (players.isEmpty()) {
-                    requestChunkVersions.remove(blockVersion);
-                }
-            }
-        }
+        this.removeRequestChunkVersion(player, player.getBlockView());
 
         player.clearLocators();
         for (Player viewer : getPlayers().values()) {
@@ -5701,6 +5878,100 @@ public class Level implements ChunkManager, Metadatable {
 
     public Map<StaticVersion, LongSet> getRequestChunkVersions() {
         return requestChunkVersions;
+    }
+
+    /**
+     * @param view 观察者方块视图，为空时返回看原始方块的玩家用到的版本
+     * @return 该视图的玩家用到的方块调色板版本，只读
+     */
+    public Map<StaticVersion, LongSet> getRequestChunkVersions(@Nullable BlockView view) {
+        if (view == null) {
+            return requestChunkVersions;
+        }
+        Map<StaticVersion, LongSet> versions = viewRequestChunkVersions.get(view);
+        return versions == null ? Collections.emptyMap() : versions;
+    }
+
+    /**
+     * 区块序列化任务要生成的方块调色板版本：该视图下统计到的版本，加上正在排队请求该区块的玩家的版本。
+     * 后者保证排队玩家的版本一定会生成，即使统计因世界切换等时序暂时缺失，也不会因缺版本反复重新序列化。
+     */
+    public Set<StaticVersion> getChunkTaskVersions(@Nullable BlockView view, long chunkIndex) {
+        Set<StaticVersion> versions = EnumSet.noneOf(StaticVersion.class);
+        versions.addAll(this.getRequestChunkVersions(view).keySet());
+        ChunkSendQueues queues = view == null ? this.chunkSendQueues : this.viewChunkSendQueues.get(view);
+        if (queues != null) {
+            addQueuedVersions(versions, queues.chunkSendQueue.get(chunkIndex));
+            addQueuedVersions(versions, queues.subChunkSendQueue.get(chunkIndex));
+        }
+        return versions;
+    }
+
+    private static void addQueuedVersions(Set<StaticVersion> versions, @Nullable Int2ObjectMap<Pair<Player, IntSet>> loaders) {
+        if (loaders == null) {
+            return;
+        }
+        for (Pair<Player, IntSet> pair : loaders.values()) {
+            StaticVersion blockVersion = pair.left().getBlockVersion();
+            if (blockVersion != null) {
+                versions.add(blockVersion);
+            }
+        }
+    }
+
+    /**
+     * 清除本世界已加载区块上某个观察者方块视图的缓存。不再使用的视图实例应调用此方法释放内存，
+     * 否则其缓存会保留到区块内容变化或卸载。
+     */
+    public void clearBlockViewCache(BlockView view) {
+        for (BaseFullChunk chunk : this.getChunks().values()) {
+            chunk.clearCachedData(view);
+        }
+    }
+
+    /**
+     * 玩家切换观察者方块视图时由 {@link Player#setBlockView} 调用，把玩家的协议版本移到新视图下统计。
+     * 玩家不在本世界的统计中时不做处理。
+     */
+    public void onPlayerBlockViewChange(Player player, @Nullable BlockView oldView, @Nullable BlockView newView) {
+        if (this.removeRequestChunkVersion(player, oldView)) {
+            this.addRequestChunkVersion(player, newView);
+        }
+    }
+
+    private void addRequestChunkVersion(Player player, @Nullable BlockView view) {
+        StaticVersion blockVersion = player.getBlockVersion();
+        if (blockVersion == null) {
+            return;
+        }
+        Map<StaticVersion, LongSet> versions = view == null ? requestChunkVersions
+                : viewRequestChunkVersions.computeIfAbsent(view, key -> new EnumMap<>(StaticVersion.class));
+        versions.computeIfAbsent(blockVersion, key -> new LongOpenHashSet()).add(player.getId());
+    }
+
+    /**
+     * @return 玩家此前是否在该视图下被统计
+     */
+    private boolean removeRequestChunkVersion(Player player, @Nullable BlockView view) {
+        StaticVersion blockVersion = player.getBlockVersion();
+        if (blockVersion == null) {
+            return false;
+        }
+        Map<StaticVersion, LongSet> versions = view == null ? requestChunkVersions : viewRequestChunkVersions.get(view);
+        if (versions == null) {
+            return false;
+        }
+        LongSet players = versions.get(blockVersion);
+        if (players == null || !players.remove(player.getId())) {
+            return false;
+        }
+        if (players.isEmpty()) {
+            versions.remove(blockVersion);
+            if (view != null && versions.isEmpty()) {
+                viewRequestChunkVersions.remove(view);
+            }
+        }
+        return true;
     }
 
     public void setDisableChunkTick(boolean disable) {
