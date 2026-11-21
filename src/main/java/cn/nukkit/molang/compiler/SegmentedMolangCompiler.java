@@ -67,7 +67,7 @@ final class SegmentedMolangCompiler {
         }
         MolangBindingPlan plan = new MolangBindingPlan(symbols.paths, symbols.queries);
         boolean invalidatesQueries = symbols.switchesContext;
-        return new MolangExpression() {
+        return new MolangBatchCompiler.UnboundProgram() {
             @Override
             public MolangBindingPlan bindingPlan() {
                 return plan;

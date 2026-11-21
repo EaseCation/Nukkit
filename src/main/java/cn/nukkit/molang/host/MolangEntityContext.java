@@ -8,28 +8,23 @@ import cn.nukkit.entity.property.EntityProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFullNames;
 import cn.nukkit.math.Mth;
-import cn.nukkit.molang.runtime.MolangActorContext;
-import cn.nukkit.molang.runtime.MolangEntityReference;
-import cn.nukkit.molang.runtime.MolangQueryDefinition;
+import cn.nukkit.molang.runtime.*;
 import cn.nukkit.molang.runtime.MolangQueryDefinition.Effect;
 import cn.nukkit.molang.runtime.MolangQueryDefinition.Stability;
 import cn.nukkit.molang.runtime.MolangQueryDefinition.ValueType;
-import cn.nukkit.molang.runtime.MolangRuntime;
-import cn.nukkit.molang.runtime.MolangRuntimeBuilder;
-import cn.nukkit.molang.runtime.MolangRuntimeTemplate;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 实体的显式 Molang 宿主。调用方提供动画时间与修正后的移动量。
  * 该适配层不会自动挂接服务器 tick；宿主负责采样帧、选择附近实体和发布公开变量。
  */
 public final class MolangEntityContext {
+    private static final MolangNumberProperty GROUND_SPEED = new MolangNumberProperty("ground_speed", Stability.FRAME);
+    private static final MolangNumberProperty MOVE_SPEED = new MolangNumberProperty("modified_move_speed", Stability.FRAME);
+    private static final MolangNumberProperty DISTANCE = new MolangNumberProperty("modified_distance_moved", Stability.FRAME);
+    private static final MolangNumberProperty ANIMATION_TIME = new MolangNumberProperty("anim_time", Stability.FRAME);
     private static final MolangRuntimeTemplate TEMPLATE = createTemplate();
 
     private final Entity entity;
@@ -38,16 +33,15 @@ public final class MolangEntityContext {
     private List<MolangEntityContext> nearby = List.of();
     private double previousX;
     private double previousZ;
-    private float animationTime;
-    private float modifiedMoveSpeed;
-    private float modifiedDistanceMoved;
-    private float groundSpeed;
+    private final MolangNumberProperty.Group samples;
+    private final float[] nextSample = new float[4];
 
     public MolangEntityContext(Entity entity, Collection<String> publicVariables) {
         this.entity = Objects.requireNonNull(entity, "entity");
         previousX = entity.x;
         previousZ = entity.z;
         runtime = TEMPLATE.newRuntime(this);
+        samples = MolangNumberProperty.Group.bind(runtime, GROUND_SPEED, ANIMATION_TIME, MOVE_SPEED, DISTANCE);
         actor = new MolangActorContext(runtime, publicVariables, () -> !entity.isClosed());
     }
 
@@ -58,10 +52,10 @@ public final class MolangEntityContext {
         builder.queryNumber(number("is_alive", Stability.EVALUATION), (context, _) -> host(context).entity.isAlive() ? 1 : 0);
         builder.queryNumber(number("is_on_ground", Stability.EVALUATION), (context, _) -> host(context).entity.isOnGround() ? 1 : 0);
         builder.queryNumber(number("life_time", Stability.EVALUATION), (context, _) -> host(context).entity.getAge() / (float) Server.TPS);
-        builder.queryNumber(number("ground_speed", Stability.FRAME), (context, _) -> host(context).groundSpeed);
-        builder.queryNumber(number("anim_time", Stability.FRAME), (context, _) -> host(context).animationTime);
-        builder.queryNumber(number("modified_move_speed", Stability.FRAME), (context, _) -> host(context).modifiedMoveSpeed);
-        builder.queryNumber(number("modified_distance_moved", Stability.FRAME), (context, _) -> host(context).modifiedDistanceMoved);
+        GROUND_SPEED.register(builder);
+        ANIMATION_TIME.register(builder);
+        MOVE_SPEED.register(builder);
+        DISTANCE.register(builder);
         builder.query(definition("property", ValueType.DYNAMIC, 1, 1).withArguments(ValueType.STRING), (context, args) -> host(context).property(string(args, 0)));
         builder.queryNumber(definition("has_property", ValueType.NUMBER, 1, 1).withArguments(ValueType.STRING).withNullable(false), (context, args) -> {
             EntityPropertiesInstance properties = host(context).entity.getProperties();
@@ -99,13 +93,13 @@ public final class MolangEntityContext {
         if (!Float.isFinite(animationTime) || !Float.isFinite(modifiedMoveSpeed) || !Float.isFinite(modifiedDistanceMoved) || !Float.isFinite(elapsedSeconds) || elapsedSeconds <= 0) {
             throw new IllegalArgumentException("Invalid Molang entity animation frame");
         }
-        groundSpeed = (float) (Mth.length(entity.x - previousX, entity.z - previousZ) / elapsedSeconds);
+        nextSample[0] = (float) (Mth.length(entity.x - previousX, entity.z - previousZ) / elapsedSeconds);
         previousX = entity.x;
         previousZ = entity.z;
-        this.animationTime = animationTime;
-        this.modifiedMoveSpeed = modifiedMoveSpeed;
-        this.modifiedDistanceMoved = modifiedDistanceMoved;
-        runtime.invalidateQueries();
+        nextSample[1] = animationTime;
+        nextSample[2] = modifiedMoveSpeed;
+        nextSample[3] = modifiedDistanceMoved;
+        samples.publish(nextSample);
     }
 
     public void nearby(Collection<MolangEntityContext> entities) {

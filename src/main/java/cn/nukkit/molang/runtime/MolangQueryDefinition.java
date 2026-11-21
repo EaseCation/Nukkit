@@ -1,10 +1,6 @@
 package cn.nukkit.molang.runtime;
 
-import java.util.Locale;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * 宿主明确声明的查询合同。未声明合同的查询按动态、有副作用的调用处理。
@@ -79,6 +75,14 @@ public record MolangQueryDefinition(
 
     public boolean isReadOnly() {
         return effect != Effect.IMPURE;
+    }
+
+    public boolean isReadOnlyUnaryNumber() {
+        if (!isReadOnly() || minArguments != 1 || maxArguments != 1 || returnType != ValueType.NUMBER) {
+            return false;
+        }
+        ValueType argument = argumentType(0);
+        return argument == ValueType.NUMBER || argument == ValueType.DYNAMIC;
     }
 
     public boolean isEvaluationStable() {

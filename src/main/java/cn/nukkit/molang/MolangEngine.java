@@ -11,6 +11,7 @@ import cn.nukkit.molang.runtime.MolangQueryDefinition;
 import cn.nukkit.molang.runtime.MolangQuerySchema;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,6 +22,8 @@ import java.util.function.Consumer;
 public class MolangEngine {
     private final int cacheCapacity;
     private final Map<CacheKey, CompiledExpression> cache = new LinkedHashMap<>(16, 0.75f, true);
+    @Nullable
+    private volatile BatchDispatch.Cache batchCache;
     private long cacheHits;
     private long compilations;
 
@@ -33,6 +36,7 @@ public class MolangEngine {
             throw new IllegalArgumentException("Molang cache capacity cannot be negative");
         }
         this.cacheCapacity = cacheCapacity;
+        this.batchCache = BatchDispatch.newCache(cacheCapacity);
     }
 
     public MolangExpression compile(String source) {
@@ -83,7 +87,29 @@ public class MolangEngine {
     }
 
     public MolangBatch bindBatch(MolangRuntime runtime, List<MolangExpression> expressions) {
-        return new MolangBatch(runtime, expressions);
+        BatchDispatch.Cache current = batchCache;
+        if (current == null) {
+            return new MolangBatch(runtime, expressions);
+        }
+        List<MolangExpression> snapshot = new ArrayList<>(expressions);
+        if (!current.acceptsSize(snapshot.size())) {
+            return new MolangBatch(runtime, snapshot);
+        }
+        for (MolangExpression expression : snapshot) {
+            if (!(expression instanceof CompiledExpression compiled) || compiled.owner() != this) {
+                return new MolangBatch(runtime, snapshot);
+            }
+        }
+
+        List<MolangExpression> programs = new ArrayList<>(snapshot.size());
+        MolangRuntime[] views = new MolangRuntime[snapshot.size()];
+        for (int i = 0; i < views.length; i++) {
+            CompiledExpression specialized = ((CompiledExpression) snapshot.get(i)).specialize(runtime);
+            // 共享的是编译器生成的程序，每个实体的绑定槽位只保存在其自己的批次中。
+            programs.add(specialized.executable);
+            views[i] = runtime.bind(specialized.bindingPlan());
+        }
+        return current.bind(List.copyOf(programs), runtime, views);
     }
 
     public synchronized CacheStats cacheStats() {
@@ -92,6 +118,8 @@ public class MolangEngine {
 
     public synchronized void clearCache() {
         cache.clear();
+        // 已经开始绑定的调用可以完成，结果不会重新插入清理后的调度缓存。
+        batchCache = BatchDispatch.newCache(cacheCapacity);
     }
 
     public record CacheStats(long hits, long compilations, int size) {
@@ -139,6 +167,15 @@ public class MolangEngine {
 
         @Override
         public MolangBoundExpression bind(MolangRuntime runtime) {
+            CompiledExpression expression = specialize(runtime);
+            return expression.executable.bind(runtime);
+        }
+
+        private MolangEngine owner() {
+            return MolangEngine.this;
+        }
+
+        private CompiledExpression specialize(MolangRuntime runtime) {
             Map<String, MolangQueryDefinition> definitions = new HashMap<>();
             MolangBindingPlan plan = bindingPlan();
             MolangQuerySchema available = runtime.querySchema();
@@ -156,7 +193,7 @@ public class MolangEngine {
             MolangCompileOptions specialized = new MolangCompileOptions(options.version(), schema, runtime.supportsStableVariableReads());
             CompiledExpression expression = compileInternal(source, specialized, _ -> {}, program);
             expression.validateRuntime(runtime);
-            return new MolangBoundExpression(expression.executable, runtime.bind(expression.bindingPlan()));
+            return expression;
         }
 
         private void validateRuntime(MolangRuntime runtime) {
@@ -164,12 +201,7 @@ public class MolangEngine {
                 throw new IllegalArgumentException("Runtime does not support the compiled variable stability contract");
             }
             if (!options.querySchema().definitions().isEmpty()) {
-                MolangQuerySchema actual = runtime.querySchema();
-                for (MolangQueryDefinition expected : options.querySchema().definitions().values()) {
-                    if (!expected.equals(actual.get(expected.name()))) {
-                        throw new IllegalArgumentException("Runtime query contract differs from compiled schema: " + expected.name());
-                    }
-                }
+                options.querySchema().validate(runtime);
             }
         }
     }

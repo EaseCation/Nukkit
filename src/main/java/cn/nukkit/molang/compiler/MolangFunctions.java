@@ -97,6 +97,20 @@ final class MolangFunctions {
         return MATH.get(name);
     }
 
+    @SuppressWarnings("unused")
+    static float smallIntegerPower(float base, int exponent) {
+        double square = (double) base * base;
+        double power = exponent == 3 ? square * base : square * square;
+        // float 的平方在 double 中精确。覆盖最后一次乘法及 Math.pow 的舍入误差后，
+        // 两端落入同一 float 才返回快速结果；分界附近和非有限输入仍使用原函数。
+        double margin = Math.abs(power) * 0x1p-50;
+        float lower = (float) (power - margin);
+        if (lower == (float) (power + margin)) {
+            return lower;
+        }
+        return MolangMath.pow(base, exponent);
+    }
+
     private MolangFunctions() {
     }
 
