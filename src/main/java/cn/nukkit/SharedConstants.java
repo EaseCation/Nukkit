@@ -33,9 +33,13 @@ public final class SharedConstants {
 
     // storage
 
+    public static final boolean USE_FFM_LEVELDB = true;
+    /**
+     * legacy flag: Use JNI when {@link #USE_FFM_LEVELDB} is {@code false}; otherwise, use pure Java.
+     */
     public static final boolean USE_NATIVE_LEVELDB = true;
 
-    public static final boolean ENABLE_STORAGE_AUTO_COMPACTION = !USE_NATIVE_LEVELDB && false; //TODO: native db_iter
+    public static final boolean ENABLE_STORAGE_AUTO_COMPACTION = (USE_FFM_LEVELDB || !USE_NATIVE_LEVELDB) && false; //TODO: native db_iter
 
     // misc
 

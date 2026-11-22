@@ -40,6 +40,8 @@ import it.unimi.dsi.fastutil.shorts.ShortCollection;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -145,6 +147,73 @@ public class BinaryStream {
         this.count = count;
     }
 
+    /**
+     * 创建共享读取位置的输入视图，上界固定为创建时的有效数据末尾。
+     * 后续追加的数据不会进入此视图；关闭视图不会关闭或重置原流。
+     */
+    public InputStream asInputStream() {
+        int start = getOffset();
+        int end = getCount();
+        if (!isReadable(0)) {
+            throw new IndexOutOfBoundsException("Buffer length mismatch");
+        }
+        return new InputStream() {
+            @Override
+            public int available() {
+                int position = getOffset();
+                if (position < start || position > end || getCount() < end) {
+                    throw new IllegalStateException("Binary stream input view was invalidated");
+                }
+                return end - position;
+            }
+
+            @Override
+            public int read() {
+                return available() == 0 ? -1 : getByte();
+            }
+
+            @Override
+            public int read(byte[] target, int targetOffset, int length) {
+                Objects.checkFromIndexSize(targetOffset, length, target.length);
+                if (length == 0) {
+                    return 0;
+                }
+                int remaining = available();
+                if (remaining == 0) {
+                    return -1;
+                }
+                int size = Math.min(length, remaining);
+                get(target, targetOffset, size);
+                return size;
+            }
+
+            @Override
+            public long skip(long length) {
+                int size = (int) Math.min(Math.max(length, 0), available());
+                BinaryStream.this.skip(size);
+                return size;
+            }
+        };
+    }
+
+    /**
+     * 创建直接追加到有效数据末尾的输出视图，同步更新 count，不改变读取位置。
+     * 关闭视图不会关闭或重置原流；视图不持有可被扩容替换的底层数组。
+     */
+    public OutputStream asOutputStream() {
+        return new OutputStream() {
+            @Override
+            public void write(int value) {
+                putByte(value);
+            }
+
+            @Override
+            public void write(byte[] source, int sourceOffset, int length) {
+                put(source, sourceOffset, length);
+            }
+        };
+    }
+
     public byte[] get() {
         return this.get(this.count - this.offset);
     }
@@ -155,6 +224,18 @@ public class BinaryStream {
         }
         this.offset += len;
         return Arrays.copyOfRange(this.buffer, this.offset - len, this.offset);
+    }
+
+    /**
+     * 将数据直接读入目标范围，并推进读取位置，不创建中间数组。
+     */
+    public void get(byte[] target, int targetOffset, int length) {
+        Objects.checkFromIndexSize(targetOffset, length, target.length);
+        if (!isReadable(length)) {
+            throw new IndexOutOfBoundsException("Buffer length mismatch");
+        }
+        System.arraycopy(buffer, offset, target, targetOffset, length);
+        offset += length;
     }
 
     public void skip(int len) {
@@ -187,6 +268,16 @@ public class BinaryStream {
         this.ensureCapacity(this.count + length);
 
         System.arraycopy(bytes, 0, this.buffer, this.count, length);
+        this.count += length;
+    }
+
+    /**
+     * 直接追加源数组的指定范围，不创建中间数组。
+     */
+    public void put(byte[] source, int sourceOffset, int length) {
+        Objects.checkFromIndexSize(sourceOffset, length, source.length);
+        this.ensureCapacity(Math.addExact(this.count, length));
+        System.arraycopy(source, sourceOffset, this.buffer, this.count, length);
         this.count += length;
     }
 
@@ -255,6 +346,33 @@ public class BinaryStream {
     public void putLInt(int i) {
         int index = this.prepareWriterIndex(4);
         Binary.writeLInt(i, this.buffer, index);
+    }
+
+    /**
+     * 读取指定数量的小端整数，不包含长度前缀；整段越界时不推进读取位置。
+     */
+    public int[] getLInts(int length) {
+        if (length < 0 || length > Integer.MAX_VALUE / Integer.BYTES || !isReadable(length * Integer.BYTES)) {
+            throw new IndexOutOfBoundsException("Buffer length mismatch");
+        }
+        int[] values = new int[length];
+        for (int index = 0; index < length; index++) {
+            values[index] = getLInt();
+        }
+        return values;
+    }
+
+    /**
+     * 追加小端整数数组，不包含长度前缀，保持逐个 putLInt 的编码。
+     */
+    public void putLInts(int[] values) {
+        Objects.requireNonNull(values, "values");
+        if (values.length > (MAX_ARRAY_SIZE - this.count) / Integer.BYTES) {
+            throw new IndexOutOfBoundsException("Output exceeds maximum stream size");
+        }
+        for (int value : values) {
+            putLInt(value);
+        }
     }
 
     public short getSignedShort() {

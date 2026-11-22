@@ -8,7 +8,10 @@ import cn.nukkit.block.Blocks;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.stream.NBTInputStream;
+import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
@@ -19,8 +22,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.List;
 import java.util.function.IntFunction;
@@ -77,20 +80,20 @@ public class PalettedSubChunkStorage {
 
         BitArrayVersion version = BitArrayVersion.get(header >> 1, true);
         int expectedWordSize = version.getWordsForSize(SUB_CHUNK_SIZE);
-        int[] words = new int[expectedWordSize];
-        for (int i = 0; i < expectedWordSize; ++i) {
-            words[i] = stream.getLInt();
-        }
+        int[] words = stream.getLInts(expectedWordSize);
         BitArray bitArray = version.createPalette(SUB_CHUNK_SIZE, words);
 
         int paletteSize = version != BitArrayVersion.V0 ? stream.getLInt() : 1;
         int[] palette = new int[paletteSize];
-        ByteArrayInputStream bais = new ByteArrayInputStream(stream.getBufferUnsafe());
-        bais.skip(stream.getOffset());
+        InputStream input = stream.asInputStream();
         for (int i = 0; i < paletteSize; ++i) {
             CompoundTag tag;
-            try {
-                tag = NBTIO.read(bais, ByteOrder.LITTLE_ENDIAN, false);
+            try (NBTInputStream nbt = new NBTInputStream(input, ByteOrder.LITTLE_ENDIAN, false, input.available())) {
+                Tag root = Tag.readNamedTag(nbt);
+                if (!(root instanceof CompoundTag compound)) {
+                    throw new IOException("Root tag must be a named compound tag");
+                }
+                tag = compound;
             } catch (IOException e) {
                 throw new ChunkException("Invalid blockstate NBT at offset " + i + " in paletted storage", e);
             }
@@ -98,7 +101,6 @@ public class PalettedSubChunkStorage {
             BlockUpgrader.upgrade(tag);
             palette[i] = BlockSerializer.deserializeRuntime(tag);
         }
-        stream.setOffset(stream.getCount() - bais.available());
 
         if (paletteSize == 0) {
             // corrupted
@@ -131,10 +133,7 @@ public class PalettedSubChunkStorage {
 
         BitArrayVersion version = BitArrayVersion.get(header >> 1, true);
         int expectedWordSize = version.getWordsForSize(SUB_CHUNK_SIZE);
-        int[] words = new int[expectedWordSize];
-        for (int i = 0; i < expectedWordSize; ++i) {
-            words[i] = stream.getLInt();
-        }
+        int[] words = stream.getLInts(expectedWordSize);
         BitArray bitArray = version.createPalette(SUB_CHUNK_SIZE, words);
 
         int paletteSize = version != BitArrayVersion.V0 ? stream.getLInt() : 1;
@@ -276,20 +275,15 @@ public class PalettedSubChunkStorage {
         }
 
         if (version != BitArrayVersion.V0) {
-            for (int word : bitArray.getWords()) {
-                stream.putLInt(word);
-            }
+            stream.putLInts(bitArray.getWords());
 
             stream.putLInt(palette.size());
         }
 
-        List<CompoundTag> tagList = new ObjectArrayList<>();
-        for (int i = 0; i < this.palette.size(); i++) {
-            int fullId = this.palette.getInt(i);
-            tagList.add(BlockSerializer.serializeRuntime(fullId));
-        }
-        try {
-            stream.put(NBTIO.write(tagList, ByteOrder.LITTLE_ENDIAN, false));
+        try (NBTOutputStream nbt = new NBTOutputStream(stream.asOutputStream(), ByteOrder.LITTLE_ENDIAN, false)) {
+            for (int i = 0; i < this.palette.size(); i++) {
+                Tag.writeNamedTag(BlockSerializer.serializeRuntime(this.palette.getInt(i)), nbt);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -307,9 +301,7 @@ public class PalettedSubChunkStorage {
         }
 
         if (version != BitArrayVersion.V0) {
-            for (int word : bitArray.getWords()) {
-                stream.putLInt(word);
-            }
+            stream.putLInts(bitArray.getWords());
 
             stream.putLInt(palette.size());
         }
