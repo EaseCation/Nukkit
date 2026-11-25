@@ -19,6 +19,32 @@ public record MolangQuerySchema(Map<String, MolangQueryDefinition> definitions) 
         }
     }
 
+    /**
+     * 内建宿主的查询表在初始化后固定，同一组预期查询只需在切换合同时重新核对。
+     */
+    public void validate(MolangRuntime runtime) {
+        MolangQuerySchema actual = runtime.querySchema();
+        if (this == actual) {
+            return;
+        }
+        if (runtime instanceof MolangRuntimeBuilder.MolangRuntimeImpl owner) {
+            if (this != owner.validatedSchema) {
+                validateDefinitions(actual);
+                owner.validatedSchema = this;
+            }
+        } else {
+            validateDefinitions(actual);
+        }
+    }
+
+    private void validateDefinitions(MolangQuerySchema actual) {
+        for (MolangQueryDefinition expected : definitions.values()) {
+            if (!expected.equals(actual.definitions.get(expected.name()))) {
+                throw new IllegalArgumentException("Runtime query contract differs from compiled schema: " + expected.name());
+            }
+        }
+    }
+
     @Nullable
     public MolangQueryDefinition get(String name) {
         return definitions.get(name.toLowerCase(Locale.ROOT));

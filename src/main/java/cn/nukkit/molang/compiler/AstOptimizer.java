@@ -9,12 +9,7 @@ import cn.nukkit.molang.runtime.MolangQuerySchema;
 import cn.nukkit.molang.runtime.MolangValues;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 数值和类型表达式共享的语义优化阶段。只折叠确定值，不重排浮点运算或删除副作用。

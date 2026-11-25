@@ -9,6 +9,9 @@ import java.util.Arrays;
 public final class MolangArray {
     private static final int MIN_CAPACITY = 16;
 
+    private static final float[] EMPTY_NUMBERS = {};
+    private static final Object[] EMPTY_REFERENCES = {};
+
     @Nullable
     private float[] numbers;
     @Nullable
@@ -19,9 +22,9 @@ public final class MolangArray {
         this.length = length;
         int capacity = Math.max(MIN_CAPACITY, length);
         if (numeric) {
-            numbers = new float[capacity];
+            numbers = length == 0 ? EMPTY_NUMBERS : new float[capacity];
         } else {
-            references = new Object[capacity];
+            references = length == 0 ? EMPTY_REFERENCES : new Object[capacity];
         }
     }
 
@@ -52,7 +55,7 @@ public final class MolangArray {
         if (length == 0) {
             return null;
         }
-        int resolved = Math.max(0, index) % length;
+        int resolved = MolangValues.wrapIndex(index, length);
         return numbers != null ? numbers[resolved] : references[resolved];
     }
 
@@ -60,7 +63,7 @@ public final class MolangArray {
         if (length == 0) {
             return 0;
         }
-        int resolved = Math.max(0, index) % length;
+        int resolved = MolangValues.wrapIndex(index, length);
         return numbers != null ? numbers[resolved] : MolangValues.toFloat(references[resolved]);
     }
 
@@ -68,13 +71,12 @@ public final class MolangArray {
         if (length == 0) {
             return 0;
         }
-        int resolved = Math.max(0, index) % length;
-        return numbers != null ? Integer.toUnsignedLong(Float.floatToRawIntBits(numbers[resolved]))
-                : MolangValues.numericOperand(references[resolved]);
+        int resolved = MolangValues.wrapIndex(index, length);
+        return numbers != null ? Integer.toUnsignedLong(Float.floatToRawIntBits(numbers[resolved])) : MolangValues.numericOperand(references[resolved]);
     }
 
     public void setNumber(int index, float value) {
-        if (!grow(index)) {
+        if (index < 0 || (index >= length && !grow(index))) {
             return;
         }
         if (numbers != null) {
@@ -94,7 +96,7 @@ public final class MolangArray {
             return;
         }
         int previousLength = length;
-        if (!grow(index)) {
+        if (index < 0 || (index >= length && !grow(index))) {
             return;
         }
         if (numbers != null) {
@@ -127,7 +129,8 @@ public final class MolangArray {
         int required = index + 1;
         int capacity = numbers != null ? numbers.length : references.length;
         if (required > capacity) {
-            long expanded = Math.max(required, capacity + (long) (capacity >>> 1));
+            int previous = Math.max(capacity, MIN_CAPACITY);
+            long expanded = required <= MIN_CAPACITY ? MIN_CAPACITY : Math.max(required, previous + (long) (previous >>> 1));
             int nextCapacity = (int) Math.min(expanded, Integer.MAX_VALUE - 8L);
             if (nextCapacity < required) {
                 return false;

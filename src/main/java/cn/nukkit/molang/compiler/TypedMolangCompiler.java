@@ -1,21 +1,27 @@
 package cn.nukkit.molang.compiler;
 
 import cn.nukkit.molang.MolangCompileOptions;
+import cn.nukkit.molang.MolangBoundExpression;
 import cn.nukkit.molang.MolangExpression;
 import cn.nukkit.molang.parser.ast.Expr;
 import cn.nukkit.molang.parser.ast.Stmt;
 import cn.nukkit.molang.runtime.*;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import java.lang.classfile.ClassFile;
 import java.lang.classfile.CodeBuilder;
 import java.lang.classfile.Label;
 import java.lang.constant.ClassDesc;
+import java.lang.constant.DynamicConstantDesc;
 import java.lang.constant.MethodTypeDesc;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.util.*;
+import javax.annotation.Nullable;
 
 import static java.lang.classfile.ClassFile.*;
 import static java.lang.constant.ConstantDescs.*;
@@ -26,17 +32,22 @@ import static java.lang.constant.ConstantDescs.*;
 final class TypedMolangCompiler {
     private static final int MAX_SPECIALIZED_LOOP_DEPTH = 2;
     private static final int MAX_SPECIALIZED_LOOP_NODES = 120;
+    private static final int UNSUPPORTED_SINGLE_READ = 2;
 
     private static final ClassDesc COMPILED = ClassDesc.of(TypedMolangCompiler.class.getPackageName(), "CompiledExpr");
     private static final ClassDesc EXPRESSION = MolangExpression.class.describeConstable().orElseThrow();
+    private static final ClassDesc UNBOUND = MolangBatchCompiler.UnboundProgram.class.describeConstable().orElseThrow();
     private static final ClassDesc RUNTIME = MolangRuntime.class.describeConstable().orElseThrow();
     private static final ClassDesc VALUES = MolangValues.class.describeConstable().orElseThrow();
     private static final ClassDesc MATH = MolangMath.class.describeConstable().orElseThrow();
     private static final ClassDesc PATH = MolangPath.class.describeConstable().orElseThrow();
-    private static final ClassDesc PATH_ARRAY = PATH.arrayType();
+    private static final ClassDesc QUERY_SITE = MolangQuerySite.class.describeConstable().orElseThrow();
     private static final ClassDesc QUERY_REF = MolangQueryRef.class.describeConstable().orElseThrow();
-    private static final ClassDesc QUERY_ARRAY = QUERY_REF.arrayType();
     private static final ClassDesc BINDING_PLAN = MolangBindingPlan.class.describeConstable().orElseThrow();
+    private static final ClassDesc LINKED_QUERY = MolangBindingPlan.LinkedQueryExpression.class.describeConstable().orElseThrow();
+    private static final ClassDesc LINKED_VARIABLES = MolangBindingPlan.LinkedVariables.class.describeConstable().orElseThrow();
+    private static final ClassDesc NUMBER_CALLBACK = MolangNumberContextQuery.class.describeConstable().orElseThrow();
+    private static final DynamicConstantDesc<MolangBindingPlan> PLAN = DynamicConstantDesc.ofNamed(BSM_CLASS_DATA_AT, DEFAULT_NAME, BINDING_PLAN, 0);
     private static final ClassDesc SEGMENTED = SegmentedMolangCompiler.class.describeConstable().orElseThrow();
     private static final ClassDesc CD_Math = Math.class.describeConstable().orElseThrow();
     private static final ClassDesc FLOAT = Float.class.describeConstable().orElseThrow();
@@ -48,13 +59,31 @@ final class TypedMolangCompiler {
     private final boolean alwaysNumericResult;
     private final CompilationSymbols symbols;
     private final boolean segmented;
+    @Nullable
+    private Stmt.ForEach ownedIteration;
     private final Object2IntMap<String> pathIndexes;
     private final List<MolangPath> paths;
     private final Object2IntMap<String> queryIndexes;
     private final List<MolangQueryRef> queries;
+    // 每个代码段只保存实际引用的符号，首项留给整个绑定计划。
+    private final Map<Object, DynamicConstantDesc<?>> symbolConstants = new LinkedHashMap<>();
+    private final Map<String, MolangQuerySite> genericSites = new HashMap<>();
+    private final Set<Integer> linkableVariables = new LinkedHashSet<>();
+    private final Set<Integer> linkableNumbers = new LinkedHashSet<>();
+    private boolean linkedBody;
+    private final boolean singleEvaluationRead;
+    private boolean propertyInputs;
+    @Nullable
+    private BatchNumberPlan batchPlan;
+    @Nullable
+    private BatchNumberPlan.Output batchOutput;
     private final Object2IntMap<String> numericTemps = new Object2IntOpenHashMap<>();
     private final Object2IntMap<String> objectTemps = new Object2IntOpenHashMap<>();
+    private Object2IntMap<String> scalarInputs = Object2IntMaps.emptyMap();
+    @Nullable
+    private MolangExpression structFallback;
     private Object2IntMap<Expr> hoistedNumbers = new Object2IntOpenHashMap<>();
+    private Map<Expr.VariableAccess, Operand> loopOperands = Map.of();
     private final Deque<Label> breaks = new ArrayDeque<>();
     private final Deque<Label> continues = new ArrayDeque<>();
     private int nextSlot = 2;
@@ -75,8 +104,9 @@ final class TypedMolangCompiler {
         this.paths = symbols.paths;
         this.queryIndexes = symbols.queryIndexes;
         this.queries = symbols.queries;
-        this.localPlan = new NumericLocalPlan(program, options);
-        this.alwaysNumericResult = !segmented && new NumericResultPlan(program, options, localPlan.numericTemps()).numeric();
+        this.localPlan = new NumericLocalPlan(this.program, options);
+        this.singleEvaluationRead = !segmented && singleEvaluationRead();
+        this.alwaysNumericResult = !segmented && new NumericResultPlan(this.program, options, localPlan.numericTemps()).numeric();
         pathIndexes.defaultReturnValue(-1);
         queryIndexes.defaultReturnValue(-1);
         numericTemps.defaultReturnValue(-1);
@@ -84,50 +114,366 @@ final class TypedMolangCompiler {
         hoistedNumbers.defaultReturnValue(-1);
     }
 
+    // 只有不执行其它宿主代码的表达式，才允许在绑定到真实数值属性后省去求值作用域。
+    private boolean propertyExpression() {
+        return !segmented && structFallback == null && BatchNumberPlan.supports(program, options, false);
+    }
+
+    private boolean singleEvaluationRead() {
+        if (program.statements().size() != 1) {
+            return false;
+        }
+        return switch (program.statements().getFirst()) {
+            case Stmt.ReturnStmt returned -> evaluationReads(returned.value()) == 1;
+            case Stmt.ExpressionStmt statement -> evaluationReads(statement.expression()) == 1;
+            default -> false;
+        };
+    }
+
+    // 只接受不会观察宿主缓存的数值操作和 JVM 局部变量，未证明安全的节点按多次读取处理。
+    private int evaluationReads(Expr expression) {
+        return switch (expression) {
+            case Expr.NumberLiteral _ -> 0;
+            case Expr.Group group -> evaluationReads(group.expression());
+            case Expr.Unary unary -> evaluationReads(unary.operand());
+            case Expr.Binary binary -> evaluationReads(binary.left()) + evaluationReads(binary.right());
+            case Expr.VariableAccess read -> "temp".equals(read.scope()) && localPlan.numericTemps().contains(read.name()) ? 0 : UNSUPPORTED_SINGLE_READ;
+            case Expr.VariableAssign write -> "temp".equals(write.scope()) && localPlan.numericTemps().contains(write.name()) ? evaluationReads(write.value()) : UNSUPPORTED_SINGLE_READ;
+            case Expr.QueryCall query -> {
+                MolangQueryDefinition definition = options.querySchema().get(query.name());
+                yield query.args().isEmpty() && !MolangFunctions.builtinQuery(query.name()) && definition != null && definition.stability() == MolangQueryDefinition.Stability.EVALUATION ? 1 : UNSUPPORTED_SINGLE_READ;
+            }
+            default -> UNSUPPORTED_SINGLE_READ;
+        };
+    }
+
     MolangExpression compile() {
-        byte[] bytes = ClassFile.of().build(COMPILED, builder -> {
+        if (!segmented) {
+            Stmt.Program expanded = TempStructCopies.expand(program);
+            if (expanded != program) {
+                TypedMolangCompiler fast = new TypedMolangCompiler(expanded, options, symbols, false);
+                fast.scalarInputs = new Object2IntLinkedOpenHashMap<>();
+                for (String name : TempStructCopies.inputs(expanded)) {
+                    fast.scalarInputs.put(name, -1);
+                    fast.internPath(name);
+                }
+                fast.structFallback = compileClass();
+                return fast.compileClass();
+            }
+        }
+        if (!segmented && localPlan.needsRuntimeTemps()) {
+            Stmt.ForEach loop = OwnedIteration.find(program, localPlan.numericTemps());
+            if (loop != null && smallLoop(loop.body())) {
+                ownedIteration = loop;
+            }
+        }
+        return compileClass();
+    }
+
+    private MolangExpression compileClass() {
+        propertyInputs = propertyExpression();
+        byte[] bytes = classBytes();
+        try {
+            MethodHandles.Lookup lookup = defineClass(bytes);
+            MolangExpression compiled = (MolangExpression) lookup.findConstructor(lookup.lookupClass(), MethodType.methodType(void.class)).invoke();
+            boolean scoped = localPlan.needsRuntimeTemps() || switchesContext;
+            if (segmented || !scoped && linkableVariables.isEmpty()) {
+                return compiled;
+            }
+            NumericLink link = null;
+            NumericLink ownedLink = null;
+            if (!linkableNumbers.isEmpty() || !linkableVariables.isEmpty()) {
+                linkedBody = true;
+                byte[] linkedBytes = classBytes();
+                MethodHandles.Lookup direct = defineClass(linkedBytes);
+                MethodType init = MethodType.methodType(void.class, MolangRuntime.class, MolangNumberContextQuery[].class, int[].class, boolean.class);
+                if (ownedIteration != null) {
+                    init = init.appendParameterTypes(boolean.class);
+                }
+                MethodHandle factory = direct.findConstructor(direct.lookupClass(), init).asType(init.changeReturnType(MolangExpression.class));
+                int[] queries = linkableNumbers.stream().mapToInt(Integer::intValue).toArray();
+                int[] paths = linkableVariables.stream().mapToInt(Integer::intValue).toArray();
+                boolean single = singleEvaluationRead && structFallback == null;
+                MolangBindingPlan symbols = compiled.bindingPlan();
+                BatchNumberPlan batch = null;
+                if (structFallback == null && queries.length > 0 && queries.length == symbols.queryCount()
+                        && paths.length == symbols.pathCount() && (propertyInputs || options.stableVariableReads()
+                        && BatchNumberPlan.supports(program, options, true))) {
+                    batch = BatchNumberPlan.create(program, options, symbols, queries, paths, single, bytes, linkedBytes);
+                }
+                if (ownedIteration != null) {
+                    int last = init.parameterCount() - 1;
+                    ownedLink = new NumericLink(MethodHandles.insertArguments(factory, last, true), queries, paths, single, propertyInputs, batch);
+                    factory = MethodHandles.insertArguments(factory, last, false);
+                }
+                link = new NumericLink(factory, queries, paths, single, propertyInputs, batch);
+            }
+            if (ownedIteration != null) {
+                MolangExpression owned = (MolangExpression) lookup.findConstructor(lookup.lookupClass(), MethodType.methodType(void.class, boolean.class)).invoke(true);
+                return new OwnedIteration(new ScopedExpression(compiled, switchesContext, link), new ScopedExpression(owned, switchesContext, ownedLink));
+            }
+            return scoped ? new ScopedExpression(compiled, switchesContext, link) : new UnscopedLink(compiled, link, canRunLoopOnOwner());
+        } catch (MolangCompileException exception) {
+            throw exception;
+        } catch (Throwable exception) {
+            throw new MolangCompileException("Failed to load typed expression", exception);
+        }
+    }
+
+    private byte[] classBytes() {
+        boolean queryScope = linkedBody && !switchesContext && !linkableNumbers.isEmpty();
+        String numBody = queryScope ? "evaluateBody" : "evaluate";
+        String objBody = queryScope ? "evaluateValueBody" : "evaluateValue";
+        return ClassFile.of().build(COMPILED, builder -> {
             builder.withFlags(ACC_PUBLIC | ACC_FINAL | ACC_SYNTHETIC);
-            builder.withInterfaceSymbols(EXPRESSION);
-            builder.withField("paths", PATH_ARRAY, ACC_PRIVATE | ACC_FINAL);
-            builder.withField("queries", QUERY_ARRAY, ACC_PRIVATE | ACC_FINAL);
-            builder.withField("bindingPlan", BINDING_PLAN, ACC_PRIVATE | ACC_FINAL);
-            builder.withMethodBody(INIT_NAME, MethodTypeDesc.of(CD_void, PATH_ARRAY, QUERY_ARRAY, BINDING_PLAN), ACC_PUBLIC, code -> {
-                code.aload(0).invokespecial(CD_Object, INIT_NAME, MTD_void);
-                code.aload(0).aload(1).putfield(COMPILED, "paths", PATH_ARRAY);
-                code.aload(0).aload(2).putfield(COMPILED, "queries", QUERY_ARRAY);
-                code.aload(0).aload(3).putfield(COMPILED, "bindingPlan", BINDING_PLAN).return_();
-            });
-            builder.withMethodBody("bindingPlan", MethodTypeDesc.of(BINDING_PLAN), ACC_PUBLIC,
-                    code -> code.aload(0).getfield(COMPILED, "bindingPlan", BINDING_PLAN).areturn());
-            builder.withMethodBody("evaluate", MethodTypeDesc.of(CD_float, RUNTIME), ACC_PUBLIC, code -> {
+            builder.withInterfaceSymbols(linkedBody ? EXPRESSION : UNBOUND);
+            if (ownedIteration != null) {
+                builder.withField("ownedTemps", CD_boolean, ACC_PRIVATE | ACC_FINAL);
+            }
+            if (linkedBody) {
+                if (queryScope) {
+                    builder.withSuperclass(LINKED_QUERY);
+                } else if (!linkableVariables.isEmpty()) {
+                    builder.withSuperclass(LINKED_VARIABLES);
+                }
+                if (!queryScope && !linkableNumbers.isEmpty()) {
+                    builder.withField("owner", RUNTIME, ACC_PRIVATE | ACC_FINAL);
+                }
+                for (int path : linkableVariables) {
+                    builder.withField("v" + path, CD_int, ACC_PRIVATE | ACC_FINAL);
+                }
+                for (int slot : linkableNumbers) {
+                    builder.withField("q" + slot, NUMBER_CALLBACK, ACC_PRIVATE | ACC_FINAL);
+                }
+                MethodTypeDesc init = MethodTypeDesc.of(CD_void, RUNTIME, NUMBER_CALLBACK.arrayType(), CD_int.arrayType(), CD_boolean);
+                if (ownedIteration != null) {
+                    init = init.insertParameterTypes(init.parameterCount(), CD_boolean);
+                }
+                builder.withMethodBody(INIT_NAME, init, ACC_PRIVATE, code -> {
+                    if (queryScope) {
+                        code.aload(0).aload(1).iload(4).invokespecial(LINKED_QUERY, INIT_NAME, MethodTypeDesc.of(CD_void, RUNTIME, CD_boolean));
+                    } else if (linkableVariables.isEmpty()) {
+                        code.aload(0).invokespecial(CD_Object, INIT_NAME, MTD_void);
+                    } else {
+                        code.aload(0).aload(1).invokespecial(LINKED_VARIABLES, INIT_NAME, MethodTypeDesc.of(CD_void, RUNTIME));
+                    }
+                    if (!queryScope && !linkableNumbers.isEmpty()) {
+                        code.aload(0).aload(1).putfield(COMPILED, "owner", RUNTIME);
+                    }
+                    int pathIndex = 0;
+                    for (int path : linkableVariables) {
+                        code.aload(0).aload(3).ldc(pathIndex++).iaload().putfield(COMPILED, "v" + path, CD_int);
+                    }
+                    int index = 0;
+                    for (int slot : linkableNumbers) {
+                        code.aload(0).aload(2).ldc(index++).aaload().putfield(COMPILED, "q" + slot, NUMBER_CALLBACK);
+                    }
+                    if (ownedIteration != null) {
+                        code.aload(0).iload(5).putfield(COMPILED, "ownedTemps", CD_boolean);
+                    }
+                    code.return_();
+                });
+            } else {
+                builder.withMethodBody(INIT_NAME, MTD_void, ACC_PUBLIC, code -> code.aload(0).invokespecial(CD_Object, INIT_NAME, MTD_void).return_());
+                if (ownedIteration != null) {
+                    builder.withMethodBody(INIT_NAME, MethodTypeDesc.of(CD_void, CD_boolean), ACC_PRIVATE, code ->
+                            code.aload(0).invokespecial(COMPILED, INIT_NAME, MTD_void)
+                                    .aload(0).iload(1).putfield(COMPILED, "ownedTemps", CD_boolean).return_());
+                }
+            }
+            builder.withMethodBody("bindingPlan", MethodTypeDesc.of(BINDING_PLAN), ACC_PUBLIC, code -> code.ldc(PLAN).areturn());
+            builder.withMethodBody(numBody, MethodTypeDesc.of(CD_float, RUNTIME), ACC_PUBLIC, code -> {
                 generateBody(code, true);
             });
-            builder.withMethodBody("evaluateValue", MethodTypeDesc.of(CD_Object, RUNTIME), ACC_PUBLIC, code -> {
-                if (alwaysNumericResult) {
-                    code.aload(0).aload(1).invokevirtual(COMPILED, "evaluate", MethodTypeDesc.of(CD_float, RUNTIME));
+            builder.withMethodBody(objBody, MethodTypeDesc.of(CD_Object, RUNTIME), ACC_PUBLIC, code -> {
+                if (alwaysNumericResult && structFallback == null) {
+                    code.aload(0).aload(1).invokevirtual(COMPILED, numBody, MethodTypeDesc.of(CD_float, RUNTIME));
                     box(code);
                     code.areturn();
                 } else {
                     generateBody(code, false);
                 }
             });
+            // 在初始化时完成常量链接，首次游戏求值直接读取已解析的路径和查询描述。
+            builder.withMethodBody(CLASS_INIT_NAME, MTD_void, ACC_STATIC, code -> {
+                code.ldc(PLAN).pop();
+                for (DynamicConstantDesc<?> symbol : symbolConstants.values()) {
+                    code.ldc(symbol).pop();
+                }
+                code.return_();
+            });
         });
+    }
+
+    private MethodHandles.Lookup defineClass(byte[] bytes) throws IllegalAccessException {
         symbols.switchesContext |= switchesContext;
-        try {
-            MethodHandles.Lookup lookup = MethodHandles.lookup().defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE);
-            MolangExpression compiled = (MolangExpression) lookup.findConstructor(lookup.lookupClass(),
-                    MethodType.methodType(void.class, MolangPath[].class, MolangQueryRef[].class, MolangBindingPlan.class))
-                    .invoke(paths.toArray(MolangPath[]::new), queries.toArray(MolangQueryRef[]::new), new MolangBindingPlan(paths, queries));
-            if (segmented || !localPlan.needsRuntimeTemps() && !switchesContext) {
-                return compiled;
+        List<Object> classData = new ArrayList<>(symbolConstants.size() + 1);
+        classData.add(new MolangBindingPlan(paths, queries));
+        classData.addAll(symbolConstants.keySet());
+        return MethodHandles.lookup().defineHiddenClassWithClassData(bytes, List.copyOf(classData), true, MethodHandles.Lookup.ClassOption.NESTMATE);
+    }
+
+    // 字面循环只读取单层变量、写入 JVM 数值局部槽时，可在绑定宿主上直接执行原程序。
+    private boolean canRunLoopOnOwner() {
+        if (structFallback != null || !options.stableVariableReads() || localPlan.needsRuntimeTemps() || !localPlan.objectTemps().isEmpty()) {
+            return false;
+        }
+        Set<String> locals = localPlan.numericTemps();
+        List<Stmt> statements = program.statements();
+        if (statements.isEmpty() || !(statements.getLast() instanceof Stmt.ReturnStmt(Expr.VariableAccess result)) || !"temp".equals(result.scope()) || !locals.contains(result.name())) {
+            return false;
+        }
+        boolean found = false;
+        for (int i = 0; i < statements.size() - 1; i++) {
+            Stmt statement = statements.get(i);
+            if (statement instanceof Stmt.ExpressionStmt(Expr.VariableAssign assign) && "temp".equals(assign.scope()) && locals.contains(assign.name()) && assign.value() instanceof Expr.NumberLiteral) {
+                continue;
             }
-            return new ScopedExpression(compiled, switchesContext);
-        } catch (Throwable exception) {
-            throw new MolangCompileException("Failed to load typed expression", exception);
+            if (found || !(statement instanceof Stmt.Loop(Expr count, Stmt body)) || !(count instanceof Expr.NumberLiteral)) {
+                return false;
+            }
+            List<Expr.VariableAccess> reads = LoopOperandReads.find(body, locals);
+            if (reads.isEmpty() || reads.stream().anyMatch(read -> read.name().indexOf('.') >= 0)) {
+                return false;
+            }
+            found = true;
+        }
+        return found;
+    }
+
+    @Nullable
+    static MolangExpression batchOwnerBody(MolangExpression program) {
+        program = OwnedIteration.original(program);
+        return program instanceof UnscopedLink local && local.localLoop ? local.compiled : null;
+    }
+
+    private record UnscopedLink(MolangExpression compiled, NumericLink link, boolean localLoop) implements MolangExpression {
+        @Override
+        public float evaluate(MolangRuntime runtime) {
+            return compiled.evaluate(runtime);
+        }
+
+        @Override
+        @Nullable
+        public Object evaluateValue(MolangRuntime runtime) {
+            return compiled.evaluateValue(runtime);
+        }
+
+        @Override
+        public MolangBindingPlan bindingPlan() {
+            return compiled.bindingPlan();
+        }
+
+        @Override
+        public MolangBoundExpression bind(MolangRuntime runtime) {
+            MolangBindingPlan plan = bindingPlan();
+            MolangRuntime view = runtime.bind(plan);
+            MolangExpression linked = link.bind(plan, view);
+            return new MolangBoundExpression(linked != null ? linked : compiled, view);
         }
     }
 
-    private record ScopedExpression(MolangExpression compiled, boolean invalidatesQueries) implements MolangExpression {
+    private record NumericLink(MethodHandle factory, int[] slots, int[] paths, boolean singleEvaluationRead, boolean propertyExpression, @Nullable BatchNumberPlan batch) {
+        private static final MolangNumberContextQuery[] NO_QUERIES = {};
+        private static final int[] NO_VARIABLES = {};
+
+        private boolean onlyLinkedQueries(MolangBindingPlan plan) {
+            return propertyExpression && slots.length != 0 && slots.length == plan.queryCount() && plan.pathCount() == 0;
+        }
+
+        @Nullable
+        MolangExpression bind(MolangBindingPlan plan, MolangRuntime view) {
+            return bind(plan, view, false);
+        }
+
+        @Nullable
+        MolangExpression bind(MolangBindingPlan plan, MolangRuntime view, boolean managedByBatch) {
+            MolangNumberContextQuery[] functions = slots.length == 0 ? NO_QUERIES : new MolangNumberContextQuery[slots.length];
+            MolangRuntime owner = onlyLinkedQueries(plan) ? plan.linkProperties(view, slots, functions) : null;
+            boolean managesScope = owner == null && !managedByBatch;
+            if (owner == null) {
+                owner = singleEvaluationRead ? plan.linkSingleEvaluationQuery(view, slots[0], functions) : plan.linkCompiledNumberQueries(view, slots, functions);
+                if (owner == null) {
+                    return null;
+                }
+            }
+            int[] variableSlots = paths.length == 0 ? NO_VARIABLES : new int[paths.length];
+            if (paths.length != 0 && !plan.linkVariableRoots(view, paths, variableSlots) && slots.length == 0) {
+                return null;
+            }
+            try {
+                return (MolangExpression) factory.invokeExact(owner, functions, variableSlots, managesScope);
+            } catch (Throwable error) {
+                throw new MolangCompileException("Failed to bind numeric expression", error);
+            }
+        }
+    }
+
+    @Nullable
+    static MolangExpression batchBody(MolangExpression expression) {
+        expression = OwnedIteration.original(expression);
+        return expression instanceof ScopedExpression scoped && !scoped.invalidatesQueries ? scoped.compiled : null;
+    }
+
+    @Nullable
+    static MolangExpression linkBatchBody(MolangExpression expression, MolangRuntime view, boolean managedScope) {
+        expression = OwnedIteration.original(expression);
+        if (expression instanceof UnscopedLink unscoped) {
+            return unscoped.link.bind(unscoped.bindingPlan(), view);
+        }
+        if (expression instanceof ScopedExpression scoped) {
+            return scoped.linkedBody(view, managedScope);
+        }
+        return null;
+    }
+
+    @Nullable
+    static BatchNumberPlan batchNumber(MolangExpression program) {
+        program = OwnedIteration.original(program);
+        return program instanceof ScopedExpression scoped && !scoped.invalidatesQueries && scoped.link != null ? scoped.link.batch : null;
+    }
+
+    static boolean isUnboundProgram(MolangExpression program) {
+        program = OwnedIteration.original(program);
+        if (program instanceof ScopedExpression scoped) {
+            return scoped.compiled instanceof MolangBatchCompiler.UnboundProgram;
+        }
+        if (program instanceof UnscopedLink unscoped) {
+            return unscoped.compiled instanceof MolangBatchCompiler.UnboundProgram;
+        }
+        return program instanceof MolangBatchCompiler.UnboundProgram;
+    }
+
+    void emitBatch(CodeBuilder code, Expr value, BatchNumberPlan plan, BatchNumberPlan.Output output) {
+        numericReturn = true;
+        nextSlot = BatchNumberPlan.FIRST_EXPRESSION_LOCAL;
+        batchPlan = plan;
+        batchOutput = output;
+        numericExpression(code, value, 3);
+    }
+
+    private record ScopedExpression(MolangExpression compiled, boolean invalidatesQueries, @Nullable NumericLink link) implements MolangExpression {
+        @Override
+        public MolangBoundExpression bind(MolangRuntime runtime) {
+            MolangBindingPlan plan = bindingPlan();
+            MolangRuntime view = runtime.bind(plan);
+            MolangExpression linked = linkedBody(view, false);
+            // 所有读取都已绑定到真实宿主时，执行体无需保留解析查询时使用的视图。
+            if (linked instanceof MolangBindingPlan.LinkedQueryExpression && link.onlyLinkedQueries(plan) && plan.matchesView(runtime, view)) {
+                return new MolangBoundExpression(linked, runtime);
+            }
+            return new MolangBoundExpression(linked != null ? linked : this, view);
+        }
+
+        @Nullable
+        private MolangExpression linkedBody(MolangRuntime view, boolean managedByBatch) {
+            MolangExpression linked = link == null ? null : link.bind(bindingPlan(), view, managedByBatch);
+            if (linked == null || managedByBatch || linked instanceof MolangBindingPlan.LinkedQueryExpression) {
+                return linked;
+            }
+            return new ScopedExpression(linked, invalidatesQueries, null);
+        }
+
         @Override
         public MolangBindingPlan bindingPlan() {
             return compiled.bindingPlan();
@@ -166,6 +512,9 @@ final class TypedMolangCompiler {
         numericTemps.clear();
         objectTemps.clear();
         hoistedNumbers.clear();
+        if (structFallback != null) {
+            guardStructInputs(code, numeric);
+        }
         for (String name : segmented ? Set.<String>of() : localPlan.numericTemps()) {
             int slot = nextSlot;
             nextSlot += 2;
@@ -200,13 +549,46 @@ final class TypedMolangCompiler {
         }
     }
 
+    private void guardStructInputs(CodeBuilder code, boolean numeric) {
+        Label fallback = code.newLabel();
+        Label ready = code.newLabel();
+        code.aload(1).invokestatic(VALUES, "isBuiltinStorage", MethodTypeDesc.of(CD_boolean, RUNTIME)).ifeq(fallback);
+        for (Object2IntMap.Entry<String> input : scalarInputs.object2IntEntrySet()) {
+            int local = nextSlot++;
+            input.setValue(local);
+            code.aload(1);
+            path(code, input.getKey());
+            code.invokeinterface(RUNTIME, "getVariableValue", MethodTypeDesc.of(CD_Object, PATH))
+                    .dup().astore(local)
+                    .invokestatic(VALUES, "isScalarInput", MethodTypeDesc.of(CD_boolean, CD_Object)).ifeq(fallback);
+        }
+        code.goto_(ready).labelBinding(fallback);
+        loadSymbol(code, structFallback, EXPRESSION);
+        code.aload(1);
+        if (numeric) {
+            code.invokeinterface(EXPRESSION, "evaluate", MethodTypeDesc.of(CD_float, RUNTIME)).freturn();
+        } else {
+            code.invokeinterface(EXPRESSION, "evaluateValue", MethodTypeDesc.of(CD_Object, RUNTIME)).areturn();
+        }
+        code.labelBinding(ready);
+    }
+
     private void statement(CodeBuilder code, Stmt statement, int runtime) {
         int scratchBase = nextSlot;
         switch (statement) {
             case Stmt.Program value -> value.statements().forEach(child -> statement(code, child, runtime));
             case Stmt.Block value -> value.statements().forEach(child -> statement(code, child, runtime));
             case Stmt.ExpressionStmt value -> {
-                if (value.expression() instanceof Expr.VariableAssign(String targetScope, String targetName, Expr targetValue)
+                if (value.expression() instanceof Expr.VariableAssign(String scope, String name, Expr.ContextSwitch(Expr target, Expr.VariableAccess(String fieldScope, String field)))
+                        && "variable".equals(scope) && "variable".equals(fieldScope)) {
+                    int reference = storeExpression(code, target, runtime);
+                    switchesContext = true;
+                    code.aload(1).aload(runtime).aload(reference);
+                    path(code, field);
+                    path(code, name);
+                    code.invokestatic(MolangActorContext.class.describeConstable().orElseThrow(), "assignArrow",
+                            MethodTypeDesc.of(CD_void, RUNTIME, RUNTIME, CD_Object, PATH, PATH));
+                } else if (value.expression() instanceof Expr.VariableAssign(String targetScope, String targetName, Expr targetValue)
                         && "variable".equals(targetScope)
                         && targetValue instanceof Expr.VariableAccess(String sourceScope, String sourceName)
                         && "variable".equals(sourceScope)) {
@@ -214,6 +596,13 @@ final class TypedMolangCompiler {
                     path(code, targetName);
                     path(code, sourceName);
                     code.invokeinterface(RUNTIME, "copyVariableValue", MethodTypeDesc.of(CD_void, PATH, PATH));
+                } else if (value.expression() instanceof Expr.ArrayAssign(String targetScope, String targetName, Expr.VariableAccess(String indexScope, String indexName), Expr.VariableAccess(String sourceScope, String sourceName))
+                        && "variable".equals(targetScope) && "variable".equals(indexScope) && "variable".equals(sourceScope)) {
+                    code.aload(runtime);
+                    path(code, targetName);
+                    path(code, indexName);
+                    path(code, sourceName);
+                    code.invokestatic(VALUES, "copyVariableToElement", MethodTypeDesc.of(CD_void, RUNTIME, PATH, PATH, PATH));
                 } else if (isNumeric(value.expression())) {
                     numericExpression(code, value.expression(), runtime);
                     code.pop();
@@ -238,9 +627,22 @@ final class TypedMolangCompiler {
         code.f2i().ldc(1024).invokestatic(CD_Math, "min", MethodTypeDesc.of(CD_int, CD_int, CD_int)).istore(count);
         MolangCompileOptions loopOptions = foreignContext ? new MolangCompileOptions(options.version(), MolangQuerySchema.EMPTY, false) : options;
         List<Expr> invariants = new LoopInvariantPlan(loop.body(), loopOptions).expressions().stream()
-                .filter(expression -> !hoistedNumbers.containsKey(expression)).toList();
-        if (invariants.isEmpty() || breaks.size() >= MAX_SPECIALIZED_LOOP_DEPTH || !smallLoop(loop.body())) {
+                .filter(expression -> !hoistedNumbers.containsKey(expression))
+                .toList();
+        if (breaks.size() >= MAX_SPECIALIZED_LOOP_DEPTH || !smallLoop(loop.body())) {
             loopBody(code, count, loop.body(), runtime);
+            return;
+        }
+        if (invariants.isEmpty()) {
+            List<Expr.VariableAccess> reads = segmented || foreignContext ? List.of() : LoopOperandReads.find(loop.body(), numericTemps.keySet());
+            if (reads.isEmpty()) {
+                loopBody(code, count, loop.body(), runtime);
+            } else {
+                Label done = code.newLabel();
+                code.iload(count).ifle(done);
+                withLoopOperands(code, runtime, reads, () -> loopBody(code, count, loop.body(), runtime));
+                code.labelBinding(done);
+            }
             return;
         }
         Label fallback = code.newLabel();
@@ -275,6 +677,27 @@ final class TypedMolangCompiler {
         code.labelBinding(next).iinc(count, -1).goto_(start).labelBinding(end);
     }
 
+    private void withLoopOperands(CodeBuilder code, int runtime, List<Expr.VariableAccess> reads, Runnable emitBody) {
+        if (reads.isEmpty()) {
+            emitBody.run();
+            return;
+        }
+        Label fallback = code.newLabel();
+        Label done = code.newLabel();
+        code.aload(runtime).invokestatic(VALUES, "isBuiltinStorage", MethodTypeDesc.of(CD_boolean, RUNTIME)).ifeq(fallback);
+        Map<Expr.VariableAccess, Operand> previous = loopOperands;
+        Map<Expr.VariableAccess, Operand> saved = new HashMap<>(previous);
+        for (Expr.VariableAccess read : reads) {
+            saved.put(read, storeArithmeticOperand(code, read, runtime));
+        }
+        loopOperands = saved;
+        emitBody.run();
+        loopOperands = previous;
+        code.goto_(done).labelBinding(fallback);
+        emitBody.run();
+        code.labelBinding(done);
+    }
+
     private static boolean smallLoop(Stmt statement) {
         int[] nodes = {0};
         AstNodes.visit(statement, _ -> nodes[0]++, _ -> nodes[0]++);
@@ -286,11 +709,17 @@ final class TypedMolangCompiler {
         int index = nextSlot++;
         int length = nextSlot++;
         code.iconst_0().istore(index).aload(array).invokestatic(VALUES, "length", MethodTypeDesc.of(CD_int, CD_Object)).istore(length);
-        if (!segmented && !foreignContext && NumericForEachPlan.eligible(loop, options) && smallLoop(loop.body())) {
+        if (!segmented && !foreignContext && NumericForEachPlan.eligible(loop) && smallLoop(loop.body())) {
             Label fallback = code.newLabel();
             Label complete = code.newLabel();
             code.iload(length).ifle(complete);
-            code.aload(runtime).invokeinterface(RUNTIME, "supportsLocalTempAccess", MethodTypeDesc.of(CD_boolean)).ifeq(fallback);
+            code.aload(runtime);
+            if (options.stableVariableReads()) {
+                code.invokeinterface(RUNTIME, "supportsLocalTempAccess", MethodTypeDesc.of(CD_boolean));
+            } else {
+                code.invokestatic(VALUES, "isBuiltinStorage", MethodTypeDesc.of(CD_boolean, RUNTIME));
+            }
+            code.ifeq(fallback);
             code.aload(array).invokestatic(VALUES, "isNumericArray", MethodTypeDesc.of(CD_boolean, CD_Object)).ifeq(fallback);
             numericForEach(code, loop, runtime, array, index, length);
             code.goto_(complete).labelBinding(fallback);
@@ -307,10 +736,37 @@ final class TypedMolangCompiler {
         String target = loop.target().name();
         int previous = numericTemps.put(target, targetSlot);
         int previousObject = objectTemps.removeInt(target);
+        code.fconst_0().fstore(targetSlot).iconst_0().istore(targetSlot + 1);
+        List<Expr.VariableAccess> reads = LoopOperandReads.find(loop.body(), numericTemps.keySet());
+        withLoopOperands(code, runtime, reads, () -> numericForEachBody(code, loop, runtime, array, index, length, targetSlot));
+        if (previous >= 0) {
+            numericTemps.put(target, previous);
+        } else {
+            numericTemps.removeInt(target);
+        }
+        if (previousObject >= 0) {
+            objectTemps.put(target, previousObject);
+        }
+        // 正常退出和 break 都使用最后实际访问的元素；公开的循环主体始终写回该值。
+        code.aload(1);
+        path(code, target);
+        code.fload(targetSlot);
+        if (loop == ownedIteration) {
+            Label ordinary = code.newLabel();
+            Label done = code.newLabel();
+            code.aload(0).getfield(COMPILED, "ownedTemps", CD_boolean).ifeq(ordinary)
+                    .invokestatic(VALUES, "finishOwnedIteration", MethodTypeDesc.of(CD_void, RUNTIME, PATH, CD_float))
+                    .goto_(done).labelBinding(ordinary)
+                    .invokeinterface(RUNTIME, "setTempNumber", MethodTypeDesc.of(CD_void, PATH, CD_float)).labelBinding(done);
+        } else {
+            code.invokeinterface(RUNTIME, "setTempNumber", MethodTypeDesc.of(CD_void, PATH, CD_float));
+        }
+    }
+
+    private void numericForEachBody(CodeBuilder code, Stmt.ForEach loop, int runtime, int array, int index, int length, int targetSlot) {
         Label start = code.newLabel();
         Label end = code.newLabel();
         Label next = code.newLabel();
-        code.fconst_0().fstore(targetSlot).iconst_0().istore(targetSlot + 1);
         code.labelBinding(start).iload(index).iload(length).if_icmpge(end);
         code.aload(array).iload(index).invokestatic(VALUES, "getElementFloat", MethodTypeDesc.of(CD_float, CD_Object, CD_int))
                 .fstore(targetSlot).iconst_1().istore(targetSlot + 1);
@@ -320,18 +776,6 @@ final class TypedMolangCompiler {
         continues.pop();
         breaks.pop();
         code.labelBinding(next).iinc(index, 1).goto_(start).labelBinding(end);
-        if (previous >= 0) {
-            numericTemps.put(target, previous);
-        } else {
-            numericTemps.removeInt(target);
-        }
-        if (previousObject >= 0) {
-            objectTemps.put(target, previousObject);
-        }
-        // 快路径只有非空数组进入；迭代目标在正常退出和 break 后发布最后实际访问的元素。
-        code.aload(1);
-        path(code, target);
-        code.fload(targetSlot).invokeinterface(RUNTIME, "setTempNumber", MethodTypeDesc.of(CD_void, PATH, CD_float));
     }
 
     private void generalForEach(CodeBuilder code, Stmt.ForEach loop, int runtime, int array, int index, int length) {
@@ -408,6 +852,23 @@ final class TypedMolangCompiler {
     }
 
     private void numericExpression(CodeBuilder code, Expr expression, int runtime) {
+        if (batchOutput == null) {
+            numericBody(code, expression, runtime);
+            return;
+        }
+        int previous = batchOutput.previousLocal(expression);
+        if (previous >= 0) {
+            code.fload(previous);
+            return;
+        }
+        numericBody(code, expression, runtime);
+        int save = batchOutput.captureLocal(expression);
+        if (save >= 0) {
+            code.dup().fstore(save);
+        }
+    }
+
+    private void numericBody(CodeBuilder code, Expr expression, int runtime) {
         int hoisted = hoistedNumbers.getInt(expression);
         if (hoisted >= 0) {
             code.fload(hoisted);
@@ -429,15 +890,7 @@ final class TypedMolangCompiler {
                     getVariable(code, runtime, value.scope(), value.name());
                     toFloat(code);
                 } else {
-                    String method = switch (value.scope()) {
-                        case "variable" -> "getVariableNumber";
-                        case "temp" -> "getTempNumber";
-                        case "context" -> "getContextNumber";
-                        default -> throw new MolangCompileException("Unknown variable scope: " + value.scope());
-                    };
-                    code.aload("temp".equals(value.scope()) ? 1 : runtime);
-                    path(code, value.name());
-                    code.invokeinterface(RUNTIME, method, MethodTypeDesc.of(CD_float, PATH));
+                    variableNumber(code, value, runtime, false);
                 }
             }
             case Expr.VariableAssign value when isNumeric(value.value()) -> numericAssign(code, value.scope(), value.name(), value.value(), runtime);
@@ -564,7 +1017,10 @@ final class TypedMolangCompiler {
         }
     }
 
-    private record Operand(int slot, boolean number, boolean packed) {
+    private record Operand(int slot, boolean number, boolean packed, int deferred) {
+        private Operand(int slot, boolean number, boolean packed) {
+            this(slot, number, packed, -1);
+        }
     }
 
     private Operand storeOperand(CodeBuilder code, Expr value, int runtime) {
@@ -576,6 +1032,18 @@ final class TypedMolangCompiler {
         Expr unwrapped = value;
         while (unwrapped instanceof Expr.Group(Expr expression)) {
             unwrapped = expression;
+        }
+        if (batchOutput != null && unwrapped instanceof Expr.VariableAccess variable) {
+            int bits = nextSlot;
+            nextSlot += 2;
+            batchOutput.readVariableOperand(code, batchPlan.variableIndex(variable.name()));
+            code.lstore(bits);
+            return new Operand(bits, false, true);
+        }
+        if (unwrapped instanceof Expr.ContextSwitch(Expr arrowTarget, Expr arrowExpression)
+                && arrowExpression instanceof Expr.VariableAccess(String fieldScope, String fieldName)
+                && "variable".equals(fieldScope)) {
+            return storeArrowOperand(code, arrowTarget, fieldName, runtime);
         }
         if (unwrapped instanceof Expr.ArrayAccess array) {
             int slot = nextSlot;
@@ -592,29 +1060,85 @@ final class TypedMolangCompiler {
             return new Operand(slot, false, true);
         }
         if (!numericOperand(value) && unwrapped instanceof Expr.VariableAccess variable && !"array".equals(variable.scope())) {
+            Operand saved = loopOperands.get(variable);
+            if (saved != null) {
+                return saved;
+            }
             int slot = nextSlot;
             nextSlot += 2;
-            String method = switch (variable.scope()) {
-                case "variable" -> "getVariableOperand";
-                case "temp" -> "getTempOperand";
-                case "context" -> "getContextOperand";
-                default -> throw new MolangCompileException("Unknown variable scope: " + variable.scope());
-            };
-            code.aload("temp".equals(variable.scope()) ? 1 : runtime);
-            int objectLocal = localObject(variable);
+            int objectLocal = "variable".equals(variable.scope()) ? scalarInputs.getOrDefault(variable.name(), -1) : localObject(variable);
             if (objectLocal >= 0) {
-                code.pop().aload(objectLocal).invokestatic(VALUES, "numericOperand", MethodTypeDesc.of(CD_long, CD_Object)).lstore(slot);
+                code.aload(objectLocal).invokestatic(VALUES, "numericOperand", MethodTypeDesc.of(CD_long, CD_Object));
             } else {
-                path(code, variable.name());
-                code.invokeinterface(RUNTIME, method, MethodTypeDesc.of(CD_long, PATH)).lstore(slot);
+                variableNumber(code, variable, runtime, true);
             }
+            code.lstore(slot);
             return new Operand(slot, false, true);
         }
         return storeOperand(code, value, runtime);
     }
 
+    private void variableNumber(CodeBuilder code, Expr.VariableAccess variable, int runtime, boolean packed) {
+        String name = variable.name();
+        boolean direct = !segmented && !foreignContext && runtime == 1 && options.stableVariableReads() && "variable".equals(variable.scope());
+        ClassDesc result = packed ? CD_long : CD_float;
+        if (linkedBody && direct) {
+            loadLinkedVariable(code, name);
+            String method = name.indexOf('.') >= 0 ? (packed ? "readNestedOperand" : "readNestedNumber") : (packed ? "readOperand" : "readNumber");
+            code.invokevirtual(LINKED_VARIABLES, method, MethodTypeDesc.of(result, CD_int, PATH));
+            return;
+        }
+
+        String method = switch (variable.scope()) {
+            case "variable" -> packed ? "getVariableOperand" : "getVariableNumber";
+            case "temp" -> packed ? "getTempOperand" : "getTempNumber";
+            case "context" -> packed ? "getContextOperand" : "getContextNumber";
+            default -> throw new MolangCompileException("Unknown variable scope: " + variable.scope());
+        };
+        code.aload("temp".equals(variable.scope()) ? 1 : runtime);
+        path(code, name);
+        code.invokeinterface(RUNTIME, method, MethodTypeDesc.of(result, PATH));
+        if (direct) {
+            linkableVariables.add(pathIndexes.getInt(name));
+        }
+    }
+
+    private Operand storeArrowOperand(CodeBuilder code, Expr target, String field, int runtime) {
+        int reference = storeExpression(code, target, runtime);
+        int alternate = nextSlot++;
+        int deferred = nextSlot++;
+        int bits = nextSlot;
+        nextSlot += 2;
+        Label typed = code.newLabel();
+        Label done = code.newLabel();
+        switchesContext = true;
+
+        code.aconst_null().astore(deferred).lconst_0().lstore(bits);
+        code.aload(reference).invokestatic(VALUES, "asRuntime", MethodTypeDesc.of(RUNTIME, CD_Object)).astore(alternate);
+        code.aload(alternate).ifnull(done);
+        code.aload(1).invokeinterface(RUNTIME, "invalidateQueries", MTD_void);
+        code.aload(alternate).invokestatic(MolangActorContext.class.describeConstable().orElseThrow(), "isPublishedView", MethodTypeDesc.of(CD_boolean, RUNTIME)).ifeq(typed);
+        code.aload(alternate);
+        path(code, field);
+        code.invokeinterface(RUNTIME, "getVariableOperand", MethodTypeDesc.of(CD_long, PATH)).lstore(bits).goto_(done);
+        code.labelBinding(typed).aload(alternate);
+        path(code, field);
+        code.invokeinterface(RUNTIME, "getVariableValue", MethodTypeDesc.of(CD_Object, PATH)).astore(deferred);
+        code.aload(deferred).instanceOf(CD_String).ifeq(done).ldc(MolangValues.STRING_OPERAND).lstore(bits);
+        code.labelBinding(done);
+        return new Operand(bits, false, true, deferred);
+    }
+
     private static void loadNumber(CodeBuilder code, Operand operand) {
-        if (operand.packed()) {
+        if (operand.deferred() >= 0) {
+            // 自定义宿主的 getter 已执行，Number 转换可能调用外部代码，因此仍在原位置执行。
+            Label fromBits = code.newLabel();
+            Label done = code.newLabel();
+            code.aload(operand.deferred()).ifnull(fromBits).aload(operand.deferred());
+            toFloat(code);
+            code.goto_(done).labelBinding(fromBits).lload(operand.slot()).l2i()
+                    .invokestatic(FLOAT, "intBitsToFloat", MethodTypeDesc.of(CD_float, CD_int)).labelBinding(done);
+        } else if (operand.packed()) {
             code.lload(operand.slot()).l2i().invokestatic(FLOAT, "intBitsToFloat", MethodTypeDesc.of(CD_float, CD_int));
         } else if (operand.number()) {
             code.fload(operand.slot());
@@ -644,20 +1168,32 @@ final class TypedMolangCompiler {
             return;
         }
         boolean equality = "==".equals(operator) || "!=".equals(operator);
+        Expr.VariableAccess linkedVariable = equality ? equalityVariable(value, runtime) : null;
+        if (linkedBody && linkedVariable != null) {
+            boolean variableFirst = linkedVariable == value.left();
+            Expr number = variableFirst ? value.right() : value.left();
+            linkedEquality(code, linkedVariable.name(), number, variableFirst && !(number instanceof Expr.NumberLiteral), runtime);
+            if ("!=".equals(operator)) {
+                code.iconst_1().ixor();
+            }
+            code.i2f();
+            return;
+        }
         Operand left = equality ? storeOperand(code, value.left(), runtime) : storeArithmeticOperand(code, value.left(), runtime);
         Operand right = equality ? storeOperand(code, value.right(), runtime) : storeArithmeticOperand(code, value.right(), runtime);
+        if (linkedVariable != null) {
+            linkableVariables.add(pathIndexes.getInt(linkedVariable.name()));
+        }
         if (equality) {
             if (left.number() && right.number()) {
                 loadNumber(code, left);
                 loadNumber(code, right);
                 code.fcmpl();
                 comparisonResult(code, operator);
-            } else {
-                loadObject(code, left);
-                loadObject(code, right);
-                code.invokestatic(VALUES, "equal", MethodTypeDesc.of(CD_boolean, CD_Object, CD_Object));
-                comparisonResult(code, "==".equals(operator) ? "!=" : "==");
+                return;
             }
+            objectEquality(code, left, right);
+            comparisonResult(code, "==".equals(operator) ? "!=" : "==");
             return;
         }
         Label invalid = code.newLabel();
@@ -700,6 +1236,63 @@ final class TypedMolangCompiler {
         }
     }
 
+    private void objectEquality(CodeBuilder code, Operand left, Operand right) {
+        if (left.number() || right.number()) {
+            loadObject(code, left.number() ? right : left);
+            loadNumber(code, left.number() ? left : right);
+            code.invokestatic(VALUES, "equalNumber", MethodTypeDesc.of(CD_boolean, CD_Object, CD_float));
+        } else {
+            loadObject(code, left);
+            loadObject(code, right);
+            code.invokestatic(VALUES, "equal", MethodTypeDesc.of(CD_boolean, CD_Object, CD_Object));
+        }
+    }
+
+    @Nullable
+    private Expr.VariableAccess equalityVariable(Expr.Binary binary, int runtime) {
+        if (!options.stableVariableReads() || segmented || foreignContext || runtime != 1 || batchOutput != null) {
+            return null;
+        }
+        Expr other;
+        if (numericOperand(binary.left())) {
+            other = binary.right();
+        } else if (numericOperand(binary.right())) {
+            other = binary.left();
+        } else {
+            return null;
+        }
+        return other instanceof Expr.VariableAccess field && "variable".equals(field.scope()) && field.name().indexOf('.') < 0 && !scalarInputs.containsKey(field.name()) ? field : null;
+    }
+
+    private void loadLinkedVariable(CodeBuilder code, String name) {
+        int index = pathIndexes.getInt(name);
+        code.aload(0).aload(0).getfield(COMPILED, "v" + index, CD_int);
+        path(code, name);
+    }
+
+    private void linkedEquality(CodeBuilder code, String name, Expr number, boolean snapshot, int runtime) {
+        if (!snapshot) {
+            int result = storeNumber(code, number, runtime);
+            loadLinkedVariable(code, name);
+            code.fload(result).invokevirtual(LINKED_VARIABLES, "equalsNumber", MethodTypeDesc.of(CD_boolean, CD_int, PATH, CD_float));
+            return;
+        }
+        int bits = nextSlot;
+        nextSlot += 2;
+        int value = nextSlot++;
+        Label captured = code.newLabel();
+        // 先保存左操作数；右侧可以更改变量，外部 Number 的转换必须在右侧求值之后。
+        code.aconst_null().astore(value);
+        loadLinkedVariable(code, name);
+        code.invokevirtual(LINKED_VARIABLES, "equalityBits", MethodTypeDesc.of(CD_long, CD_int, PATH))
+                .lstore(bits).lload(bits).lconst_0().lcmp().ifge(captured);
+        loadLinkedVariable(code, name);
+        code.invokevirtual(LINKED_VARIABLES, "equalityValue", MethodTypeDesc.of(CD_Object, CD_int, PATH)).astore(value);
+        code.labelBinding(captured);
+        int result = storeNumber(code, number, runtime);
+        code.lload(bits).aload(value).fload(result).invokestatic(VALUES, "equalSnapshot", MethodTypeDesc.of(CD_boolean, CD_long, CD_Object, CD_float));
+    }
+
     private static void comparisonResult(CodeBuilder code, String operator) {
         Label matched = code.newLabel();
         Label done = code.newLabel();
@@ -716,6 +1309,13 @@ final class TypedMolangCompiler {
     }
 
     private void numericMath(CodeBuilder code, Expr.MathCall call, int runtime) {
+        // small integer pow
+        if ("pow".equals(call.function()) && call.args().size() >= 2 && call.args().get(1) instanceof Expr.NumberLiteral(float exponent) && (exponent == 3 || exponent == 4)) {
+            numericExpression(code, call.args().getFirst(), runtime);
+            code.ldc((int) exponent).invokestatic(MolangFunctions.class.describeConstable().orElseThrow(), "smallIntegerPower", MethodTypeDesc.of(CD_float, CD_float, CD_int));
+            return;
+        }
+
         int arity = mathArity(call.function());
         int[] slots = new int[arity];
         for (int i = 0; i < arity; i++) {
@@ -738,15 +1338,58 @@ final class TypedMolangCompiler {
     }
 
     private void numericQuery(CodeBuilder code, Expr.QueryCall call, int runtime) {
+        if (batchOutput != null) {
+            batchOutput.readQuery(code, batchPlan.queryIndex(call.name()));
+            return;
+        }
         if (MolangFunctions.builtinQuery(call.name())) {
             numericBuiltin(code, call, runtime);
         } else if (call.args().size() <= 3 && call.args().stream().allMatch(this::isNumeric)) {
+            MolangQueryDefinition definition = options.querySchema().get(call.name());
+            boolean directNumber = !segmented && !foreignContext && call.args().isEmpty() && definition != null
+                    && definition.returnType() == MolangQueryDefinition.ValueType.NUMBER && !definition.nullable()
+                    && definition.minArguments() == 0 && definition.isReadOnly()
+                    && (definition.stability() == MolangQueryDefinition.Stability.NONE
+                    || definition.stability() == MolangQueryDefinition.Stability.FRAME
+                    || singleEvaluationRead && structFallback == null || propertyInputs);
+            if (linkedBody && directNumber) {
+                int slot = queryIndexes.getInt(call.name());
+                if (!switchesContext) {
+                    code.aload(0).aload(0).getfield(COMPILED, "q" + slot, NUMBER_CALLBACK);
+                    code.invokevirtual(LINKED_QUERY, "number0", MethodTypeDesc.of(CD_float, NUMBER_CALLBACK));
+                } else {
+                    code.aload(0).getfield(COMPILED, "q" + slot, NUMBER_CALLBACK).aload(0).getfield(COMPILED, "owner", RUNTIME);
+                    code.invokestatic(BINDING_PLAN, "invokeNumber0", MethodTypeDesc.of(CD_float, NUMBER_CALLBACK, RUNTIME));
+                }
+                return;
+            }
+            boolean unary = !segmented && !foreignContext && call.args().size() == 1 && definition != null && definition.isReadOnlyUnaryNumber() && !definition.nullable();
+            if (unary && linkedBody) {
+                int argument = storeNumber(code, call.args().getFirst(), runtime);
+                int slot = queryIndexes.getInt(call.name());
+                if (!switchesContext) {
+                    code.aload(0).aload(0).getfield(COMPILED, "q" + slot, NUMBER_CALLBACK).fload(argument)
+                            .invokevirtual(LINKED_QUERY, "number1", MethodTypeDesc.of(CD_float, NUMBER_CALLBACK, CD_float));
+                } else {
+                    code.aload(0).getfield(COMPILED, "q" + slot, NUMBER_CALLBACK).aload(0).getfield(COMPILED, "owner", RUNTIME)
+                            .fload(argument).invokestatic(BINDING_PLAN, "invokeNumber1", MethodTypeDesc.of(CD_float, NUMBER_CALLBACK, RUNTIME, CD_float));
+                }
+                return;
+            }
             int[] slots = new int[call.args().size()];
             for (int i = 0; i < slots.length; i++) {
                 slots[i] = storeNumber(code, call.args().get(i), runtime);
             }
             code.aload(runtime);
-            queryRef(code, call);
+            boolean indexed = slots.length == 0 && queryParameterType().equals(CD_String);
+            queryRef(code, call, indexed);
+            if (indexed) {
+                code.invokestatic(QUERY_SITE, "queryNumber0", MethodTypeDesc.of(CD_float, RUNTIME, QUERY_SITE));
+                return;
+            }
+            if (directNumber || unary) {
+                linkableNumbers.add(queryIndexes.getInt(call.name()));
+            }
             for (int slot : slots) {
                 code.fload(slot);
             }
@@ -826,9 +1469,7 @@ final class TypedMolangCompiler {
                             code.ifeq(decisive);
                         }
                     } else {
-                        loadObject(code, first);
-                        loadObject(code, next);
-                        code.invokestatic(VALUES, "equal", MethodTypeDesc.of(CD_boolean, CD_Object, CD_Object));
+                        objectEquality(code, first, next);
                         if (all) {
                             code.ifeq(decisive);
                         } else {
@@ -919,8 +1560,11 @@ final class TypedMolangCompiler {
             case Expr.VariableAssign value -> {
                 int result = storeExpression(code, value.value(), runtime);
                 if ("temp".equals(value.scope()) && objectTemps.containsKey(value.name())) {
-                    code.aload(result).invokestatic(VALUES, "copy", MethodTypeDesc.of(CD_Object, CD_Object))
-                            .astore(objectTemps.getInt(value.name()));
+                    code.aload(result);
+                    if (structFallback == null) {
+                        code.invokestatic(VALUES, "copy", MethodTypeDesc.of(CD_Object, CD_Object));
+                    }
+                    code.astore(objectTemps.getInt(value.name()));
                 } else {
                     code.aload("temp".equals(value.scope()) ? 1 : runtime);
                     path(code, value.name());
@@ -985,16 +1629,24 @@ final class TypedMolangCompiler {
     }
 
     private void path(CodeBuilder code, String name) {
+        loadSymbol(code, internPath(name), PATH);
+    }
+
+    private MolangPath internPath(String name) {
         int index = pathIndexes.getInt(name);
         if (index < 0) {
             index = paths.size();
             paths.add(new MolangPath(name, index));
             pathIndexes.put(name, index);
         }
-        code.aload(0).getfield(COMPILED, "paths", PATH_ARRAY).ldc(index).aaload();
+        return paths.get(index);
     }
 
     private void queryRef(CodeBuilder code, Expr.QueryCall call) {
+        queryRef(code, call, false);
+    }
+
+    private void queryRef(CodeBuilder code, Expr.QueryCall call, boolean indexed) {
         MolangQueryDefinition definition = foreignContext ? null : options.querySchema().get(call.name());
         if (definition == null) {
             definition = MolangQueryDefinition.dynamic(call.name());
@@ -1021,12 +1673,17 @@ final class TypedMolangCompiler {
             queries.add(new MolangQueryRef(call.name(), index, definition, foreignContext));
             queryIndexes.put(key, index);
         }
-        if (queryParameterType().equals(CD_String)) {
-            // 通用入口使用常量查询名称，便于 JIT 内联查找；绑定入口使用预解析查询句柄。
+        if (indexed) {
+            loadSymbol(code, genericSites.computeIfAbsent(call.name(), MolangQuerySite::new), QUERY_SITE);
+        } else if (queryParameterType().equals(CD_String)) {
             code.ldc(call.name());
         } else {
-            code.aload(0).getfield(COMPILED, "queries", QUERY_ARRAY).ldc(index).aaload();
+            loadSymbol(code, queries.get(index), QUERY_REF);
         }
+    }
+
+    private void loadSymbol(CodeBuilder code, Object symbol, ClassDesc type) {
+        code.ldc(symbolConstants.computeIfAbsent(symbol, _ -> DynamicConstantDesc.ofNamed(BSM_CLASS_DATA_AT, DEFAULT_NAME, type, symbolConstants.size() + 1)));
     }
 
     private ClassDesc queryParameterType() {
@@ -1041,6 +1698,11 @@ final class TypedMolangCompiler {
     }
 
     private void getVariable(CodeBuilder code, int runtime, String scope, String name) {
+        int input = "variable".equals(scope) ? scalarInputs.getOrDefault(name, -1) : -1;
+        if (input >= 0) {
+            code.aload(input);
+            return;
+        }
         if ("temp".equals(scope) && objectTemps.containsKey(name)) {
             code.aload(objectTemps.getInt(name));
             return;
@@ -1139,9 +1801,15 @@ final class TypedMolangCompiler {
                 arguments[i] = storeExpression(code, call.args().get(i), runtime);
             }
             code.aload(runtime);
-            queryRef(code, call);
+            boolean indexed = arguments.length <= 1 && queryParameterType().equals(CD_String);
+            queryRef(code, call, indexed);
             for (int argument : arguments) {
                 code.aload(argument);
+            }
+            if (indexed) {
+                MethodTypeDesc descriptor = arguments.length == 0 ? MethodTypeDesc.of(CD_Object, RUNTIME, QUERY_SITE) : MethodTypeDesc.of(CD_Object, RUNTIME, QUERY_SITE, CD_Object);
+                code.invokestatic(QUERY_SITE, "queryValue" + arguments.length, descriptor);
+                return;
             }
             ClassDesc[] parameters = new ClassDesc[arguments.length + 1];
             parameters[0] = queryParameterType();

@@ -7,12 +7,7 @@ import cn.nukkit.molang.runtime.MolangQueryDefinition;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 在有明确读写合同的直线区域复用数值子式。分支、循环边界和未知回调会清空可用结果。

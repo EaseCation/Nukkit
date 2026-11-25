@@ -30,6 +30,10 @@ tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }
 
+tasks.test {
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
+}
+
 dependencies {
     api(project(":Network:raknet"))
     api(libs.apache.commons.compress)

@@ -1,17 +1,10 @@
 package cn.nukkit.molang.runtime;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntStack;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongStack;
 
 import javax.annotation.Nullable;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class MolangRuntimeBuilder {
     private final MolangStruct variables = new MolangStruct();
@@ -28,6 +21,21 @@ public class MolangRuntimeBuilder {
     private Object host;
     @Nullable
     private QueryRegistry cachedRegistry;
+
+    /**
+     * 内建 runtime 的所有程序视图均向同一个宿主转发求值作用域。
+     */
+    public static boolean hasBuiltInEvaluationScopes(MolangRuntime runtime) {
+        return runtime instanceof MolangRuntimeImpl;
+    }
+
+    /**
+     * 在同一深度结束当前求值并开始下一次求值，供已确认使用内建宿主的编译批次调用。
+     */
+    @SuppressWarnings("unused")
+    public static void nextEvaluation(MolangRuntime runtime) {
+        ((MolangRuntimeImpl) runtime).releaseEvaluation();
+    }
 
     public MolangRuntimeBuilder declareVariables(String... names) {
         variables.declareMembers(List.of(names));
@@ -175,7 +183,7 @@ public class MolangRuntimeBuilder {
         boolean tracks = schema.definitions().values().stream().anyMatch(definition -> definition.minArguments() == 0 && definition.isEvaluationStable());
         boolean boundCalls = tracks || !contextQueries.isEmpty() || !numberQueries.isEmpty() || schema.definitions().values().stream()
                 .anyMatch(definition -> !definition.equals(MolangQueryDefinition.dynamic(definition.name())));
-        cached = new QueryRegistry(immutableQueries(), Map.copyOf(contextQueries), Map.copyOf(numberQueries), schema, tracks, boundCalls);
+        cached = new QueryRegistry(immutableQueries(), Map.copyOf(contextQueries), Map.copyOf(numberQueries), schema, tracks, boundCalls, MolangQuerySite.Layout.of(schema.definitions().keySet()));
         cachedRegistry = cached;
         return cached;
     }
@@ -185,11 +193,13 @@ public class MolangRuntimeBuilder {
                                  Map<String, MolangNumberContextQuery> numberFunctions,
                                  MolangQuerySchema schema,
                                  boolean tracksChanges,
-                                 boolean boundCalls) {
+                                 boolean boundCalls,
+                                 MolangQuerySite.Layout layout) {
     }
 
     static final class MolangRuntimeImpl implements MolangRuntime {
         private static final QueryHandler UNKNOWN_QUERY = _ -> 0f;
+        private static final MolangQueryBinding[] NO_BINDINGS = {};
 
         @Override
         @Nullable
@@ -239,6 +249,14 @@ public class MolangRuntimeBuilder {
         @Nullable
         public Object queryValue(MolangQueryRef query, Object... args) {
             return resolveCompiledQuery(query).queryValue(args);
+        }
+
+        QueryHandler resolve(MolangQuerySite site) {
+            if (!useQueryBindings) {
+                return resolveDynamicQuery(site.name());
+            }
+            int slot = site.slot(queryLayout);
+            return slot >= 0 ? binding(slot, site.name()) : unknownQuery(site.name());
         }
 
         private QueryHandler resolveCompiledQuery(MolangQueryRef query) {
@@ -326,34 +344,29 @@ public class MolangRuntimeBuilder {
 
         @Override
         public float getTempNumber(MolangPath path) {
-            ensureTempScope();
-            return temps.getFloat(path);
+            return currentTemps().getFloat(path);
         }
 
         @Override
         public long getTempOperand(MolangPath path) {
-            ensureTempScope();
-            return temps.getOperand(path);
+            return currentTemps().getOperand(path);
         }
 
         @Override
         @Nullable
         public Object getTempValue(MolangPath path) {
-            ensureTempScope();
-            return temps.get(path);
+            return currentTemps().get(path);
         }
 
         @Override
         public void setTempNumber(MolangPath path, float value) {
-            ensureTempScope();
-            temps.set(path, value);
+            currentTemps().set(path, value);
             tempChanged();
         }
 
         @Override
         public void setTempValue(MolangPath path, @Nullable Object value) {
-            ensureTempScope();
-            temps.set(path, value);
+            currentTemps().set(path, value);
             tempChanged();
         }
 
@@ -410,29 +423,35 @@ public class MolangRuntimeBuilder {
 
         @Override
         public void setVariableElementValue(MolangPath path, int index, @Nullable Object value) {
-            MolangStruct storage = variables.get(path) != null || arrays.get(path) == null ? variables : arrays;
-            setElementValue(storage, path, index, value);
-            variableChanged();
+            Object variable = variables.get(path);
+            Object previous = variable != null ? variable : arrays.get(path);
+            finishVariableElementWrite(path, variable, previous, MolangArrays.write(previous, index, value));
         }
 
         @Override
         public void setVariableElementNumber(MolangPath path, int index, float value) {
-            MolangStruct storage = variables.get(path) != null || arrays.get(path) == null ? variables : arrays;
-            setElementNumber(storage, path, index, value);
+            Object variable = variables.get(path);
+            Object previous = variable != null ? variable : arrays.get(path);
+            finishVariableElementWrite(path, variable, previous, MolangArrays.writeNumber(previous, index, value));
+        }
+
+        private void finishVariableElementWrite(MolangPath path, @Nullable Object variable, @Nullable Object previous, @Nullable Object updated) {
+            if (updated != previous) {
+                MolangStruct storage = variable != null || previous == null ? variables : arrays;
+                storage.setOwnedReference(path, updated);
+            }
             variableChanged();
         }
 
         @Override
         public void setTempElementValue(MolangPath path, int index, @Nullable Object value) {
-            ensureTempScope();
-            setElementValue(temps, path, index, value);
+            setElementValue(currentTemps(), path, index, value);
             tempChanged();
         }
 
         @Override
         public void setTempElementNumber(MolangPath path, int index, float value) {
-            ensureTempScope();
-            setElementNumber(temps, path, index, value);
+            setElementNumber(currentTemps(), path, index, value);
             tempChanged();
         }
 
@@ -460,14 +479,12 @@ public class MolangRuntimeBuilder {
 
         @Override
         public float getTempNumber(String name) {
-            ensureTempScope();
-            return temps.getFloat(name);
+            return currentTemps().getFloat(name);
         }
 
         @Override
         public void setTempNumber(String name, float value) {
-            ensureTempScope();
-            temps.set(name, value);
+            currentTemps().set(name, value);
             tempChanged();
         }
 
@@ -525,21 +542,24 @@ public class MolangRuntimeBuilder {
         private final Map<String, QueryHandler> queries;
         private final Map<String, MolangContextQuery> contextQueries;
         private final Map<String, MolangNumberContextQuery> numberQueries;
-        private final Map<String, MolangQueryBinding> queryBindings = new HashMap<>();
+        private final MolangQuerySite.Layout queryLayout;
+        private MolangQueryBinding[] queryBindings = NO_BINDINGS;
         private final MolangQuerySchema schema;
+        @Nullable
+        MolangQuerySchema validatedSchema;
         private final boolean useQueryBindings;
         final MolangStruct contextValues;
         final MolangStruct arrays;
-        private final Deque<MolangStruct> tempScopes = new ArrayDeque<>();
-        private final IntStack tempDepths = new IntArrayList();
-        private final Deque<MolangStruct> availableTemps = new ArrayDeque<>();
-        private MolangStruct temps = new MolangStruct();
+        @Nullable
+        private TempScope tempScope;
         private int evaluationDepth;
-        private int tempDepth;
-        private final LongStack evaluationIds = new LongArrayList();
+        @Nullable
+        private LongStack evaluationIds;
         private long nextEvaluationId;
-        long evaluationId;
+        private long evaluationId;
+        private int evaluationIdDepth;
         long frameEpoch;
+        long hostFrameEpoch;
         int frameDepth;
         private long frameId;
         private boolean hasFrame;
@@ -561,6 +581,7 @@ public class MolangRuntimeBuilder {
             this.contextQueries = registry.functions();
             this.numberQueries = registry.numberFunctions();
             this.useQueryBindings = registry.boundCalls();
+            queryLayout = registry.layout();
             this.contextValues = contextValues;
             this.arrays = arrays;
             this.thisValue = thisValue;
@@ -599,6 +620,7 @@ public class MolangRuntimeBuilder {
                 this.frameId = frameId;
                 hasFrame = true;
                 frameEpoch++;
+                invalidateFrameNumbers();
             }
             frameDepth = 1;
         }
@@ -618,6 +640,14 @@ public class MolangRuntimeBuilder {
                 tempVersion++;
                 contextVersion++;
                 hostVersion++;
+                invalidateFrameNumbers();
+            }
+        }
+
+        private void invalidateFrameNumbers() {
+            // 零值留给尚未采样的绑定。
+            if (++hostFrameEpoch == 0) {
+                hostFrameEpoch = 1;
             }
         }
 
@@ -643,21 +673,78 @@ public class MolangRuntimeBuilder {
             return evaluationDepth;
         }
 
+        boolean topEvaluationMatches(long epoch) {
+            return evaluationIdDepth == 1 && evaluationId == epoch;
+        }
+
+        long evaluationId() {
+            // 帧内的 FRAME 查询不使用求值编号，嵌套时只保存真正访问过缓存的父层。
+            if (evaluationDepth != evaluationIdDepth) {
+                if (evaluationIdDepth != 0) {
+                    if (evaluationIds == null) {
+                        evaluationIds = new LongArrayList();
+                    }
+                    evaluationIds.push(evaluationId);
+                    evaluationIds.push(evaluationIdDepth);
+                }
+                evaluationIdDepth = evaluationDepth;
+                evaluationId = ++nextEvaluationId;
+            }
+            return evaluationId;
+        }
+
         MolangStruct currentTemps() {
-            ensureTempScope();
-            return temps;
+            TempScope current = tempScope;
+            if (current == null) {
+                current = new TempScope(null);
+                tempScope = current;
+            }
+            if (current.depth != evaluationDepth) {
+                TempScope next = current.child;
+                if (next == null) {
+                    next = new TempScope(current);
+                    current.child = next;
+                }
+                next.depth = evaluationDepth;
+                tempScope = next;
+                return next.values;
+            }
+            return current.values;
+        }
+
+        // 只有实际读写 temp 的求值层才占用节点；同深度后续求值复用已清空的子节点。
+        private static final class TempScope {
+            private final MolangStruct values = new MolangStruct();
+            @Nullable
+            private final TempScope parent;
+            @Nullable
+            private TempScope child;
+            private int depth;
+
+            private TempScope(@Nullable TempScope parent) {
+                this.parent = parent;
+            }
         }
 
         MolangQueryBinding binding(String name) {
-            MolangQueryBinding binding = queryBindings.get(name);
-            if (binding != null) {
-                return binding;
+            int slot = queryLayout.index(name);
+            return slot >= 0 ? binding(slot, name) : missingBinding(name);
+        }
+
+        private MolangQueryBinding binding(int slot, String name) {
+            MolangQueryBinding[] bindings = queryBindings;
+            if (slot < bindings.length && bindings[slot] != null) {
+                return bindings[slot];
             }
+            return createBinding(slot, name);
+        }
+
+        private MolangQueryBinding createBinding(int slot, String name) {
+            MolangQueryBinding binding;
             MolangNumberContextQuery numberFunction = numberQueries.get(name);
             if (numberFunction != null) {
-                binding = new MolangQueryBinding(this, schema.get(name), numberFunction);
-                queryBindings.put(name, binding);
-                return binding;
+                binding = MolangQueryBinding.number(this, schema.get(name), numberFunction);
+                return rememberBinding(slot, binding);
             }
             QueryHandler handler = queries.get(name);
             if (handler == null) {
@@ -668,12 +755,25 @@ public class MolangRuntimeBuilder {
             }
             if (handler != null) {
                 MolangQueryDefinition definition = schema.get(name);
-                binding = new MolangQueryBinding(this, definition != null ? definition : MolangQueryDefinition.dynamic(name), handler);
-                queryBindings.put(name, binding);
-                return binding;
+                binding = MolangQueryBinding.forHandler(this, definition != null ? definition : MolangQueryDefinition.dynamic(name), handler);
+                return rememberBinding(slot, binding);
             }
+            return missingBinding(name);
+        }
+
+        private MolangQueryBinding rememberBinding(int slot, MolangQueryBinding binding) {
+            if (slot >= queryBindings.length) {
+                long required = Math.max(slot + 1L, Math.max(4L, 2L * queryBindings.length));
+                int capacity = (int) Math.min(queryLayout.size(), required);
+                queryBindings = Arrays.copyOf(queryBindings, capacity);
+            }
+            queryBindings[slot] = binding;
+            return binding;
+        }
+
+        private MolangQueryBinding missingBinding(String name) {
             // 未执行的分支可以引用未知查询；绑定阶段不能提前触发 strict 查询错误。
-            return new MolangQueryBinding(this, MolangQueryDefinition.dynamic(name), arguments -> resolveQuery(name).queryValue(arguments));
+            return new MolangQueryBinding(this, MolangQueryDefinition.dynamic(name), arguments -> unknownQuery(name).queryValue(arguments));
         }
 
         @Override
@@ -702,68 +802,68 @@ public class MolangRuntimeBuilder {
 
         @Override
         public float getTemp(String name) {
-            ensureTempScope();
-            return temps.getFloat(name);
+            return currentTemps().getFloat(name);
         }
 
         @Override
         public void setTemp(String name, float value) {
-            ensureTempScope();
-            temps.set(name, value);
+            currentTemps().set(name, value);
             tempChanged();
         }
 
         @Override
         @Nullable
         public Object getTempValue(String name) {
-            ensureTempScope();
-            return temps.get(name);
+            return currentTemps().get(name);
         }
 
         @Override
         public void setTempValue(String name, @Nullable Object value) {
-            ensureTempScope();
-            temps.set(name, value);
+            currentTemps().set(name, value);
             tempChanged();
         }
 
         @Override
         public void beginEvaluation() {
-            if (tracksQueryChanges) {
-                evaluationIds.push(evaluationId);
-                evaluationId = ++nextEvaluationId;
-            }
             evaluationDepth++;
         }
 
         @Override
         public void endEvaluation() {
-            if (evaluationDepth == 0) {
-                throw new IllegalStateException("No active Molang evaluation");
-            }
-            if (tempDepth == evaluationDepth) {
-                // 仅清空根容器；表达式返回的子结构仍保留其独立内容。
-                temps.clear();
-                availableTemps.push(temps);
-                temps = tempScopes.pop();
-                tempDepth = tempDepths.popInt();
-            }
+            releaseEvaluation();
             evaluationDepth--;
-            if (tracksQueryChanges) {
-                evaluationId = evaluationIds.popLong();
+        }
+
+        long scopeResources() {
+            return ((long) (tempScope == null ? 0 : tempScope.depth) << 32) | Integer.toUnsignedLong(evaluationIdDepth);
+        }
+
+        void finishLinkedEvaluation(int previousDepth, long resources) {
+            // 重入可能使用 temp、建立缓存或改变作用域栈，仍按普通 endEvaluation 释放实际的当前层。
+            if (evaluationDepth == previousDepth + 1 && scopeResources() == resources) {
+                evaluationDepth = previousDepth;
+            } else {
+                endEvaluation();
             }
         }
 
-        private void ensureTempScope() {
-            if (tempDepth == evaluationDepth) {
-                return;
+        private void releaseEvaluation() {
+            if (evaluationDepth == 0) {
+                throw new IllegalStateException("No active Molang evaluation");
             }
-            // 没有访问临时变量的求值层只记录深度，不分配或清空容器。
-            tempScopes.push(temps);
-            tempDepths.push(tempDepth);
-            MolangStruct reusable = availableTemps.pollFirst();
-            temps = reusable != null ? reusable : new MolangStruct();
-            tempDepth = evaluationDepth;
+            if (tempScope != null && tempScope.depth == evaluationDepth) {
+                tempScope.values.clear();
+                tempScope = tempScope.parent;
+            }
+            if (evaluationDepth == evaluationIdDepth) {
+                if (evaluationDepth == 1 || evaluationIds == null || evaluationIds.isEmpty()) {
+                    evaluationIdDepth = 0;
+                    evaluationId = 0;
+                } else {
+                    evaluationIdDepth = (int) evaluationIds.popLong();
+                    evaluationId = evaluationIds.popLong();
+                }
+            }
         }
 
         @Override
@@ -804,8 +904,13 @@ public class MolangRuntimeBuilder {
 
         @Override
         public QueryHandler resolveQuery(String name) {
-            String normalized = name.toLowerCase(Locale.ROOT);
-            return useQueryBindings ? resolveDeclaredQuery(normalized) : resolveDynamicQuery(normalized);
+            // 编译器生成的查询名已规范化，只有未绑定或调用方传入不同大小写时才需要回退。
+            if (useQueryBindings) {
+                int slot = queryLayout.index(name);
+                return slot >= 0 ? binding(slot, name) : resolveDeclaredQuery(name.toLowerCase(Locale.ROOT));
+            }
+            QueryHandler found = queries.get(name);
+            return found != null ? found : resolveDynamicQuery(name.toLowerCase(Locale.ROOT));
         }
 
         private QueryHandler resolveDynamicQuery(String normalized) {
@@ -817,21 +922,8 @@ public class MolangRuntimeBuilder {
         }
 
         private QueryHandler resolveDeclaredQuery(String normalized) {
-            MolangQueryBinding existing = queryBindings.get(normalized);
-            if (existing != null) {
-                return existing;
-            }
-            return resolveDeclaredQuerySlow(normalized);
-        }
-
-        private QueryHandler resolveDeclaredQuerySlow(String normalized) {
-            if (queries.containsKey(normalized)) {
-                return binding(normalized);
-            }
-            if (contextQueries.containsKey(normalized) || numberQueries.containsKey(normalized)) {
-                return binding(normalized);
-            }
-            return unknownQuery(normalized);
+            int slot = queryLayout.index(normalized);
+            return slot >= 0 ? binding(slot, normalized) : unknownQuery(normalized);
         }
 
         private QueryHandler unknownQuery(String name) {
@@ -859,22 +951,29 @@ public class MolangRuntimeBuilder {
 
         @Override
         public void setVariableElement(String name, int index, float value) {
-            MolangStruct storage = variables.get(name) != null || arrays.get(name) == null ? variables : arrays;
-            setElementNumber(storage, name, index, value);
-            variableChanged();
+            Object variable = variables.get(name);
+            Object previous = variable != null ? variable : arrays.get(name);
+            finishVariableElementWrite(name, variable, previous, MolangArrays.writeNumber(previous, index, value));
         }
 
         @Override
         public void setVariableElementValue(String name, int index, @Nullable Object value) {
-            MolangStruct storage = variables.get(name) != null || arrays.get(name) == null ? variables : arrays;
-            setElementValue(storage, name, index, value);
+            Object variable = variables.get(name);
+            Object previous = variable != null ? variable : arrays.get(name);
+            finishVariableElementWrite(name, variable, previous, MolangArrays.write(previous, index, value));
+        }
+
+        private void finishVariableElementWrite(String name, @Nullable Object variable, @Nullable Object previous, @Nullable Object updated) {
+            if (updated != previous) {
+                MolangStruct storage = variable != null || previous == null ? variables : arrays;
+                storage.setOwnedReference(name, updated);
+            }
             variableChanged();
         }
 
         @Override
         public void setTempElementValue(String name, int index, @Nullable Object value) {
-            ensureTempScope();
-            setElementValue(temps, name, index, value);
+            setElementValue(currentTemps(), name, index, value);
             tempChanged();
         }
 
@@ -891,14 +990,6 @@ public class MolangRuntimeBuilder {
             Object updated = MolangArrays.write(previous, index, value);
             if (updated != previous) {
                 storage.setOwnedReference(path, updated);
-            }
-        }
-
-        private static void setElementNumber(MolangStruct storage, String name, int index, float value) {
-            Object previous = storage.get(name);
-            Object updated = MolangArrays.writeNumber(previous, index, value);
-            if (updated != previous) {
-                storage.setOwnedReference(name, updated);
             }
         }
 

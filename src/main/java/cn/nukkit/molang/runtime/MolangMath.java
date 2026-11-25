@@ -35,7 +35,8 @@ public final class MolangMath {
      * 使用 cvttss2si；NaN 和越界值产生整数不定值，非 Java 的饱和转换。
      */
     private static int toNativeInt(float value) {
-        return value >= -0x1.0p31f && value < 0x1.0p31f ? (int) value : Integer.MIN_VALUE;
+        // 低于下界时 Java 转换已经得到 MIN_VALUE；上界比较也会排除 NaN。
+        return value < 0x1.0p31f ? (int) value : Integer.MIN_VALUE;
     }
 
     public static float abs(float x) {
@@ -75,7 +76,7 @@ public final class MolangMath {
     }
 
     public static float cos(float degrees) {
-        return (float) Math.cos(degrees * Mth.DEG_TO_RAD);
+        return sinCos(degrees * Mth.DEG_TO_RAD, true);
     }
 
     public static float copy_sign(float magnitude, float sign) {
@@ -169,7 +170,17 @@ public final class MolangMath {
     }
 
     public static float min_angle(float degrees) {
-        float result = (degrees + 180) % 360;
+        float result = degrees + 180f;
+        float magnitude = Math.abs(result);
+        if (!(magnitude < 360f)) {
+            if (magnitude < 0x1p31f) {
+                // 整数和小数部分都可精确表示，按整圈取余后再加回小数部分。
+                int whole = (int) result;
+                result = whole % 360 + (result - whole);
+            } else {
+                result %= 360f;
+            }
+        }
         if (result < 0) result += 360;
         return result - 180;
     }
@@ -177,7 +188,7 @@ public final class MolangMath {
     public static float mod(float a, float b) {
         if (b == 0 || Float.isNaN(b)) return 0;
         // 最终加零会将负零余数转为正零。
-        return a % b + 0f;
+        return (Math.abs(a) < Math.abs(b) ? a : a % b) + 0f;
     }
 
     public static float pi() {
@@ -230,7 +241,51 @@ public final class MolangMath {
     }
 
     public static float sin(float degrees) {
-        return (float) Math.sin(degrees * Mth.DEG_TO_RAD);
+        return sinCos(degrees * Mth.DEG_TO_RAD, false);
+    }
+
+    private static float sinCos(float radians, boolean cosine) {
+        if (Math.abs(radians) < 0x1p-12f) {
+            return cosine ? 1 : radians;
+        }
+        if (Math.abs(radians) <= 32) {
+            int quadrant = (int) Math.rint(radians * (2 / Math.PI));
+            double x = radians - quadrant * (Math.PI * 0.5);
+            if (cosine) {
+                quadrant++;
+            }
+            double value = (quadrant & 1) == 0 ? reducedSin(x) : reducedCos(x);
+            if ((quadrant & 2) != 0) {
+                value = -value;
+            }
+            // |x| < 0.786。在此范围内，规约、截断和双精度运算的总误差小于 2^-43。
+            // 只有误差区间的两端舍入为同一 float 时才使用该结果。
+            float lower = (float) (value - 0x1p-43);
+            if (lower == (float) (value + 0x1p-43)) {
+                return lower;
+            }
+        }
+        return cosine ? (float) Math.cos(radians) : (float) Math.sin(radians);
+    }
+
+    private static double reducedSin(double x) {
+        double z = x * x;
+        double p = 1.0 / 6227020800.0 - z * (1.0 / 1307674368000.0);
+        p = -1.0 / 39916800.0 + z * p;
+        p = 1.0 / 362880.0 + z * p;
+        p = -1.0 / 5040.0 + z * p;
+        p = 1.0 / 120.0 + z * p;
+        return x + (x * z) * (-1.0 / 6.0 + z * p);
+    }
+
+    private static double reducedCos(double x) {
+        double z = x * x;
+        double p = 1.0 / 479001600.0 - z * (1.0 / 87178291200.0);
+        p = -1.0 / 3628800.0 + z * p;
+        p = 1.0 / 40320.0 + z * p;
+        p = -1.0 / 720.0 + z * p;
+        p = 1.0 / 24.0 + z * p;
+        return 1.0 + z * (-0.5 + z * p);
     }
 
     public static float sqrt(float x) {
