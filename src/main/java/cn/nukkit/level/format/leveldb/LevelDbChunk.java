@@ -508,14 +508,29 @@ public class LevelDbChunk extends BaseChunk {
 
         for (int chunkY = heightRange.getMaxChunkY() - 1; chunkY >= heightRange.getMinChunkY(); chunkY--) {
             ChunkSection subChunk = this.sections[Level.subChunkYtoIndex(chunkY)];
+            if (subChunk == null) {
+                continue;
+            }
             int baseY = chunkY << 4;
-            for (int localY = 15; localY >= 0; localY--) {
-                if (!Block.lightBlocking[subChunk.getBlockId(0, x, localY, z)]) {
-                    continue;
+            if (subChunk instanceof LevelDbSubChunk) {
+                int localY = ((LevelDbSubChunk) subChunk).getHighestLightBlockingY(x, z);
+                if (localY >= 0) {
+                    int y = baseY | localY;
+                    this.setHeightMap(x, z, y + 1);
+                    return y;
                 }
-                int y = baseY | localY;
-                this.setHeightMap(x, z, y + 1);
-                return y;
+                continue;
+            }
+            if (subChunk.isEmpty()) {
+                continue;
+            }
+            for (int localY = 15; localY >= 0; localY--) {
+                int blockId = subChunk.getBlockId(0, x, localY, z);
+                if (blockId != Block.AIR && Block.lightBlocking[blockId]) {
+                    int y = baseY | localY;
+                    this.setHeightMap(x, z, y + 1);
+                    return y;
+                }
             }
         }
         this.setHeightmapValue(x, z, 0);
@@ -549,9 +564,50 @@ public class LevelDbChunk extends BaseChunk {
 
     @Override
     public void recalculateHeightMap() {
+        HeightRange heightRange = getHeightRange();
+        int[] highestY = new int[SUB_CHUNK_2D_SIZE];
+        Arrays.fill(highestY, Integer.MIN_VALUE);
+        int remaining = SUB_CHUNK_2D_SIZE;
+
+        for (int chunkY = heightRange.getMaxChunkY() - 1; chunkY >= heightRange.getMinChunkY() && remaining > 0; chunkY--) {
+            ChunkSection subChunk = this.sections[Level.subChunkYtoIndex(chunkY)];
+            if (subChunk == null) {
+                continue;
+            }
+            int baseY = chunkY << 4;
+            if (subChunk instanceof LevelDbSubChunk) {
+                remaining = ((LevelDbSubChunk) subChunk).fillHighestLightBlockingY(highestY, remaining, baseY);
+                continue;
+            }
+            if (subChunk.isEmpty()) {
+                continue;
+            }
+            for (int x = 0; x < 16 && remaining > 0; x++) {
+                for (int z = 0; z < 16 && remaining > 0; z++) {
+                    int index = index2d(x, z);
+                    if (highestY[index] != Integer.MIN_VALUE) {
+                        continue;
+                    }
+                    for (int localY = 15; localY >= 0; localY--) {
+                        int blockId = subChunk.getBlockId(0, x, localY, z);
+                        if (blockId != Block.AIR && Block.lightBlocking[blockId]) {
+                            highestY[index] = baseY | localY;
+                            remaining--;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                this.getHighestBlockAt(x, z, false);
+                int y = highestY[index2d(x, z)];
+                if (y != Integer.MIN_VALUE) {
+                    this.setHeightMap(x, z, y + 1);
+                } else {
+                    this.setHeightmapValue(x, z, 0);
+                }
             }
         }
     }
