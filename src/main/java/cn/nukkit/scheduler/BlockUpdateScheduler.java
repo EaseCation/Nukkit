@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 
 import java.util.Collections;
@@ -20,12 +21,14 @@ import java.util.Set;
 public class BlockUpdateScheduler {
     private final Level level;
     private long lastTick;
-    private final Long2ObjectMap<Set<BlockUpdateEntry>> queuedUpdates;
+    private final Long2ObjectMap<ObjectLinkedOpenHashSet<BlockUpdateEntry>> queuedUpdates;
+    private final Object2IntOpenHashMap<BlockUpdateEntry> queuedEntryCounts;
 
     private Set<BlockUpdateEntry> pendingUpdates;
 
     public BlockUpdateScheduler(Level level, long currentTick) {
         queuedUpdates = new Long2ObjectOpenHashMap<>(); // Change to ConcurrentHashMap if this needs to be concurrent
+        queuedEntryCounts = new Object2IntOpenHashMap<>();
         lastTick = currentTick;
         this.level = level;
     }
@@ -57,6 +60,9 @@ public class BlockUpdateScheduler {
             lastTick = tick;
             Set<BlockUpdateEntry> updates = pendingUpdates = queuedUpdates.remove(tick);
             if (updates != null) {
+                for (BlockUpdateEntry entry : updates) {
+                    decrementQueuedCount(entry);
+                }
                 Iterator<BlockUpdateEntry> updateIterator = updates.iterator();
 
                 while (updateIterator.hasNext()) {
@@ -88,7 +94,7 @@ public class BlockUpdateScheduler {
     public Set<BlockUpdateEntry> getPendingBlockUpdates(AxisAlignedBB boundingBox) {
         Set<BlockUpdateEntry> set = null;
 
-        for (Long2ObjectMap.Entry<Set<BlockUpdateEntry>> tickEntries : this.queuedUpdates.long2ObjectEntrySet()) {
+        for (Long2ObjectMap.Entry<ObjectLinkedOpenHashSet<BlockUpdateEntry>> tickEntries : this.queuedUpdates.long2ObjectEntrySet()) {
             Set<BlockUpdateEntry> tickSet = tickEntries.getValue();
             for (BlockUpdateEntry update : tickSet) {
                 Vector3 pos = update.pos;
@@ -118,26 +124,27 @@ public class BlockUpdateScheduler {
 
     public void add(BlockUpdateEntry entry) {
         long time = getMinTime(entry);
-        Set<BlockUpdateEntry> updateSet = queuedUpdates.get(time);
+        ObjectLinkedOpenHashSet<BlockUpdateEntry> updateSet = queuedUpdates.get(time);
         if (updateSet == null) {
             updateSet = new ObjectLinkedOpenHashSet<>();
             queuedUpdates.put(time, updateSet);
         }
-        updateSet.add(entry);
+        if (updateSet.add(entry)) {
+            queuedEntryCounts.addTo(entry, 1);
+        }
     }
 
     public boolean contains(BlockUpdateEntry entry) {
-        for (Long2ObjectMap.Entry<Set<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
-            if (tickUpdateSet.getValue().contains(entry)) {
-                return true;
-            }
-        }
-        return false;
+        return queuedEntryCounts.containsKey(entry);
     }
 
     public boolean remove(BlockUpdateEntry entry) {
-        for (Long2ObjectMap.Entry<Set<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
+        if (!queuedEntryCounts.containsKey(entry)) {
+            return false;
+        }
+        for (Long2ObjectMap.Entry<ObjectLinkedOpenHashSet<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
             if (tickUpdateSet.getValue().remove(entry)) {
+                decrementQueuedCount(entry);
                 return true;
             }
         }
@@ -145,12 +152,25 @@ public class BlockUpdateScheduler {
     }
 
     public boolean remove(Vector3 pos) {
-        for (Long2ObjectMap.Entry<Set<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
-            if (tickUpdateSet.getValue().remove(pos)) {
+        if (pos == null) {
+            return false;
+        }
+        for (Long2ObjectMap.Entry<ObjectLinkedOpenHashSet<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
+            ObjectLinkedOpenHashSet<BlockUpdateEntry> updateSet = tickUpdateSet.getValue();
+            BlockUpdateEntry matched = updateSet.get(pos);
+            if (matched != null && updateSet.remove(pos)) {
+                decrementQueuedCount(matched);
                 return true;
             }
         }
         return false;
+    }
+
+    private void decrementQueuedCount(BlockUpdateEntry entry) {
+        int count = queuedEntryCounts.removeInt(entry);
+        if (count > 1) {
+            queuedEntryCounts.put(entry, count - 1);
+        }
     }
 
     /**
