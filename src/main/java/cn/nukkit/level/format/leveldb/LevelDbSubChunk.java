@@ -118,6 +118,71 @@ public class LevelDbSubChunk implements ChunkSection {
         }
     }
 
+    protected int getHighestLightBlockingY(int x, int z) {
+        try {
+            this.readLock.lock();
+
+            if (!this.hasLayerUnsafe(0)) {
+                return -1;
+            }
+
+            PalettedSubChunkStorage storage = this.storages[0];
+            if (storage.isEmpty(true)) {
+                return -1;
+            }
+
+            for (int localY = 15; localY >= 0; localY--) {
+                int blockId = storage.get(x, localY, z) >> Block.BLOCK_META_BITS;
+                if (blockId != BlockID.AIR && Block.lightBlocking[blockId]) {
+                    return localY;
+                }
+            }
+            return -1;
+        } finally {
+            this.readLock.unlock();
+        }
+    }
+
+    protected int fillHighestLightBlockingY(int[] highestY, int remaining, int baseY) {
+        if (remaining <= 0) {
+            return 0;
+        }
+        try {
+            this.readLock.lock();
+
+            if (!this.hasLayerUnsafe(0)) {
+                return remaining;
+            }
+
+            PalettedSubChunkStorage storage = this.storages[0];
+            if (storage.isEmpty(true)) {
+                return remaining;
+            }
+
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    int index = (z << 4) | x;
+                    if (highestY[index] != Integer.MIN_VALUE) {
+                        continue;
+                    }
+                    for (int localY = 15; localY >= 0; localY--) {
+                        int blockId = storage.get(x, localY, z) >> Block.BLOCK_META_BITS;
+                        if (blockId != BlockID.AIR && Block.lightBlocking[blockId]) {
+                            highestY[index] = baseY | localY;
+                            if (--remaining == 0) {
+                                return 0;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            return remaining;
+        } finally {
+            this.readLock.unlock();
+        }
+    }
+
     @Override
     public void setBlockId(int layer, int x, int y, int z, int id) {
         try {
