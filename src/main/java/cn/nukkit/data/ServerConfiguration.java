@@ -29,6 +29,8 @@ public class ServerConfiguration {
     int chunkSpawnThreshold;
     int chunkSendingPerTick;
     int chunkTickingPerTick;
+    @Default
+    int maxLiquidScheduledUpdatesPerTick = 512;
     int chunkTickRadius;
     int chunkGenerationQueueSize;
     int chunkPopulationQueueSize;

@@ -379,6 +379,7 @@ public class Server {
                 .chunkSpawnThreshold(getConfig("chunk-sending.spawn-threshold", 56))
                 .chunkSendingPerTick(getConfig("chunk-sending.per-tick", 4))
                 .chunkTickingPerTick(getConfig("chunk-ticking.per-tick", 40))
+                .maxLiquidScheduledUpdatesPerTick(getConfig("chunk-ticking.max-liquid-scheduled-updates-per-tick", 512))
                 .chunkTickRadius(getConfig("chunk-ticking.tick-radius", 4))
                 .chunkGenerationQueueSize(getConfig("chunk-generation.queue-size", 8))
                 .chunkPopulationQueueSize(getConfig("chunk-generation.population-queue-size", 2))
