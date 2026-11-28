@@ -1,6 +1,8 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockUpdateEntry;
@@ -237,5 +239,78 @@ class BlockUpdateSchedulerTest {
         }
         long elapsedMs = (System.nanoTime() - startNanos) / 1_000_000L;
         assertTrue(elapsedMs < 2_000L, "contains() should be O(1) across 5,000 tick buckets, took " + elapsedMs + "ms");
+    }
+
+    private static BlockLiquid mockLiquid(int id) {
+        BlockLiquid block = mock(BlockLiquid.class);
+        when(block.getId()).thenReturn(id);
+        when(block.getDamage()).thenReturn(0);
+        return block;
+    }
+
+    @Test
+    void liquidScheduledUpdatesRespectPerTickBudgetAndCarryOverWithoutBlockingNonLiquid() {
+        Level level = mockLoadedLevel();
+        when(level.getMaxLiquidScheduledUpdatesPerTick()).thenReturn(2);
+
+        BlockLiquid water = mockLiquid(Block.FLOWING_WATER);
+        Block redstone = mockBlock(Block.REDSTONE_WIRE);
+        Vector3[] waterPos = new Vector3[5];
+        for (int i = 0; i < 5; i++) {
+            waterPos[i] = new Vector3(i, 64, 0);
+            when(level.getBlock(waterPos[i])).thenReturn(water);
+        }
+        Vector3 redstonePos = new Vector3(100, 64, 0);
+        when(level.getBlock(redstonePos)).thenReturn(redstone);
+
+        BlockUpdateScheduler scheduler = new BlockUpdateScheduler(level, 0);
+        for (int i = 0; i < 5; i++) {
+            scheduler.add(new BlockUpdateEntry(waterPos[i], water, 1, 0));
+        }
+        scheduler.add(new BlockUpdateEntry(redstonePos, redstone, 1, 0));
+
+        // Tick 1: at most 2 liquid updates run, non-liquid redstone still runs immediately
+        scheduler.tick(1);
+        verify(water, times(2)).onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+        verify(redstone, times(1)).onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+        assertFalse(scheduler.contains(new BlockUpdateEntry(waterPos[0], water)));
+        assertFalse(scheduler.contains(new BlockUpdateEntry(waterPos[1], water)));
+        assertTrue(scheduler.contains(new BlockUpdateEntry(waterPos[2], water)));
+        assertTrue(scheduler.contains(new BlockUpdateEntry(waterPos[4], water)));
+
+        // Deferred liquid updates remain visible to getPendingBlockUpdates and removable
+        assertEquals(3, scheduler.getPendingBlockUpdates(new SimpleAxisAlignedBB(0, 0, 0, 10, 256, 10)).size());
+        assertTrue(scheduler.remove(new BlockUpdateEntry(waterPos[4], water)));
+        assertFalse(scheduler.contains(new BlockUpdateEntry(waterPos[4], water)));
+
+        // Tick 2: remaining 2 deferred liquid updates drain cleanly
+        scheduler.tick(2);
+        verify(water, times(4)).onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+        assertFalse(scheduler.contains(new BlockUpdateEntry(waterPos[2], water)));
+        assertFalse(scheduler.contains(new BlockUpdateEntry(waterPos[3], water)));
+    }
+
+    @Test
+    void skippedTicksShareSingleLiquidBudgetWithoutCatchUpBurst() {
+        Level level = mockLoadedLevel();
+        when(level.getMaxLiquidScheduledUpdatesPerTick()).thenReturn(3);
+
+        BlockLiquid water = mockLiquid(Block.FLOWING_WATER);
+        BlockUpdateScheduler scheduler = new BlockUpdateScheduler(level, 0);
+        for (int i = 0; i < 8; i++) {
+            Vector3 pos = new Vector3(i, 64, 0);
+            when(level.getBlock(pos)).thenReturn(water);
+            scheduler.add(new BlockUpdateEntry(pos, water, (i % 4) + 1, 0));
+        }
+
+        // Jump from tick 0 to tick 5 in one call: must still execute at most 3 liquid updates
+        scheduler.tick(5);
+        verify(water, times(3)).onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+
+        scheduler.tick(6);
+        verify(water, times(6)).onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+
+        scheduler.tick(7);
+        verify(water, times(8)).onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
     }
 }

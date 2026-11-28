@@ -300,6 +300,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private final BlockUpdateScheduler updateQueue;
     private final BlockUpdateScheduler randomUpdateQueue;
+    private int maxLiquidScheduledUpdatesPerTick;
 
     private final Queue<Vector3> normalUpdateQueue = new ConcurrentLinkedDeque<>();
 //    private final TreeSet<BlockUpdateEntry> updateQueue = new TreeSet<>();
@@ -400,6 +401,7 @@ public class Level implements ChunkManager, Metadatable {
         this.autoSave = server.getAutoSave();
         this.autoCompaction = server.isAutoCompactionEnabled();
         this.folderName = name;
+        this.maxLiquidScheduledUpdatesPerTick = server.getConfiguration().getMaxLiquidScheduledUpdatesPerTick();
         this.updateQueue = new BlockUpdateScheduler(this, 0);
         this.randomUpdateQueue = new BlockUpdateScheduler(this, 0);
         Arrays.fill(lastChunkPos, ChunkPosition.INVALID_CHUNK_POSITION);
@@ -539,6 +541,7 @@ public class Level implements ChunkManager, Metadatable {
         this.autoSave = parent.autoSave;
         this.autoCompaction = parent.autoCompaction;
         this.folderName = parent.folderName;
+        this.maxLiquidScheduledUpdatesPerTick = parent.maxLiquidScheduledUpdatesPerTick;
         this.updateQueue = new BlockUpdateScheduler(this, 0);
         this.randomUpdateQueue = new BlockUpdateScheduler(this, 0);
         Arrays.fill(lastChunkPos, ChunkPosition.INVALID_CHUNK_POSITION);
@@ -743,6 +746,14 @@ public class Level implements ChunkManager, Metadatable {
 
     public Server getServer() {
         return server;
+    }
+
+    public int getMaxLiquidScheduledUpdatesPerTick() {
+        return maxLiquidScheduledUpdatesPerTick;
+    }
+
+    public void setMaxLiquidScheduledUpdatesPerTick(int maxLiquidScheduledUpdatesPerTick) {
+        this.maxLiquidScheduledUpdatesPerTick = maxLiquidScheduledUpdatesPerTick;
     }
 
     final public LevelProvider getProvider() {

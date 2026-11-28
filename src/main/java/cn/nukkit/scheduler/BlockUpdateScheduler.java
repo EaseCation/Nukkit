@@ -1,6 +1,7 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Mth;
@@ -14,6 +15,7 @@ import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
@@ -23,21 +25,26 @@ public class BlockUpdateScheduler {
     private long lastTick;
     private final Long2ObjectMap<ObjectLinkedOpenHashSet<BlockUpdateEntry>> queuedUpdates;
     private final Object2IntOpenHashMap<BlockUpdateEntry> queuedEntryCounts;
+    private final ArrayDeque<BlockUpdateEntry> deferredLiquidUpdates;
 
     private Set<BlockUpdateEntry> pendingUpdates;
 
     public BlockUpdateScheduler(Level level, long currentTick) {
         queuedUpdates = new Long2ObjectOpenHashMap<>(); // Change to ConcurrentHashMap if this needs to be concurrent
         queuedEntryCounts = new Object2IntOpenHashMap<>();
+        deferredLiquidUpdates = new ArrayDeque<>();
         lastTick = currentTick;
         this.level = level;
     }
 
     public void tick(long currentTick) {
+        int liquidBudget = level.getMaxLiquidScheduledUpdatesPerTick();
+        int liquidExecuted = drainDeferredLiquidUpdates(liquidBudget);
+
         // Should only perform once, unless ticks were skipped
         if (currentTick - lastTick < Short.MAX_VALUE) {// Arbitrary
             for (long tick = lastTick + 1; tick <= currentTick; tick++) {
-                perform(tick);
+                liquidExecuted = perform(tick, liquidBudget, liquidExecuted);
             }
         } else {
             LongList times = new LongArrayList(queuedUpdates.keySet());
@@ -46,7 +53,7 @@ public class BlockUpdateScheduler {
             while (iter.hasNext()) {
                 long tick = iter.nextLong();
                 if (tick <= currentTick) {
-                    perform(tick);
+                    liquidExecuted = perform(tick, liquidBudget, liquidExecuted);
                 } else {
                     break;
                 }
@@ -55,40 +62,69 @@ public class BlockUpdateScheduler {
         lastTick = currentTick;
     }
 
-    private void perform(long tick) {
+    private int drainDeferredLiquidUpdates(int liquidBudget) {
+        int liquidExecuted = 0;
+        while (!deferredLiquidUpdates.isEmpty() && (liquidBudget <= 0 || liquidExecuted < liquidBudget)) {
+            BlockUpdateEntry entry = deferredLiquidUpdates.poll();
+            decrementQueuedCount(entry);
+            if (executeEntry(entry)) {
+                liquidExecuted++;
+            }
+        }
+        return liquidExecuted;
+    }
+
+    private int perform(long tick, int liquidBudget, int liquidExecuted) {
+        Set<BlockUpdateEntry> updates = pendingUpdates = queuedUpdates.remove(tick);
         try {
             lastTick = tick;
-            Set<BlockUpdateEntry> updates = pendingUpdates = queuedUpdates.remove(tick);
             if (updates != null) {
-                for (BlockUpdateEntry entry : updates) {
-                    decrementQueuedCount(entry);
-                }
                 Iterator<BlockUpdateEntry> updateIterator = updates.iterator();
 
                 while (updateIterator.hasNext()) {
                     BlockUpdateEntry entry = updateIterator.next();
+                    updateIterator.remove();
 
-                    Vector3 pos = entry.pos;
-                    if (level.isChunkLoaded(Mth.floor(pos.x) >> 4, Mth.floor(pos.z) >> 4)) {
-                        Block block = level.getBlock(entry.pos);
+                    if (liquidBudget > 0 && entry.block instanceof BlockLiquid && liquidExecuted >= liquidBudget) {
+                        deferredLiquidUpdates.addLast(entry);
+                        continue;
+                    }
 
-                        updateIterator.remove();
-                        if (Block.equals(block, entry.block, false)) {
-                            block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
-                        } else {
-                            block = level.getExtraBlock(entry.pos);
-                            if (Block.equals(block, entry.block, false)) {
-                                block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
-                            }
-                        }
-                    } else {
-                        level.scheduleUpdate(entry.block, entry.pos, 0);
+                    decrementQueuedCount(entry);
+                    if (executeEntry(entry)) {
+                        liquidExecuted++;
                     }
                 }
             }
         } finally {
+            if (updates != null && !updates.isEmpty()) {
+                for (BlockUpdateEntry remaining : updates) {
+                    decrementQueuedCount(remaining);
+                }
+            }
             pendingUpdates = null;
         }
+        return liquidExecuted;
+    }
+
+    private boolean executeEntry(BlockUpdateEntry entry) {
+        boolean isLiquid = entry.block instanceof BlockLiquid;
+        Vector3 pos = entry.pos;
+        if (level.isChunkLoaded(Mth.floor(pos.x) >> 4, Mth.floor(pos.z) >> 4)) {
+            Block block = level.getBlock(entry.pos);
+
+            if (Block.equals(block, entry.block, false)) {
+                block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+            } else {
+                block = level.getExtraBlock(entry.pos);
+                if (Block.equals(block, entry.block, false)) {
+                    block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+                }
+            }
+        } else {
+            level.scheduleUpdate(entry.block, entry.pos, 0);
+        }
+        return isLiquid;
     }
 
     public Set<BlockUpdateEntry> getPendingBlockUpdates(AxisAlignedBB boundingBox) {
@@ -97,18 +133,24 @@ public class BlockUpdateScheduler {
         for (Long2ObjectMap.Entry<ObjectLinkedOpenHashSet<BlockUpdateEntry>> tickEntries : this.queuedUpdates.long2ObjectEntrySet()) {
             Set<BlockUpdateEntry> tickSet = tickEntries.getValue();
             for (BlockUpdateEntry update : tickSet) {
-                Vector3 pos = update.pos;
-
-                if (pos.getX() >= boundingBox.getMinX() && pos.getX() < boundingBox.getMaxX() && pos.getZ() >= boundingBox.getMinZ() && pos.getZ() < boundingBox.getMaxZ()) {
-                    if (set == null) {
-                        set = new ObjectLinkedOpenHashSet<>();
-                    }
-
-                    set.add(update);
-                }
+                set = addPendingIfWithin(set, update, boundingBox);
             }
         }
+        for (BlockUpdateEntry update : this.deferredLiquidUpdates) {
+            set = addPendingIfWithin(set, update, boundingBox);
+        }
 
+        return set;
+    }
+
+    private static Set<BlockUpdateEntry> addPendingIfWithin(Set<BlockUpdateEntry> set, BlockUpdateEntry update, AxisAlignedBB boundingBox) {
+        Vector3 pos = update.pos;
+        if (pos.getX() >= boundingBox.getMinX() && pos.getX() < boundingBox.getMaxX() && pos.getZ() >= boundingBox.getMinZ() && pos.getZ() < boundingBox.getMaxZ()) {
+            if (set == null) {
+                set = new ObjectLinkedOpenHashSet<>();
+            }
+            set.add(update);
+        }
         return set;
     }
 
@@ -148,6 +190,10 @@ public class BlockUpdateScheduler {
                 return true;
             }
         }
+        if (deferredLiquidUpdates.remove(entry)) {
+            decrementQueuedCount(entry);
+            return true;
+        }
         return false;
     }
 
@@ -160,6 +206,15 @@ public class BlockUpdateScheduler {
             BlockUpdateEntry matched = updateSet.get(pos);
             if (matched != null && updateSet.remove(pos)) {
                 decrementQueuedCount(matched);
+                return true;
+            }
+        }
+        Iterator<BlockUpdateEntry> deferredIterator = deferredLiquidUpdates.iterator();
+        while (deferredIterator.hasNext()) {
+            BlockUpdateEntry entry = deferredIterator.next();
+            if (pos.equals(entry)) {
+                deferredIterator.remove();
+                decrementQueuedCount(entry);
                 return true;
             }
         }
