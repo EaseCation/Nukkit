@@ -1,5 +1,6 @@
 package cn.nukkit.level.format.anvil;
 
+import cn.nukkit.level.BlockView;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.LevelCreationOptions;
@@ -20,6 +21,7 @@ import cn.nukkit.utils.ChunkException;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -124,12 +126,17 @@ public class Anvil extends BaseLevelProvider {
 
     @Override
     public AsyncTask requestChunkTask(int x, int z) throws ChunkException {
+        return requestChunkTask(x, z, null);
+    }
+
+    @Override
+    public AsyncTask requestChunkTask(int x, int z, @Nullable BlockView view) throws ChunkException {
         Chunk chunk = (Chunk) this.getChunk(x, z, false);
         if (chunk == null) {
 //            throw new ChunkException("Invalid Chunk Set");
             return null;
         }
-        return new ChunkRequestTask(chunk);
+        return new ChunkRequestTask(chunk, view);
     }
 
     private int lastPosition = 0;

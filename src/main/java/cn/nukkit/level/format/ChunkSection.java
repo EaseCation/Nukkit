@@ -1,9 +1,11 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.level.BlockView;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.utils.BinaryStream;
 
+import javax.annotation.Nullable;
 import java.util.function.IntFunction;
 
 /**
@@ -65,6 +67,14 @@ public interface ChunkSection {
     void writeTo(BinaryStream stream, StaticVersion version);
 
     /**
+     * Paletted sub chunk storage (static runtime)，写出前按观察者方块视图替换方块。
+     * 视图为空时与 {@link #writeTo(BinaryStream, StaticVersion)} 相同；不含方块的实现可直接沿用默认实现。
+     */
+    default void writeTo(BinaryStream stream, StaticVersion version, @Nullable BlockView view) {
+        writeTo(stream, version);
+    }
+
+    /**
      * Paletted sub chunk storage (runtime).
      * @since 1.2.13
      */
@@ -83,6 +93,15 @@ public interface ChunkSection {
      * @since 1.12.0
      */
     default boolean writeToCache(BinaryStream stream, IntFunction<String> blockIdToName) {
+        return writeToCache(stream);
+    }
+
+    /**
+     * Paletted sub chunk storage (client blob cache)，写出前按观察者方块视图替换方块。
+     * 视图为空时与 {@link #writeToCache(BinaryStream)} 相同；不含方块的实现可直接沿用默认实现。
+     * @return all air（按原方块判断）
+     */
+    default boolean writeToCache(BinaryStream stream, @Nullable BlockView view) {
         return writeToCache(stream);
     }
 
